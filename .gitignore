@@ -56,3 +56,6 @@ uploads/
 
 # ===== skills 缓存 =====
 skills/*/cache/
+
+# ===== Redis =====
+dump.rdb
