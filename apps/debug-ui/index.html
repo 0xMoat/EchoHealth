@@ -1,0 +1,893 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>EchoHealth — Debug Console</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&family=Syne:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --bg:        #060a0f;
+    --panel:     #0c1218;
+    --border:    #1a2535;
+    --border-hi: #243247;
+    --green:     #00e5a0;
+    --green-dim: #00a872;
+    --amber:     #f5a623;
+    --red:       #ff4757;
+    --blue:      #4fc3f7;
+    --text:      #c8d8e8;
+    --text-dim:  #5a7a9a;
+    --text-faint:#2a4060;
+    --mono:      'IBM Plex Mono', monospace;
+    --sans:      'Syne', sans-serif;
+  }
+
+  html, body {
+    height: 100%;
+    background: var(--bg);
+    color: var(--text);
+    font-family: var(--mono);
+    font-size: 13px;
+    line-height: 1.6;
+  }
+
+  /* ── Scanlines overlay ─────────────────── */
+  body::before {
+    content: '';
+    position: fixed; inset: 0; z-index: 9999;
+    pointer-events: none;
+    background: repeating-linear-gradient(
+      to bottom,
+      transparent 0px,
+      transparent 2px,
+      rgba(0,0,0,0.08) 2px,
+      rgba(0,0,0,0.08) 4px
+    );
+  }
+
+  /* ── Layout ────────────────────────────── */
+  .shell {
+    display: grid;
+    grid-template-rows: 48px 1fr;
+    grid-template-columns: 380px 1fr;
+    height: 100vh;
+    overflow: hidden;
+  }
+
+  /* ── Topbar ─────────────────────────────── */
+  .topbar {
+    grid-column: 1 / -1;
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    padding: 0 20px;
+    border-bottom: 1px solid var(--border);
+    background: var(--panel);
+  }
+  .topbar-logo {
+    font-family: var(--sans);
+    font-size: 15px;
+    font-weight: 700;
+    color: var(--green);
+    letter-spacing: 0.05em;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+  .topbar-logo::before {
+    content: '⬡';
+    font-size: 18px;
+  }
+  .topbar-sub {
+    font-size: 11px;
+    color: var(--text-dim);
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+  }
+  .topbar-sep { flex: 1; }
+  .status-dot {
+    width: 8px; height: 8px;
+    border-radius: 50%;
+    background: var(--text-faint);
+    transition: background 0.3s;
+  }
+  .status-dot.alive { background: var(--green); box-shadow: 0 0 6px var(--green); animation: pulse 2s infinite; }
+  .status-dot.error { background: var(--red); box-shadow: 0 0 6px var(--red); }
+  @keyframes pulse { 0%,100% { opacity:1; } 50% { opacity:0.4; } }
+  .status-label { font-size: 11px; color: var(--text-dim); }
+
+  /* ── Left Panel ─────────────────────────── */
+  .left {
+    border-right: 1px solid var(--border);
+    overflow-y: auto;
+    display: flex;
+    flex-direction: column;
+    gap: 0;
+  }
+  .left::-webkit-scrollbar { width: 4px; }
+  .left::-webkit-scrollbar-track { background: transparent; }
+  .left::-webkit-scrollbar-thumb { background: var(--border-hi); border-radius: 2px; }
+
+  /* ── Section ────────────────────────────── */
+  .section {
+    border-bottom: 1px solid var(--border);
+    padding: 14px 16px;
+  }
+  .section-head {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 12px;
+    font-family: var(--sans);
+    font-size: 11px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.15em;
+    color: var(--text-dim);
+  }
+  .section-head::before {
+    content: '';
+    display: inline-block;
+    width: 2px; height: 12px;
+    border-radius: 1px;
+  }
+  .s-config .section-head::before  { background: var(--blue); }
+  .s-auth   .section-head::before  { background: var(--amber); }
+  .s-upload .section-head::before  { background: var(--green); }
+  .s-status .section-head::before  { background: var(--text-dim); }
+
+  /* ── Form Elements ──────────────────────── */
+  label {
+    display: block;
+    font-size: 11px;
+    color: var(--text-dim);
+    margin-bottom: 4px;
+    letter-spacing: 0.05em;
+  }
+  input[type="text"], input[type="url"], select, textarea {
+    width: 100%;
+    background: var(--bg);
+    border: 1px solid var(--border);
+    border-radius: 4px;
+    color: var(--text);
+    font-family: var(--mono);
+    font-size: 12px;
+    padding: 7px 10px;
+    outline: none;
+    transition: border-color 0.2s;
+    margin-bottom: 10px;
+  }
+  input:focus, select:focus, textarea:focus {
+    border-color: var(--green-dim);
+  }
+  select option { background: var(--panel); }
+
+  /* ── Buttons ────────────────────────────── */
+  .btn {
+    display: inline-flex; align-items: center; justify-content: center;
+    gap: 6px;
+    width: 100%;
+    padding: 9px 14px;
+    border-radius: 4px;
+    font-family: var(--mono);
+    font-size: 12px;
+    font-weight: 500;
+    cursor: pointer;
+    border: 1px solid transparent;
+    transition: all 0.15s;
+    letter-spacing: 0.04em;
+    margin-bottom: 6px;
+  }
+  .btn:last-child { margin-bottom: 0; }
+  .btn-primary {
+    background: var(--green);
+    color: #060a0f;
+    border-color: var(--green);
+  }
+  .btn-primary:hover { background: #00ffb2; box-shadow: 0 0 16px rgba(0,229,160,0.35); }
+  .btn-primary:active { transform: scale(0.98); }
+  .btn-secondary {
+    background: transparent;
+    color: var(--text);
+    border-color: var(--border-hi);
+  }
+  .btn-secondary:hover { border-color: var(--text-dim); color: var(--green); }
+  .btn-danger {
+    background: transparent;
+    color: var(--red);
+    border-color: rgba(255,71,87,0.3);
+  }
+  .btn-danger:hover { background: rgba(255,71,87,0.08); }
+  .btn:disabled { opacity: 0.35; cursor: not-allowed; }
+  .btn-spinner {
+    display: inline-block;
+    width: 10px; height: 10px;
+    border: 2px solid rgba(6,10,15,0.3);
+    border-top-color: #060a0f;
+    border-radius: 50%;
+    animation: spin 0.6s linear infinite;
+  }
+  @keyframes spin { to { transform: rotate(360deg); } }
+
+  /* ── File Upload ─────────────────────────── */
+  .file-drop {
+    border: 1px dashed var(--border-hi);
+    border-radius: 4px;
+    padding: 16px;
+    text-align: center;
+    cursor: pointer;
+    transition: border-color 0.2s, background 0.2s;
+    margin-bottom: 10px;
+    position: relative;
+  }
+  .file-drop:hover, .file-drop.dragover {
+    border-color: var(--green-dim);
+    background: rgba(0,229,160,0.03);
+  }
+  .file-drop input[type="file"] {
+    position: absolute; inset: 0; opacity: 0; cursor: pointer; margin: 0; border: 0;
+  }
+  .file-drop-icon { font-size: 22px; margin-bottom: 6px; }
+  .file-drop-text { font-size: 11px; color: var(--text-dim); }
+  .photo-preview {
+    display: flex; flex-wrap: wrap; gap: 6px;
+    margin-bottom: 10px;
+  }
+  .photo-thumb {
+    position: relative;
+    width: 56px; height: 56px;
+    border-radius: 4px;
+    overflow: hidden;
+    border: 1px solid var(--border-hi);
+    flex-shrink: 0;
+  }
+  .photo-thumb img { width: 100%; height: 100%; object-fit: cover; display: block; }
+  .photo-thumb .rm {
+    position: absolute; top: 2px; right: 2px;
+    width: 16px; height: 16px;
+    background: rgba(255,71,87,0.85);
+    border-radius: 2px;
+    display: flex; align-items: center; justify-content: center;
+    cursor: pointer;
+    font-size: 10px; color: #fff; line-height: 1;
+  }
+
+  /* ── Status Badge ────────────────────────── */
+  .badge {
+    display: inline-flex; align-items: center; gap: 5px;
+    padding: 2px 8px;
+    border-radius: 3px;
+    font-size: 11px;
+    font-weight: 500;
+    letter-spacing: 0.06em;
+  }
+  .badge-pending  { background: rgba(245,166,35,0.12); color: var(--amber); border: 1px solid rgba(245,166,35,0.3); }
+  .badge-processing { background: rgba(79,195,247,0.12); color: var(--blue); border: 1px solid rgba(79,195,247,0.3); }
+  .badge-completed { background: rgba(0,229,160,0.12); color: var(--green); border: 1px solid rgba(0,229,160,0.3); }
+  .badge-failed   { background: rgba(255,71,87,0.12); color: var(--red); border: 1px solid rgba(255,71,87,0.3); }
+
+  /* ── Progress Bar ────────────────────────── */
+  .progress-wrap {
+    background: var(--bg);
+    border: 1px solid var(--border);
+    border-radius: 3px;
+    height: 6px;
+    margin: 8px 0;
+    overflow: hidden;
+  }
+  .progress-fill {
+    height: 100%;
+    border-radius: 3px;
+    background: linear-gradient(90deg, var(--green-dim), var(--green));
+    transition: width 0.5s ease;
+    box-shadow: 0 0 8px rgba(0,229,160,0.4);
+  }
+
+  /* ── Status Info ─────────────────────────── */
+  .info-row {
+    display: flex; align-items: center;
+    justify-content: space-between;
+    padding: 4px 0;
+    border-bottom: 1px solid var(--border);
+    font-size: 11px;
+  }
+  .info-row:last-child { border-bottom: 0; }
+  .info-key { color: var(--text-dim); }
+  .info-val { color: var(--text); font-weight: 500; max-width: 200px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .info-val a { color: var(--green); text-decoration: none; }
+  .info-val a:hover { text-decoration: underline; }
+
+  /* ── Right Panel / Log ───────────────────── */
+  .right {
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+  }
+  .log-header {
+    display: flex; align-items: center; gap: 10px;
+    padding: 10px 16px;
+    border-bottom: 1px solid var(--border);
+    flex-shrink: 0;
+  }
+  .log-title {
+    font-family: var(--sans);
+    font-size: 11px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.15em;
+    color: var(--text-dim);
+  }
+  .log-count {
+    background: var(--border);
+    color: var(--text-dim);
+    font-size: 10px;
+    padding: 1px 6px;
+    border-radius: 10px;
+    min-width: 20px; text-align: center;
+  }
+  .log-sep { flex: 1; }
+  .log-clear {
+    font-size: 11px;
+    color: var(--text-faint);
+    cursor: pointer;
+    padding: 3px 8px;
+    border-radius: 3px;
+    border: 1px solid transparent;
+    background: none;
+    font-family: var(--mono);
+    letter-spacing: 0.04em;
+    transition: all 0.15s;
+  }
+  .log-clear:hover { color: var(--red); border-color: rgba(255,71,87,0.3); }
+
+  .log-body {
+    flex: 1;
+    overflow-y: auto;
+    padding: 8px 0;
+    display: flex;
+    flex-direction: column;
+    gap: 0;
+  }
+  .log-body::-webkit-scrollbar { width: 4px; }
+  .log-body::-webkit-scrollbar-track { background: transparent; }
+  .log-body::-webkit-scrollbar-thumb { background: var(--border-hi); border-radius: 2px; }
+
+  /* ── Log Entry ───────────────────────────── */
+  .log-entry {
+    display: grid;
+    grid-template-columns: 64px 70px 1fr;
+    gap: 0 10px;
+    padding: 6px 16px;
+    border-bottom: 1px solid rgba(26,37,53,0.5);
+    animation: fadeIn 0.2s ease;
+    align-items: start;
+  }
+  .log-entry:hover { background: rgba(255,255,255,0.015); }
+  @keyframes fadeIn { from { opacity:0; transform: translateY(-4px); } to { opacity:1; transform:none; } }
+
+  .log-ts { color: var(--text-faint); font-size: 11px; padding-top: 1px; }
+  .log-method {
+    font-size: 11px; font-weight: 600;
+    text-align: right;
+    padding-top: 1px;
+  }
+  .m-GET    { color: var(--blue); }
+  .m-POST   { color: var(--green); }
+  .m-INFO   { color: var(--amber); }
+  .m-ERROR  { color: var(--red); }
+  .m-POLL   { color: var(--text-dim); }
+
+  .log-content {}
+  .log-path { color: var(--text); margin-bottom: 2px; word-break: break-all; }
+  .log-body-text {
+    color: var(--text-dim);
+    font-size: 11px;
+    white-space: pre-wrap;
+    word-break: break-all;
+    border-left: 2px solid var(--border);
+    padding-left: 8px;
+    margin-top: 4px;
+    max-height: 200px;
+    overflow-y: auto;
+  }
+  .log-body-text.success { border-color: var(--green-dim); }
+  .log-body-text.error   { border-color: var(--red); color: var(--red); }
+  .log-status-200  { color: var(--green); }
+  .log-status-201  { color: var(--green); }
+  .log-status-4xx  { color: var(--amber); }
+  .log-status-5xx  { color: var(--red); }
+
+  /* ── User ID Row ─────────────────────────── */
+  .userid-display {
+    background: rgba(0,229,160,0.05);
+    border: 1px solid rgba(0,229,160,0.2);
+    border-radius: 4px;
+    padding: 6px 10px;
+    margin-bottom: 10px;
+    font-size: 11px;
+    display: flex; align-items: center; justify-content: space-between;
+  }
+  .userid-display .uid { color: var(--green); word-break: break-all; }
+  .userid-display .copy-btn {
+    cursor: pointer; color: var(--text-dim);
+    background: none; border: none; font-size: 14px; padding: 0 2px;
+    font-family: inherit;
+    transition: color 0.15s;
+  }
+  .userid-display .copy-btn:hover { color: var(--green); }
+
+  /* ── Video Player ─────────────────────────── */
+  .video-wrap {
+    margin-top: 8px;
+    border: 1px solid var(--border);
+    border-radius: 4px;
+    overflow: hidden;
+    background: #000;
+  }
+  .video-wrap video { display: block; width: 100%; max-height: 200px; }
+
+  /* ── Empty state ─────────────────────────── */
+  .empty-log {
+    flex: 1;
+    display: flex; flex-direction: column;
+    align-items: center; justify-content: center;
+    color: var(--text-faint);
+    gap: 8px;
+    padding: 40px;
+    text-align: center;
+  }
+  .empty-log-icon { font-size: 32px; opacity: 0.4; }
+  .empty-log-text { font-size: 12px; line-height: 1.7; }
+</style>
+</head>
+<body>
+<div class="shell">
+
+  <!-- Topbar -->
+  <header class="topbar">
+    <div class="topbar-logo">EchoHealth</div>
+    <span class="topbar-sub">Debug Console</span>
+    <div class="topbar-sep"></div>
+    <div id="serverDot" class="status-dot"></div>
+    <span id="serverLabel" class="status-label">未连接</span>
+  </header>
+
+  <!-- Left Panel -->
+  <aside class="left">
+
+    <!-- Config -->
+    <div class="section s-config">
+      <div class="section-head">Config</div>
+      <label>API Base URL</label>
+      <input type="url" id="baseUrl" value="http://localhost:3000" placeholder="http://localhost:3000">
+      <button class="btn btn-secondary" onclick="checkHealth()">▶ 检查连接</button>
+    </div>
+
+    <!-- Auth -->
+    <div class="section s-auth">
+      <div class="section-head">Auth / User</div>
+      <label>微信 Code（留空则自动生成测试 userId）</label>
+      <input type="text" id="wxCode" placeholder="留空 → 跳过微信验证，手动输入 userId">
+      <div id="userIdDisplay" style="display:none" class="userid-display">
+        <span class="uid" id="userIdText">—</span>
+        <button class="copy-btn" onclick="copyUserId()" title="复制">⎘</button>
+      </div>
+      <button class="btn btn-secondary" onclick="doLogin()">→ 登录 / 获取 userId</button>
+      <div style="margin-top:6px">
+        <label>或直接输入 userId</label>
+        <input type="text" id="manualUserId" placeholder="cuid...">
+      </div>
+    </div>
+
+    <!-- Upload -->
+    <div class="section s-upload">
+      <div class="section-head">上传报告</div>
+      <div class="file-drop" id="fileDrop"
+           ondragover="event.preventDefault();this.classList.add('dragover')"
+           ondragleave="this.classList.remove('dragover')"
+           ondrop="handleDrop(event)">
+        <input type="file" id="fileInput" accept="image/*" multiple onchange="handleFiles(this.files)">
+        <div class="file-drop-icon">📋</div>
+        <div class="file-drop-text">点击或拖拽报告照片<br>最多 5 张</div>
+      </div>
+      <div class="photo-preview" id="photoPreview"></div>
+      <label>报告类型</label>
+      <select id="reportType">
+        <option value="血常规">血常规</option>
+        <option value="生化检查">生化检查</option>
+        <option value="尿常规">尿常规</option>
+        <option value="血糖">血糖</option>
+        <option value="血脂">血脂</option>
+        <option value="肝功能">肝功能</option>
+        <option value="肾功能">肾功能</option>
+        <option value="综合体检" selected>综合体检</option>
+        <option value="心电图">心电图</option>
+        <option value="其他">其他</option>
+      </select>
+      <button class="btn btn-primary" id="submitBtn" onclick="submitReport()">
+        ⚡ 提交生成任务
+      </button>
+    </div>
+
+    <!-- Status -->
+    <div class="section s-status">
+      <div class="section-head">任务状态</div>
+      <div id="statusEmpty" style="color:var(--text-faint);font-size:11px">
+        提交任务后在此查看进度
+      </div>
+      <div id="statusContent" style="display:none">
+        <div class="info-row">
+          <span class="info-key">Report ID</span>
+          <span class="info-val" id="sReportId">—</span>
+        </div>
+        <div class="info-row">
+          <span class="info-key">状态</span>
+          <span class="info-val" id="sStatusBadge">—</span>
+        </div>
+        <div class="info-row">
+          <span class="info-key">类型</span>
+          <span class="info-val" id="sType">—</span>
+        </div>
+        <div class="progress-wrap">
+          <div class="progress-fill" id="sProgress" style="width:5%"></div>
+        </div>
+        <div id="sVideoSection" style="display:none">
+          <div class="info-row">
+            <span class="info-key">视频时长</span>
+            <span class="info-val" id="sVideoDur">—</span>
+          </div>
+          <div class="info-row">
+            <span class="info-key">视频链接</span>
+            <span class="info-val" id="sVideoLink">—</span>
+          </div>
+          <div id="sVideoPlayer" class="video-wrap" style="display:none">
+            <video id="videoEl" controls></video>
+          </div>
+        </div>
+        <div id="sErrorSection" style="display:none">
+          <div style="color:var(--red);font-size:11px;margin-top:6px;padding:6px 8px;background:rgba(255,71,87,0.06);border-radius:3px;border-left:2px solid var(--red)" id="sErrorMsg"></div>
+        </div>
+        <button class="btn btn-secondary" style="margin-top:10px" onclick="manualPoll()">↻ 刷新状态</button>
+      </div>
+    </div>
+
+  </aside>
+
+  <!-- Right Panel: Logs -->
+  <main class="right">
+    <div class="log-header">
+      <span class="log-title">Request Log</span>
+      <span class="log-count" id="logCount">0</span>
+      <div class="log-sep"></div>
+      <button class="log-clear" onclick="clearLog()">clear</button>
+    </div>
+    <div class="log-body" id="logBody">
+      <div class="empty-log" id="logEmpty">
+        <div class="empty-log-icon">⬡</div>
+        <div class="empty-log-text">API 请求日志将在此实时显示<br>先点击「检查连接」开始</div>
+      </div>
+    </div>
+  </main>
+
+</div>
+
+<script>
+// ── State ──────────────────────────────────────────────────────────────
+let userId = ''
+let reportId = ''
+let pollTimer = null
+let photos = []
+let logEntries = 0
+
+// ── Helpers ─────────────────────────────────────────────────────────────
+function base() {
+  return document.getElementById('baseUrl').value.replace(/\/$/, '')
+}
+
+function getEffectiveUserId() {
+  const manual = document.getElementById('manualUserId').value.trim()
+  return manual || userId
+}
+
+function ts() {
+  const d = new Date()
+  return `${String(d.getHours()).padStart(2,'0')}:${String(d.getMinutes()).padStart(2,'0')}:${String(d.getSeconds()).padStart(2,'0')}`
+}
+
+// ── Log ──────────────────────────────────────────────────────────────────
+function log(method, path, status, body) {
+  const empty = document.getElementById('logEmpty')
+  if (empty) empty.remove()
+
+  const el = document.createElement('div')
+  el.className = 'log-entry'
+
+  const statusClass = !status ? ''
+    : status < 300 ? 'log-status-200'
+    : status < 500 ? 'log-status-4xx'
+    : 'log-status-5xx'
+
+  const bodyClass = !status ? ''
+    : status < 300 ? 'success'
+    : 'error'
+
+  const bodyText = typeof body === 'object' ? JSON.stringify(body, null, 2) : String(body || '')
+
+  el.innerHTML = `
+    <span class="log-ts">${ts()}</span>
+    <span class="log-method m-${method}">${method}${status ? ' <span class="${statusClass}">${status}</span>' : ''}</span>
+    <div class="log-content">
+      <div class="log-path">${path}</div>
+      ${bodyText ? `<div class="log-body-text ${bodyClass}">${escHtml(bodyText)}</div>` : ''}
+    </div>
+  `
+  // fix inner template literal
+  el.querySelector('.log-method').innerHTML =
+    `${method}${status ? ` <span class="${statusClass}">${status}</span>` : ''}`
+
+  const lb = document.getElementById('logBody')
+  lb.appendChild(el)
+  lb.scrollTop = lb.scrollHeight
+
+  logEntries++
+  document.getElementById('logCount').textContent = logEntries
+}
+
+function escHtml(s) {
+  return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;')
+}
+
+function clearLog() {
+  document.getElementById('logBody').innerHTML =
+    '<div class="empty-log" id="logEmpty"><div class="empty-log-icon">⬡</div><div class="empty-log-text">日志已清空</div></div>'
+  logEntries = 0
+  document.getElementById('logCount').textContent = '0'
+}
+
+// ── Server Status ────────────────────────────────────────────────────────
+async function checkHealth() {
+  log('GET', '/health', null, null)
+  try {
+    const res = await fetch(`${base()}/health`)
+    const data = await res.json()
+    log('GET', '/health', res.status, data)
+    const dot = document.getElementById('serverDot')
+    const lbl = document.getElementById('serverLabel')
+    if (res.ok) {
+      dot.className = 'status-dot alive'
+      lbl.textContent = '服务正常'
+    } else {
+      dot.className = 'status-dot error'
+      lbl.textContent = `HTTP ${res.status}`
+    }
+  } catch(e) {
+    log('ERROR', '/health', null, e.message)
+    document.getElementById('serverDot').className = 'status-dot error'
+    document.getElementById('serverLabel').textContent = '连接失败'
+  }
+}
+
+// ── Auth ─────────────────────────────────────────────────────────────────
+async function doLogin() {
+  const code = document.getElementById('wxCode').value.trim()
+  if (!code) {
+    log('INFO', '跳过微信登录 — 请手动填写 userId', null, null)
+    return
+  }
+  log('POST', '/auth/login', null, { code })
+  try {
+    const res = await fetch(`${base()}/auth/login`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ code }),
+    })
+    const data = await res.json()
+    log('POST', '/auth/login', res.status, data)
+    if (res.ok && data.userId) {
+      userId = data.userId
+      showUserId(userId)
+    }
+  } catch(e) {
+    log('ERROR', '/auth/login', null, e.message)
+  }
+}
+
+function showUserId(uid) {
+  document.getElementById('userIdText').textContent = uid
+  document.getElementById('userIdDisplay').style.display = 'flex'
+}
+
+function copyUserId() {
+  navigator.clipboard.writeText(userId || document.getElementById('manualUserId').value)
+  log('INFO', '已复制 userId 到剪贴板', null, null)
+}
+
+// ── Photo Upload ─────────────────────────────────────────────────────────
+function handleFiles(files) {
+  for (const f of files) {
+    if (photos.length >= 5) break
+    photos.push(f)
+  }
+  renderPreviews()
+}
+
+function handleDrop(e) {
+  e.preventDefault()
+  document.getElementById('fileDrop').classList.remove('dragover')
+  handleFiles(e.dataTransfer.files)
+}
+
+function renderPreviews() {
+  const container = document.getElementById('photoPreview')
+  container.innerHTML = ''
+  photos.forEach((f, i) => {
+    const url = URL.createObjectURL(f)
+    const div = document.createElement('div')
+    div.className = 'photo-thumb'
+    div.innerHTML = `
+      <img src="${url}" alt="">
+      <div class="rm" onclick="removePhoto(${i})">×</div>
+    `
+    container.appendChild(div)
+  })
+  if (photos.length > 0) {
+    document.getElementById('fileDrop').querySelector('.file-drop-text').textContent =
+      `已选 ${photos.length} 张，点击继续添加`
+  }
+}
+
+function removePhoto(i) {
+  photos.splice(i, 1)
+  renderPreviews()
+}
+
+// ── Upload Images ────────────────────────────────────────────────────────
+async function uploadPhotos(uid) {
+  const urls = []
+  for (let i = 0; i < photos.length; i++) {
+    const f = photos[i]
+    log('POST', `/upload/image (${i+1}/${photos.length})`, null, f.name)
+    try {
+      const fd = new FormData()
+      fd.append('file', f)
+      const res = await fetch(`${base()}/upload/image`, {
+        method: 'POST',
+        headers: { 'x-user-id': uid },
+        body: fd,
+      })
+      const data = await res.json()
+      log('POST', `/upload/image`, res.status, data)
+      if (data.url) urls.push(data.url)
+    } catch(e) {
+      log('ERROR', '/upload/image', null, e.message)
+    }
+  }
+  return urls
+}
+
+// ── Submit Report ────────────────────────────────────────────────────────
+async function submitReport() {
+  const uid = getEffectiveUserId()
+  if (!uid) {
+    log('ERROR', '请先登录或手动填写 userId', null, null)
+    return
+  }
+
+  const btn = document.getElementById('submitBtn')
+  btn.disabled = true
+  btn.innerHTML = '<span class="btn-spinner"></span> 处理中...'
+
+  try {
+    let photoUrls = []
+    if (photos.length > 0) {
+      photoUrls = await uploadPhotos(uid)
+      if (photoUrls.length === 0) {
+        log('ERROR', '图片上传全部失败', null, null)
+        return
+      }
+    } else {
+      // 使用占位图进行测试
+      photoUrls = ['https://picsum.photos/400/600']
+      log('INFO', '未选图片，使用占位测试图', null, photoUrls)
+    }
+
+    const reportType = document.getElementById('reportType').value
+    const payload = { userId: uid, reportType, photoUrls }
+    log('POST', '/reports', null, payload)
+
+    const res = await fetch(`${base()}/reports`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(payload),
+    })
+    const data = await res.json()
+    log('POST', '/reports', res.status, data)
+
+    if (res.ok && data.reportId) {
+      reportId = data.reportId
+      showStatus({ id: reportId, status: 'PENDING', reportType })
+      startPolling()
+    }
+  } finally {
+    btn.disabled = false
+    btn.innerHTML = '⚡ 提交生成任务'
+  }
+}
+
+// ── Polling ───────────────────────────────────────────────────────────────
+function startPolling() {
+  clearInterval(pollTimer)
+  pollTimer = setInterval(poll, 3000)
+}
+
+async function poll() {
+  if (!reportId) return
+  log('POLL', `/reports/${reportId}`, null, null)
+  try {
+    const res = await fetch(`${base()}/reports/${reportId}`)
+    const data = await res.json()
+    log('POLL', `/reports/${reportId}`, res.status, data)
+    if (res.ok) {
+      showStatus(data)
+      if (data.status === 'COMPLETED' || data.status === 'FAILED') {
+        clearInterval(pollTimer)
+      }
+    }
+  } catch(e) {
+    log('ERROR', `/reports/${reportId}`, null, e.message)
+  }
+}
+
+async function manualPoll() {
+  if (!reportId) return
+  await poll()
+}
+
+// ── Show Status ───────────────────────────────────────────────────────────
+function showStatus(data) {
+  document.getElementById('statusEmpty').style.display = 'none'
+  document.getElementById('statusContent').style.display = 'block'
+
+  document.getElementById('sReportId').textContent = data.id || reportId
+  document.getElementById('sType').textContent = data.reportType || '—'
+
+  const progressMap = { PENDING: '8%', PROCESSING: '60%', COMPLETED: '100%', FAILED: '100%' }
+  document.getElementById('sProgress').style.width = progressMap[data.status] || '5%'
+  if (data.status === 'FAILED') {
+    document.getElementById('sProgress').style.background = 'var(--red)'
+    document.getElementById('sProgress').style.boxShadow = '0 0 8px rgba(255,71,87,0.4)'
+  }
+
+  const badgeMap = {
+    PENDING:    '<span class="badge badge-pending">● PENDING</span>',
+    PROCESSING: '<span class="badge badge-processing">◎ PROCESSING</span>',
+    COMPLETED:  '<span class="badge badge-completed">✓ COMPLETED</span>',
+    FAILED:     '<span class="badge badge-failed">✕ FAILED</span>',
+  }
+  document.getElementById('sStatusBadge').innerHTML = badgeMap[data.status] || data.status
+
+  if (data.video) {
+    document.getElementById('sVideoSection').style.display = 'block'
+    document.getElementById('sVideoDur').textContent = `${data.video.durationSec}s`
+    document.getElementById('sVideoLink').innerHTML =
+      `<a href="${data.video.url}" target="_blank">打开视频 ↗</a>`
+    const vp = document.getElementById('sVideoPlayer')
+    vp.style.display = 'block'
+    document.getElementById('videoEl').src = data.video.url
+  }
+
+  if (data.status === 'FAILED' && data.errorMsg) {
+    document.getElementById('sErrorSection').style.display = 'block'
+    document.getElementById('sErrorMsg').textContent = data.errorMsg
+  }
+}
+
+// ── Init ──────────────────────────────────────────────────────────────────
+checkHealth()
+</script>
+</body>
+</html>
