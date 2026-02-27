@@ -102,6 +102,41 @@ pnpm --filter server dev
 pnpm --filter miniprogram dev:weapp
 ```
 
+## 📊 开发进度
+
+> 最后更新：2026-02-27
+
+### MVP 核心链路（全部完成 ✅）
+
+| # | 模块 | 任务 | 状态 |
+|---|------|------|------|
+| 1 | 基础设施 | Monorepo 初始化（pnpm workspace） | ✅ |
+| 2 | 后端 | Fastify 后端项目初始化 | ✅ |
+| 3 | 数据库 | Prisma Schema（User / Report / Video / Order） | ✅ |
+| 4 | 队列 | Redis + BullMQ 任务队列 | ✅ |
+| 5 | 流水线 | 腾讯云 OCR 图像识别模块 | ✅ |
+| 6 | 流水线 | Claude API LLM 解读脚本生成 | ✅ |
+| 7 | 流水线 | edge-tts TTS 音频生成 | ✅ |
+| 8 | 视频 | Remotion 4 视频模板（5 种 Slide） | ✅ |
+| 9 | 视频 | @remotion/renderer 渲染 + 腾讯云 COS 上传 | ✅ |
+| 10 | 后端 | BullMQ Worker 8 步流水线串联 | ✅ |
+| 11 | 后端 | REST API（POST /reports、GET /reports/:id） | ✅ |
+| 12 | 后端 | 配额中间件 + 微信 jscode2session 登录 | ✅ |
+| 13 | 小程序 | Taro 4 小程序脚手架初始化 | ✅ |
+| 14 | 小程序 | 三页面实现（首页 / 上传 / 结果） | ✅ |
+
+### 测试覆盖
+
+- **服务端**：11 个测试文件，**45 个测试用例全部通过**，`tsc` 零错误
+- **覆盖范围**：OCR 解析、LLM 脚本、TTS 生成、Remotion 渲染、COS 上传、Worker 流水线、REST API、配额中间件、微信登录
+
+### 待办（下一阶段）
+
+- [ ] 微信支付 Pro 升级链路
+- [ ] 真机联调（需填写真实微信 AppID、COS / Tencent 凭证）
+- [ ] 生产环境部署（服务端 + PostgreSQL + Redis）
+- [ ] CI/CD 流水线
+
 ## 📖 设计文档
 
 详细的产品设计与技术规划方案请参阅：[`docs/plans/2026-02-27-echohealth-design.md`](docs/plans/2026-02-27-echohealth-design.md)

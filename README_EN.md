@@ -102,6 +102,41 @@ pnpm --filter server dev
 pnpm --filter miniprogram dev:weapp
 ```
 
+## 📊 Development Progress
+
+> Last updated: 2026-02-27
+
+### MVP Core Pipeline — All Complete ✅
+
+| # | Module | Task | Status |
+|---|--------|------|--------|
+| 1 | Infrastructure | Monorepo init (pnpm workspace) | ✅ |
+| 2 | Backend | Fastify backend project init | ✅ |
+| 3 | Database | Prisma schema (User / Report / Video / Order) | ✅ |
+| 4 | Queue | Redis + BullMQ task queue | ✅ |
+| 5 | Pipeline | Tencent Cloud OCR image recognition | ✅ |
+| 6 | Pipeline | Claude API LLM script generation | ✅ |
+| 7 | Pipeline | edge-tts TTS audio generation | ✅ |
+| 8 | Video | Remotion 4 video templates (5 slide types) | ✅ |
+| 9 | Video | @remotion/renderer render + Tencent COS upload | ✅ |
+| 10 | Backend | BullMQ Worker 8-step pipeline | ✅ |
+| 11 | Backend | REST API (POST /reports, GET /reports/:id) | ✅ |
+| 12 | Backend | Quota middleware + WeChat jscode2session login | ✅ |
+| 13 | Miniprogram | Taro 4 miniprogram scaffold | ✅ |
+| 14 | Miniprogram | 3-page implementation (Home / Upload / Result) | ✅ |
+
+### Test Coverage
+
+- **Server**: 11 test files, **45 test cases all passing**, `tsc` zero errors
+- **Scope**: OCR parsing, LLM scripting, TTS generation, Remotion rendering, COS upload, Worker pipeline, REST API, quota middleware, WeChat login
+
+### Upcoming (Next Phase)
+
+- [ ] WeChat Pay Pro upgrade flow
+- [ ] Device testing (requires real WeChat AppID, COS / Tencent credentials)
+- [ ] Production deployment (server + PostgreSQL + Redis)
+- [ ] CI/CD pipeline
+
 ## 📖 Documentation
 
 For detailed product design and technical planning, please refer to: [`docs/plans/2026-02-27-echohealth-design.md`](docs/plans/2026-02-27-echohealth-design.md)
