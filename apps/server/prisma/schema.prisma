@@ -16,6 +16,7 @@ model User {
   usedThisMonth Int       @default(0)
   usageResetAt  DateTime  @default(now())
   reports       Report[]
+  orders        Order[]
   createdAt     DateTime  @default(now())
   updatedAt     DateTime  @updatedAt
 }
@@ -34,6 +35,9 @@ model Report {
   errorMsg  String?
   createdAt DateTime     @default(now())
   updatedAt DateTime     @updatedAt
+
+  @@index([userId])
+  @@index([status])
 }
 
 model Video {
@@ -46,13 +50,17 @@ model Video {
 }
 
 model Order {
-  id           String      @id @default(cuid())
-  userId       String
-  amount       Int
-  status       OrderStatus @default(PENDING)
-  wxPayOrderId String?     @unique
-  paidAt       DateTime?
-  createdAt    DateTime    @default(now())
+  id            String      @id @default(cuid())
+  userId        String
+  user          User        @relation(fields: [userId], references: [id])
+  amount        Int
+  status        OrderStatus @default(PENDING)
+  wxPayOrderId  String?     @unique
+  paidAt        DateTime?
+  createdAt     DateTime    @default(now())
+  updatedAt     DateTime    @updatedAt
+
+  @@index([userId])
 }
 
 enum ReportType {
