@@ -1,0 +1,14 @@
+{
+  "name": "echohealth",
+  "version": "0.0.1",
+  "private": true,
+  "scripts": {
+    "dev:server": "pnpm --filter server dev",
+    "dev:mp": "pnpm --filter miniprogram dev:weapp",
+    "test": "pnpm --filter server test"
+  },
+  "engines": {
+    "node": ">=20.0.0",
+    "pnpm": ">=9.0.0"
+  }
+}
