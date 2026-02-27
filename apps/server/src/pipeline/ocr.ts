@@ -12,6 +12,12 @@ export interface Indicator {
  * 需要 TENCENT_SECRET_ID / TENCENT_SECRET_KEY 环境变量
  */
 export async function ocrReportImage(base64Image: string): Promise<string> {
+  const secretId = process.env.TENCENT_SECRET_ID
+  const secretKey = process.env.TENCENT_SECRET_KEY
+  if (!secretId || !secretKey) {
+    throw new Error('Missing TENCENT_SECRET_ID or TENCENT_SECRET_KEY environment variables')
+  }
+
   // 动态导入，避免在没有凭证的环境中加载失败
   const { OcrClient } = await import(
     'tencentcloud-sdk-nodejs-ocr/tencentcloud/services/ocr/v20181119/ocr_client.js'
@@ -19,14 +25,19 @@ export async function ocrReportImage(base64Image: string): Promise<string> {
 
   const client = new OcrClient({
     credential: {
-      secretId: process.env.TENCENT_SECRET_ID!,
-      secretKey: process.env.TENCENT_SECRET_KEY!,
+      secretId,
+      secretKey,
     },
-    region: 'ap-guangzhou',
+    region: process.env.TENCENT_OCR_REGION ?? 'ap-guangzhou',
   })
 
+  interface TextDetection {
+    DetectedText: string
+    Confidence: number
+  }
   const res = await client.GeneralAccurateOCR({ ImageBase64: base64Image })
-  return res.TextDetections?.map((t: any) => t.DetectedText).join('\n') ?? ''
+  const detections = res.TextDetections as TextDetection[] | undefined
+  return detections?.map((t) => t.DetectedText).join('\n') ?? ''
 }
 
 /**
