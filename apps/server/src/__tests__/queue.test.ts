@@ -1,10 +1,9 @@
 import { describe, it, expect, afterAll } from 'vitest'
-import { getQueue } from '../queue/index.js'
+import { getQueue, closeQueue } from '../queue/index.js'
 
 describe('Queue', () => {
   afterAll(async () => {
-    const queue = getQueue()
-    await queue.close()
+    await closeQueue()
   })
 
   it('can add a video generation job', async () => {
