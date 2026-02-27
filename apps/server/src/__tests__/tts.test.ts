@@ -19,7 +19,7 @@ describe('generateAudio', () => {
     await generateAudio('您好，这是测试', '/tmp/test.mp3')
 
     expect(exec).toHaveBeenCalledOnce()
-    const callArg = (exec as ReturnType<typeof vi.fn>).mock.calls[0][0] as string
+    const callArg = vi.mocked(exec).mock.calls[0][0] as string
     expect(callArg).toContain('edge-tts')
     expect(callArg).toContain('zh-CN-XiaoxiaoNeural')
     expect(callArg).toContain('您好，这是测试')
@@ -39,7 +39,7 @@ describe('generateAudio', () => {
 
     await generateAudio('第一行\n第二行', '/tmp/test.mp3')
 
-    const callArg = (exec as ReturnType<typeof vi.fn>).mock.calls[0][0] as string
+    const callArg = vi.mocked(exec).mock.calls[0][0] as string
     expect(callArg).not.toContain('\n')
     expect(callArg).toContain('第一行 第二行')
   })

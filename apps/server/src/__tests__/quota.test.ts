@@ -1,0 +1,123 @@
+import { describe, it, expect, vi, beforeEach } from 'vitest'
+import type { FastifyRequest, FastifyReply } from 'fastify'
+import { FREE_MONTHLY_LIMIT, PRO_MONTHLY_LIMIT } from '../middleware/quota.js'
+
+vi.mock('../db.js', () => ({
+  prisma: {
+    user: {
+      findUnique: vi.fn(),
+      update: vi.fn().mockResolvedValue({}),
+    },
+  },
+}))
+
+import { prisma } from '../db.js'
+import { quotaMiddleware } from '../middleware/quota.js'
+
+function makeReply() {
+  const reply = { status: vi.fn(), send: vi.fn() }
+  reply.status.mockReturnValue(reply)
+  return reply as unknown as FastifyReply
+}
+
+function makeRequest(userId: string) {
+  return { body: { userId } } as FastifyRequest<{ Body: { userId?: string } }>
+}
+
+describe('quotaMiddleware', () => {
+  beforeEach(() => vi.clearAllMocks())
+
+  it('allows request when user is under free limit', async () => {
+    vi.mocked(prisma.user.findUnique).mockResolvedValue({
+      id: 'u1',
+      isPro: false,
+      usedThisMonth: 1,
+      usageResetAt: new Date(),
+    } as never)
+
+    const reply = makeReply()
+    await quotaMiddleware(makeRequest('u1'), reply)
+
+    expect(vi.mocked(prisma.user.update)).toHaveBeenCalledWith(
+      expect.objectContaining({ data: { usedThisMonth: { increment: 1 } } }),
+    )
+    expect(reply.status).not.toHaveBeenCalled()
+  })
+
+  it('blocks request when free user has reached limit', async () => {
+    vi.mocked(prisma.user.findUnique).mockResolvedValue({
+      id: 'u1',
+      isPro: false,
+      usedThisMonth: FREE_MONTHLY_LIMIT,
+      usageResetAt: new Date(),
+    } as never)
+
+    const reply = makeReply()
+    await quotaMiddleware(makeRequest('u1'), reply)
+
+    expect(reply.status).toHaveBeenCalledWith(429)
+    expect(reply.send).toHaveBeenCalledWith(
+      expect.objectContaining({ error: 'Monthly quota exceeded', limit: FREE_MONTHLY_LIMIT }),
+    )
+  })
+
+  it('allows pro user with higher limit', async () => {
+    vi.mocked(prisma.user.findUnique).mockResolvedValue({
+      id: 'u2',
+      isPro: true,
+      usedThisMonth: FREE_MONTHLY_LIMIT, // would be blocked for free users
+      usageResetAt: new Date(),
+    } as never)
+
+    const reply = makeReply()
+    await quotaMiddleware(makeRequest('u2'), reply)
+
+    expect(reply.status).not.toHaveBeenCalled()
+    expect(vi.mocked(prisma.user.update)).toHaveBeenCalledWith(
+      expect.objectContaining({ data: { usedThisMonth: { increment: 1 } } }),
+    )
+  })
+
+  it('resets counter for a new month', async () => {
+    const lastMonth = new Date()
+    lastMonth.setMonth(lastMonth.getMonth() - 1)
+
+    vi.mocked(prisma.user.findUnique).mockResolvedValue({
+      id: 'u3',
+      isPro: false,
+      usedThisMonth: FREE_MONTHLY_LIMIT, // looks full but last month's count
+      usageResetAt: lastMonth,
+    } as never)
+
+    const reply = makeReply()
+    await quotaMiddleware(makeRequest('u3'), reply)
+
+    // Should reset first, then allow
+    expect(vi.mocked(prisma.user.update)).toHaveBeenCalledWith(
+      expect.objectContaining({ data: expect.objectContaining({ usedThisMonth: 0 }) }),
+    )
+    expect(reply.status).not.toHaveBeenCalledWith(429)
+  })
+
+  it('returns 400 when userId is missing', async () => {
+    const req = { body: {} } as FastifyRequest<{ Body: { userId?: string } }>
+    const reply = makeReply()
+    await quotaMiddleware(req, reply)
+
+    expect(reply.status).toHaveBeenCalledWith(400)
+  })
+
+  it('returns 404 when user does not exist', async () => {
+    vi.mocked(prisma.user.findUnique).mockResolvedValue(null)
+
+    const reply = makeReply()
+    await quotaMiddleware(makeRequest('ghost'), reply)
+
+    expect(reply.status).toHaveBeenCalledWith(404)
+  })
+})
+
+describe('quota constants', () => {
+  it('free limit is 3', () => expect(FREE_MONTHLY_LIMIT).toBe(3))
+  it('pro limit is 30', () => expect(PRO_MONTHLY_LIMIT).toBe(30))
+})

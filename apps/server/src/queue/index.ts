@@ -1,11 +1,12 @@
 import { Queue } from 'bullmq'
-import IORedis from 'ioredis'
+// eslint-disable-next-line @typescript-eslint/no-require-imports
+const Redis = require('ioredis')
 
-let connection: IORedis | null = null
+let connection: ReturnType<typeof Redis> | null = null
 
-function getConnection(): IORedis {
+export function getConnection(): ReturnType<typeof Redis> {
   if (!connection) {
-    connection = new IORedis(process.env.REDIS_URL ?? 'redis://localhost:6379', {
+    connection = new Redis(process.env.REDIS_URL ?? 'redis://localhost:6379', {
       maxRetriesPerRequest: null,
     })
   }
@@ -31,5 +32,3 @@ export async function closeQueue() {
     connection = null
   }
 }
-
-export { getConnection }

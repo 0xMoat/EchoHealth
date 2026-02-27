@@ -19,9 +19,13 @@ export async function ocrReportImage(base64Image: string): Promise<string> {
   }
 
   // 动态导入，避免在没有凭证的环境中加载失败
-  const { OcrClient } = await import(
+  const ocrModule = await import(
     'tencentcloud-sdk-nodejs-ocr/tencentcloud/services/ocr/v20181119/ocr_client.js'
   )
+  // Support multiple export styles (CJS default, named Client/OcrClient)
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const m = ocrModule as any
+  const OcrClient = m.OcrClient ?? m.Client ?? m.default ?? m
 
   const client = new OcrClient({
     credential: {

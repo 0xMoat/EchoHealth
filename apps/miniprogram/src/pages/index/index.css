@@ -1,0 +1,181 @@
+.page {
+  min-height: 100vh;
+  background: linear-gradient(180deg, #e0f2fe 0%, #f0f9ff 40%);
+  padding-bottom: 40px;
+}
+
+.hero {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 60px 32px 40px;
+}
+
+.hero-icon {
+  font-size: 64px;
+  margin-bottom: 16px;
+}
+
+.hero-title {
+  font-size: 32px;
+  font-weight: 700;
+  color: #0c4a6e;
+  margin-bottom: 8px;
+}
+
+.hero-subtitle {
+  font-size: 18px;
+  color: #0284c7;
+  font-weight: 500;
+  margin-bottom: 16px;
+}
+
+.hero-desc {
+  font-size: 14px;
+  color: #64748b;
+  text-align: center;
+  line-height: 1.6;
+}
+
+.upload-btn-wrap {
+  padding: 0 32px;
+  margin-bottom: 32px;
+}
+
+.upload-btn {
+  width: 100%;
+  background: #0284c7 !important;
+  color: #fff !important;
+  border-radius: 16px !important;
+  font-size: 18px !important;
+  font-weight: 600 !important;
+  padding: 20px 0 !important;
+  border: none !important;
+}
+
+.upload-btn::after {
+  border: none !important;
+}
+
+.features {
+  display: flex;
+  justify-content: space-around;
+  padding: 0 16px 32px;
+}
+
+.feature-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  flex: 1;
+  padding: 16px 8px;
+  background: #fff;
+  border-radius: 16px;
+  margin: 0 6px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+}
+
+.feature-icon {
+  font-size: 28px;
+  margin-bottom: 8px;
+}
+
+.feature-title {
+  font-size: 14px;
+  font-weight: 600;
+  color: #0f172a;
+  margin-bottom: 4px;
+}
+
+.feature-desc {
+  font-size: 12px;
+  color: #64748b;
+  text-align: center;
+}
+
+.recent {
+  padding: 0 16px;
+}
+
+.section-title {
+  font-size: 16px;
+  font-weight: 600;
+  color: #0f172a;
+  padding: 0 8px 12px;
+}
+
+.loading-text {
+  font-size: 14px;
+  color: #94a3b8;
+  padding: 16px 8px;
+}
+
+.report-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background: #fff;
+  border-radius: 12px;
+  padding: 16px;
+  margin-bottom: 8px;
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.06);
+}
+
+.report-info {
+  display: flex;
+  flex-direction: column;
+}
+
+.report-type {
+  font-size: 15px;
+  font-weight: 500;
+  color: #0f172a;
+  margin-bottom: 4px;
+}
+
+.report-date {
+  font-size: 12px;
+  color: #94a3b8;
+}
+
+.report-status {
+  padding: 4px 12px;
+  border-radius: 20px;
+}
+
+.status-text {
+  font-size: 13px;
+  font-weight: 500;
+}
+
+.status-pending {
+  background: #fef9c3;
+}
+
+.status-pending .status-text {
+  color: #854d0e;
+}
+
+.status-processing {
+  background: #dbeafe;
+}
+
+.status-processing .status-text {
+  color: #1e40af;
+}
+
+.status-completed {
+  background: #dcfce7;
+}
+
+.status-completed .status-text {
+  color: #166534;
+}
+
+.status-failed {
+  background: #fee2e2;
+}
+
+.status-failed .status-text {
+  color: #991b1b;
+}

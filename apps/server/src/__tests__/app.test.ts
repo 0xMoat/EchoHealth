@@ -1,6 +1,19 @@
-import { afterAll, describe, it, expect } from 'vitest'
+import { afterAll, describe, it, expect, vi } from 'vitest'
 import { buildApp } from '../app.js'
 import type { FastifyInstance } from 'fastify'
+
+// db.ts is now transitively imported via routes/reports; mock it to avoid
+// requiring a real DATABASE_URL in the test environment.
+vi.mock('../db.js', () => ({
+  prisma: {
+    user: { findUnique: vi.fn() },
+    report: { create: vi.fn(), findUnique: vi.fn() },
+  },
+}))
+
+vi.mock('../queue/index.js', () => ({
+  getQueue: vi.fn(() => ({ add: vi.fn() })),
+}))
 
 describe('App', () => {
   let app: FastifyInstance

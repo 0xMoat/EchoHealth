@@ -1,0 +1,23 @@
+{
+  "name": "@echohealth/video",
+  "version": "0.0.1",
+  "private": true,
+  "scripts": {
+    "dev": "remotion studio",
+    "bundle": "remotion bundle src/Root.tsx"
+  },
+  "dependencies": {
+    "@remotion/cli": "^4.0.0",
+    "@remotion/google-fonts": "^4.0.0",
+    "@remotion/transitions": "^4.0.0",
+    "remotion": "^4.0.0",
+    "react": "^18.3.0",
+    "react-dom": "^18.3.0",
+    "zod": "4.3.6"
+  },
+  "devDependencies": {
+    "@types/react": "^18.3.0",
+    "@types/react-dom": "^18.3.0",
+    "typescript": "^5.5.0"
+  }
+}

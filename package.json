@@ -5,6 +5,7 @@
   "scripts": {
     "dev:server": "pnpm --filter server dev",
     "dev:mp": "pnpm --filter miniprogram dev:weapp",
+    "dev:video": "pnpm --filter @echohealth/video dev",
     "test": "pnpm --filter server test"
   },
   "engines": {
