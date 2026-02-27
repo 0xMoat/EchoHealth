@@ -1,0 +1,75 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+model User {
+  id            String    @id @default(cuid())
+  openid        String    @unique
+  nickname      String?
+  avatarUrl     String?
+  isPro         Boolean   @default(false)
+  proExpireAt   DateTime?
+  usedThisMonth Int       @default(0)
+  usageResetAt  DateTime  @default(now())
+  reports       Report[]
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+}
+
+model Report {
+  id        String       @id @default(cuid())
+  userId    String
+  user      User         @relation(fields: [userId], references: [id])
+  type      ReportType
+  photoUrls String[]
+  ocrText   String?
+  indicators Json?
+  script    Json?
+  video     Video?
+  status    ReportStatus @default(PENDING)
+  errorMsg  String?
+  createdAt DateTime     @default(now())
+  updatedAt DateTime     @updatedAt
+}
+
+model Video {
+  id        String   @id @default(cuid())
+  reportId  String   @unique
+  report    Report   @relation(fields: [reportId], references: [id])
+  cosUrl    String
+  duration  Int
+  createdAt DateTime @default(now())
+}
+
+model Order {
+  id           String      @id @default(cuid())
+  userId       String
+  amount       Int
+  status       OrderStatus @default(PENDING)
+  wxPayOrderId String?     @unique
+  paidAt       DateTime?
+  createdAt    DateTime    @default(now())
+}
+
+enum ReportType {
+  BLOOD_ROUTINE
+  BIOCHEMISTRY
+  PHYSICAL_EXAM
+}
+
+enum ReportStatus {
+  PENDING
+  PROCESSING
+  COMPLETED
+  FAILED
+}
+
+enum OrderStatus {
+  PENDING
+  PAID
+  REFUNDED
+}

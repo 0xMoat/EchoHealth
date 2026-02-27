@@ -7,16 +7,21 @@
     "dev": "tsx watch src/index.ts",
     "build": "tsc",
     "test": "vitest run",
-    "test:watch": "vitest"
+    "test:watch": "vitest",
+    "db:migrate": "prisma migrate dev",
+    "db:generate": "prisma generate",
+    "db:studio": "prisma studio"
   },
   "dependencies": {
     "@fastify/cors": "^11.2.0",
     "@fastify/multipart": "^9.4.0",
+    "@prisma/client": "^7.4.1",
     "dotenv": "^16.0.0",
     "fastify": "^5.0.0"
   },
   "devDependencies": {
     "@types/node": "^20.0.0",
+    "prisma": "^7.4.1",
     "tsx": "^4.0.0",
     "typescript": "^5.0.0",
     "vitest": "^2.0.0"
