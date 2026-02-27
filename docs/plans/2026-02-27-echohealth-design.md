@@ -106,45 +106,65 @@ EchoHealth 是一款面向「关注父母健康的子女」的微信小程序。
 
 ### 整体架构
 
-```
-┌─────────────────────────────────────────┐
-│           微信小程序（前端）              │
-│        Taro 4 + React + TypeScript       │
-└──────────────┬──────────────────────────┘
-               │ HTTPS API
-┌──────────────▼──────────────────────────┐
-│         后端服务（Node.js）              │
-│         Fastify + TypeScript             │
-│                                         │
-│  ┌─────────┐  ┌─────────┐  ┌─────────┐ │
-│  │ 上传接口 │  │ 状态查询 │  │ 支付接口 │ │
-│  └────┬────┘  └─────────┘  └─────────┘ │
-│       │ 入队                            │
-│  ┌────▼──────────────────────────────┐  │
-│  │       任务队列（BullMQ + Redis）   │  │
-│  └────┬──────────────────────────────┘  │
-│       │ Worker 异步处理                  │
-│  ┌────▼──────────────────────────────┐  │
-│  │        视频生成流水线              │  │
-│  │  OCR → LLM → TTS → 渲染 → 合成   │  │
-│  └────┬──────────────────────────────┘  │
-└───────┼─────────────────────────────────┘
-        │
-┌───────▼─────────┐   ┌──────────────────┐
-│  腾讯云 COS 存储  │   │   PostgreSQL     │
-└─────────────────┘   └──────────────────┘
+```mermaid
+graph TD
+    %% 统一样式定义
+    classDef primary fill:#e8f5e9,stroke:#07c160,stroke-width:2px;
+    classDef secondary fill:#f9f9f9,stroke:#333,stroke-width:1px;
+    classDef neutral fill:#eceff1,stroke:#607d8b,stroke-width:1px;
+
+    subgraph Frontend [WeChat Frontend]
+        A["微信小程序 (前端)<br/>Taro 4 + React + TypeScript"]:::primary
+    end
+
+    subgraph Backend [Node.js Backend]
+        direction TB
+        B["Fastify + TypeScript"]:::secondary
+        
+        subgraph Services [Internal Services]
+            S1["上传接口"]:::secondary
+            S2["状态查询"]:::secondary
+            S3["支付接口"]:::secondary
+        end
+        
+        Q[("任务队列<br/>(BullMQ + Redis)")]:::secondary
+        
+        subgraph Pipeline [视频生成流水线]
+            direction LR
+            P1["OCR"] --> P2["LLM"] --> P3["TTS"] --> P4["渲染"] --> P5["合成"]
+        end
+        class Pipeline primary
+    end
+
+    subgraph Data [Data & Storage]
+        COS["腾讯云COS存储"]:::neutral
+        DB[("PostgreSQL")]:::neutral
+    end
+
+    %% 关系链路
+    A -- "HTTPS API" --> B
+    B --> Services
+    S1 -- "入队" --> Q
+    Q -- "Worker 异步处理" --> Pipeline
+    
+    Pipeline -- "保存视频" --> COS
+    B -- "数据持久化" --> DB
 ```
 
 ### 视频生成流水线
 
-```
-1. OCR     → 腾讯云智能文字识别（中文医疗表格优化）
-2. 解析    → 结构化提取：指标名称 + 数值 + 参考范围 + 状态
-3. LLM     → Claude Sonnet 4.6（生成分层脚本：总结 + 逐项 + 建议）
-4. TTS     → Microsoft Edge TTS（zh-CN-XiaoxiaoNeural，免费，自然度高）
-5. 渲染    → Remotion（React 编写动画模板，Node.js 无头渲染）
-6. 合成    → ffmpeg（音频 + 视频帧 → MP4）
-7. 存储    → 腾讯云 COS → 返回播放 URL
+```mermaid
+graph LR
+    classDef base fill:#f9f9f9,stroke:#333,stroke-width:1px;
+    classDef highlight fill:#e8f5e9,stroke:#07c160,stroke-width:2px;
+
+    S1["1. OCR<br/>腾讯云医疗识别"]:::base --> 
+    S2["2. 解析<br/>结构化提指标"]:::base --> 
+    S3["3. LLM<br/>Claude 分层脚本"]:::highlight --> 
+    S4["4. TTS<br/>Edge 语音合成"]:::base --> 
+    S5["5. 渲染<br/>Remotion 模板"]:::base --> 
+    S6["6. 合成<br/>ffmpeg 压制"]:::base --> 
+    S7["7. 存储<br/>COS 返回 URL"]:::base
 ```
 
 ### 技术选型
@@ -230,15 +250,29 @@ Week 6     测试 + 灰度发布给 10 个真实用户
 
 ### 成就卡片设计
 
-生成视频后弹出可分享卡片：
+生成视频后弹出可分享卡片预览：
 
-```
-┌────────────────────────┐
-│  ✓ 我为爸爸解读了      │
-│    2024 年度体检报告   │
-│                        │
-│  用 EchoHealth →       │
-└────────────────────────┘
+```mermaid
+graph TD
+    subgraph Mockup ["成就卡片 (WeChat Card)"]
+        direction TB
+        Content["✓ 我为<b>爸爸</b>解读了<br/>2024 年度体检报告"]:::text
+        Gap[" "]:::empty
+        Action["用 EchoHealth →"]:::brand
+        
+        %% 强制垂直排列
+        Content --- Gap --- Action
+    end
+
+    classDef text fill:none,stroke:none,font-size:16px,color:#333;
+    classDef brand fill:#07c160,stroke:none,color:#fff,font-weight:bold;
+    classDef empty fill:none,stroke:none;
+    classDef mockup fill:#fff,stroke:#07c160,stroke-width:2px,rx:10;
+    
+    %% 隐藏连接线
+    linkStyle 0,1 stroke-width:0px;
+    
+    class Mockup mockup;
 ```
 
 卡片不包含任何健康数据，子女可放心转发朋友圈，触达同龄有类似需求的朋友。
