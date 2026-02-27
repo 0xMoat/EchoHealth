@@ -1,4 +1,5 @@
 import Anthropic from '@anthropic-ai/sdk'
+import OpenAI from 'openai'
 import type { Indicator } from './ocr.js'
 import type { ReportType } from '@prisma/client'
 
@@ -22,18 +23,16 @@ export interface VideoScript {
   outro: string
 }
 
-export async function buildVideoScript(params: {
+/**
+ * Build the prompt for LLM script generation.
+ */
+function buildPrompt(params: {
   indicators: Indicator[]
   reportType: ReportType
   senderName: string
-}): Promise<VideoScript> {
-  const apiKey = process.env.CLAUDE_API_KEY
-  if (!apiKey) throw new Error('Missing CLAUDE_API_KEY environment variable')
-
+}): string {
   const { indicators, reportType, senderName } = params
-  const client = new Anthropic({ apiKey })
-
-  const prompt = `你是一位温和专业的健康顾问，需要为一位中老年人解读他们的${REPORT_TYPE_MAP[reportType]}报告。
+  return `你是一位温和专业的健康顾问，需要为一位中老年人解读他们的${REPORT_TYPE_MAP[reportType]}报告。
 请用简单易懂的语言，避免使用专业术语，像对父母说话一样亲切。
 
 报告指标如下：
@@ -61,23 +60,81 @@ ${indicators.map((i) => {
 }
 
 注意：只对异常指标（偏高/偏低）给出 advice，正常指标的 advice 字段省略。`
+}
 
-  const message = await client.messages.create({
-    model: 'claude-sonnet-4-6',
-    max_tokens: 2000,
-    messages: [{ role: 'user', content: prompt }],
-  })
-
-  const text = message.content[0].type === 'text' ? message.content[0].text : ''
-
-  // 提取 JSON（防止模型在 JSON 前后输出额外文本）
+/**
+ * Extract and validate JSON from LLM response text.
+ */
+function parseJsonResponse(text: string): VideoScript {
   const start = text.indexOf('{')
   const end = text.lastIndexOf('}')
   if (start === -1 || end === -1 || end < start) {
     throw new Error('LLM response did not contain valid JSON')
   }
-  const jsonStr = text.slice(start, end + 1)
-  return validateVideoScript(JSON.parse(jsonStr))
+  return validateVideoScript(JSON.parse(text.slice(start, end + 1)))
+}
+
+/**
+ * Call LLM via OpenRouter (OpenAI-compatible API).
+ * Uses the free model with the longest context window: qwen/qwen3-coder:free (1M ctx).
+ */
+async function callOpenRouter(prompt: string): Promise<string> {
+  const apiKey = process.env.OPENROUTER_API_KEY
+  if (!apiKey) throw new Error('Missing OPENROUTER_API_KEY environment variable')
+
+  const model = process.env.OPENROUTER_MODEL ?? 'qwen/qwen3-coder:free'
+
+  const client = new OpenAI({
+    baseURL: 'https://openrouter.ai/api/v1',
+    apiKey,
+    defaultHeaders: {
+      'HTTP-Referer': 'https://github.com/0xMoat/EchoHealth',
+      'X-Title': 'EchoHealth',
+    },
+  })
+
+  const completion = await client.chat.completions.create({
+    model,
+    max_tokens: 2000,
+    messages: [{ role: 'user', content: prompt }],
+  })
+
+  return completion.choices[0]?.message?.content ?? ''
+}
+
+/**
+ * Call LLM via Anthropic Claude API.
+ */
+async function callAnthropic(prompt: string): Promise<string> {
+  const apiKey = process.env.CLAUDE_API_KEY
+  if (!apiKey) throw new Error('Missing CLAUDE_API_KEY environment variable')
+
+  const client = new Anthropic({ apiKey })
+  const message = await client.messages.create({
+    model: process.env.CLAUDE_MODEL ?? 'claude-sonnet-4-6',
+    max_tokens: 2000,
+    messages: [{ role: 'user', content: prompt }],
+  })
+
+  return message.content[0].type === 'text' ? message.content[0].text : ''
+}
+
+/**
+ * Generate a video script from health report indicators.
+ * Provider selection: OPENROUTER_API_KEY takes priority over CLAUDE_API_KEY.
+ */
+export async function buildVideoScript(params: {
+  indicators: Indicator[]
+  reportType: ReportType
+  senderName: string
+}): Promise<VideoScript> {
+  const prompt = buildPrompt(params)
+
+  const text = process.env.OPENROUTER_API_KEY
+    ? await callOpenRouter(prompt)
+    : await callAnthropic(prompt)
+
+  return parseJsonResponse(text)
 }
 
 function validateVideoScript(obj: unknown): VideoScript {
