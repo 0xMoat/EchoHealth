@@ -42,9 +42,10 @@ describe('POST /orders', () => {
       id: 'order-1',
       status: 'PAID',
     } as never)
-    vi.mocked(prisma.$transaction).mockImplementation(async (ops: any[]) => {
-      return Promise.all(ops.map((op: any) => op))
-    })
+    vi.mocked(prisma.$transaction).mockResolvedValue([
+      { id: 'order-1', status: 'PAID' },
+      { isPro: true, proExpireAt: fakeExpireAt },
+    ])
 
     const app = await buildApp()
     const res = await app.inject({
@@ -57,6 +58,10 @@ describe('POST /orders', () => {
     const body = res.json()
     expect(body.orderId).toBe('order-1')
     expect(body.proExpireAt).toBeDefined()
+    const returnedExpire = new Date(body.proExpireAt).getTime()
+    const expected30d = Date.now() + 30 * 86_400_000
+    expect(returnedExpire).toBeGreaterThan(expected30d - 10_000)
+    expect(returnedExpire).toBeLessThan(expected30d + 10_000)
 
     expect(vi.mocked(prisma.$transaction)).toHaveBeenCalled()
   })
