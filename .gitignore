@@ -54,6 +54,9 @@ uploads/
 .agents/
 .claude/
 
+# ===== 本地归档笔记 =====
+.archive/
+
 # ===== skills 缓存 =====
 skills/*/cache/
 
