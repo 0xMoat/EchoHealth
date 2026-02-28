@@ -8,7 +8,9 @@ export const PRO_MONTHLY_LIMIT = 30
  * Quota middleware for Fastify.
  * Expects request.body to contain `userId`.
  * Checks if the user has remaining quota for the current calendar month.
- * On success, increments `usedThisMonth` atomically.
+ *
+ * The increment is fully atomic: uses a single UPDATE WHERE usedThisMonth < limit
+ * so concurrent requests cannot both sneak through the last available slot.
  */
 export async function quotaMiddleware(
   request: FastifyRequest<{ Body: { userId?: string } }>,
@@ -29,7 +31,7 @@ export async function quotaMiddleware(
     return
   }
 
-  // Reset counter if we're in a new calendar month
+  // Reset counter when we enter a new calendar month
   if (user.usageResetAt < startOfMonth) {
     await prisma.user.update({
       where: { id: userId },
@@ -39,18 +41,21 @@ export async function quotaMiddleware(
   }
 
   const limit = user.isPro ? PRO_MONTHLY_LIMIT : FREE_MONTHLY_LIMIT
-  if (user.usedThisMonth >= limit) {
-    reply.status(429).send({
-      error: 'Monthly quota exceeded',
-      used: user.usedThisMonth,
-      limit,
-    })
-    return
-  }
 
-  // Increment atomically before the job is queued
-  await prisma.user.update({
-    where: { id: userId },
+  // Atomic check-and-increment: the WHERE clause prevents concurrent over-limit bypass.
+  // If two requests race here, the DB row lock ensures only one can satisfy
+  // `usedThisMonth < limit` and actually commit the increment.
+  const result = await prisma.user.updateMany({
+    where: { id: userId, usedThisMonth: { lt: limit } },
     data: { usedThisMonth: { increment: 1 } },
   })
+
+  if (result.count === 0) {
+    const current = await prisma.user.findUniqueOrThrow({ where: { id: userId } })
+    reply.status(429).send({
+      error: 'Monthly quota exceeded',
+      used: current.usedThisMonth,
+      limit,
+    })
+  }
 }

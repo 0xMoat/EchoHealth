@@ -6,7 +6,9 @@ vi.mock('../db.js', () => ({
   prisma: {
     user: {
       findUnique: vi.fn(),
+      findUniqueOrThrow: vi.fn(),
       update: vi.fn().mockResolvedValue({}),
+      updateMany: vi.fn().mockResolvedValue({ count: 1 }),
     },
   },
 }))
@@ -34,22 +36,29 @@ describe('quotaMiddleware', () => {
       usedThisMonth: 1,
       usageResetAt: new Date(),
     } as never)
+    vi.mocked(prisma.user.updateMany).mockResolvedValue({ count: 1 })
 
     const reply = makeReply()
     await quotaMiddleware(makeRequest('u1'), reply)
 
-    expect(vi.mocked(prisma.user.update)).toHaveBeenCalledWith(
+    expect(vi.mocked(prisma.user.updateMany)).toHaveBeenCalledWith(
       expect.objectContaining({ data: { usedThisMonth: { increment: 1 } } }),
     )
     expect(reply.status).not.toHaveBeenCalled()
   })
 
-  it('blocks request when free user has reached limit', async () => {
+  it('blocks request when free user has reached limit (updateMany returns count=0)', async () => {
     vi.mocked(prisma.user.findUnique).mockResolvedValue({
       id: 'u1',
       isPro: false,
       usedThisMonth: FREE_MONTHLY_LIMIT,
       usageResetAt: new Date(),
+    } as never)
+    // Simulate the WHERE clause rejecting the update (quota already full)
+    vi.mocked(prisma.user.updateMany).mockResolvedValue({ count: 0 })
+    vi.mocked(prisma.user.findUniqueOrThrow).mockResolvedValue({
+      id: 'u1',
+      usedThisMonth: FREE_MONTHLY_LIMIT,
     } as never)
 
     const reply = makeReply()
@@ -68,17 +77,19 @@ describe('quotaMiddleware', () => {
       usedThisMonth: FREE_MONTHLY_LIMIT, // would be blocked for free users
       usageResetAt: new Date(),
     } as never)
+    vi.mocked(prisma.user.updateMany).mockResolvedValue({ count: 1 })
 
     const reply = makeReply()
     await quotaMiddleware(makeRequest('u2'), reply)
 
     expect(reply.status).not.toHaveBeenCalled()
-    expect(vi.mocked(prisma.user.update)).toHaveBeenCalledWith(
+    // updateMany WHERE limit = PRO_MONTHLY_LIMIT
+    expect(vi.mocked(prisma.user.updateMany)).toHaveBeenCalledWith(
       expect.objectContaining({ data: { usedThisMonth: { increment: 1 } } }),
     )
   })
 
-  it('resets counter for a new month', async () => {
+  it('resets counter for a new month then allows the request', async () => {
     const lastMonth = new Date()
     lastMonth.setMonth(lastMonth.getMonth() - 1)
 
@@ -88,14 +99,16 @@ describe('quotaMiddleware', () => {
       usedThisMonth: FREE_MONTHLY_LIMIT, // looks full but last month's count
       usageResetAt: lastMonth,
     } as never)
+    vi.mocked(prisma.user.updateMany).mockResolvedValue({ count: 1 })
 
     const reply = makeReply()
     await quotaMiddleware(makeRequest('u3'), reply)
 
-    // Should reset first, then allow
+    // Reset update first
     expect(vi.mocked(prisma.user.update)).toHaveBeenCalledWith(
       expect.objectContaining({ data: expect.objectContaining({ usedThisMonth: 0 }) }),
     )
+    // Then allowed via atomic increment
     expect(reply.status).not.toHaveBeenCalledWith(429)
   })
 

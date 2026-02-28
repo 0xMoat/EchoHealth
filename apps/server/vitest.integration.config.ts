@@ -5,9 +5,6 @@ export default defineConfig({
     include: ['src/__tests__/integration/**/*.test.ts'],
     testTimeout: 120_000,    // containers take time to start
     hookTimeout: 120_000,
-    pool: 'forks',           // each file gets its own process for container isolation
-    poolOptions: {
-      forks: { singleFork: true },
-    },
+    pool: 'forks',           // each file gets its own process — clean module singletons
   },
 })

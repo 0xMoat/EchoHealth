@@ -18,6 +18,7 @@ vi.mock('../db.js', () => ({
     user: {
       findUnique: vi.fn(),
       update: vi.fn().mockResolvedValue({}),
+      updateMany: vi.fn().mockResolvedValue({ count: 1 }),
     },
     report: { create: vi.fn(), findUnique: vi.fn(), findMany: vi.fn() },
   },

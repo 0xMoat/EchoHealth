@@ -105,6 +105,9 @@ importers:
       '@testcontainers/postgresql':
         specifier: ^11.12.0
         version: 11.12.0
+      '@testcontainers/redis':
+        specifier: ^11.12.0
+        version: 11.12.0
       '@types/node':
         specifier: ^20.0.0
         version: 20.19.35
@@ -2326,6 +2329,9 @@ packages:
 
   '@testcontainers/postgresql@11.12.0':
     resolution: {integrity: sha512-w4ZK0H+WIYBUBk57H9wCSxPMSMZUNsFpx2MZAX4iru0Aevz9HFWDfAhFLAu+/SwsHtEJUD7XfWUDlqBGC3OF0Q==}
+
+  '@testcontainers/redis@11.12.0':
+    resolution: {integrity: sha512-2qCoevN0t+6yFFdmLUywFiL0n+EwTvYXDdc3lYXkKiIpTt1t4mqyWGXmV5dfWyCNYAWbV+PWmVvwnP1GDMoxrA==}
 
   '@trysound/sax@0.2.0':
     resolution: {integrity: sha512-L7z9BgrNEcYyUYtF+HaEfiS5ebkh9jXqbszz7pC0hRBPaatV0XjSD3+eHrpqFemQfgwiFF0QPIarnIihIDn7OA==}
@@ -9494,6 +9500,15 @@ snapshots:
       - webpack-cli
 
   '@testcontainers/postgresql@11.12.0':
+    dependencies:
+      testcontainers: 11.12.0
+    transitivePeerDependencies:
+      - bare-abort-controller
+      - bare-buffer
+      - react-native-b4a
+      - supports-color
+
+  '@testcontainers/redis@11.12.0':
     dependencies:
       testcontainers: 11.12.0
     transitivePeerDependencies:

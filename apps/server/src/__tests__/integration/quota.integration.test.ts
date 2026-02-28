@@ -136,6 +136,77 @@ describe('quota (real DB)', () => {
   })
 })
 
+describe('quota concurrency (real DB)', () => {
+  it('atomic increment: N concurrent allowed requests are each counted', async () => {
+    // Tests that Prisma's { increment: 1 } is atomic — no lost updates under concurrency.
+    // All FREE_LIMIT requests start from usedThisMonth=0, so all pass the check.
+    // The final count must equal exactly FREE_LIMIT (no lost increments).
+    const { quotaMiddleware, FREE_MONTHLY_LIMIT } = await import('../../middleware/quota.js')
+    const user = await createUser({ usedThisMonth: 0 })
+
+    const makeReply = () => {
+      let _status = 200
+      return {
+        getStatus: () => _status,
+        status(s: number) { _status = s; return this },
+        send() {},
+      }
+    }
+
+    const replies = await Promise.all(
+      Array.from({ length: FREE_MONTHLY_LIMIT }, () => {
+        const reply = makeReply()
+        return quotaMiddleware({ body: { userId: user.id } } as never, reply as never)
+          .then(() => reply.getStatus())
+      }),
+    )
+
+    // All requests were within the limit, so all should have passed
+    expect(replies.every(s => s === 200)).toBe(true)
+
+    // DB atomic increment — no lost updates
+    const final = await prisma.user.findUniqueOrThrow({ where: { id: user.id } })
+    expect(final.usedThisMonth).toBe(FREE_MONTHLY_LIMIT)
+  })
+
+  it('over-limit concurrent requests: exactly 1 passes, rest blocked (atomic fix)', async () => {
+    // User has 1 slot left. We fire FREE_LIMIT concurrent requests.
+    // With the atomic updateMany WHERE usedThisMonth < limit fix, the DB row lock
+    // ensures only 1 request can satisfy the WHERE clause and commit the increment.
+    // All others get count=0 → 429.
+    const { quotaMiddleware, FREE_MONTHLY_LIMIT } = await import('../../middleware/quota.js')
+    const user = await createUser({ usedThisMonth: FREE_MONTHLY_LIMIT - 1 })
+
+    const makeReply = () => {
+      let _status = 200
+      return {
+        getStatus: () => _status,
+        status(s: number) { _status = s; return this },
+        send() {},
+      }
+    }
+
+    const statuses = await Promise.all(
+      Array.from({ length: FREE_MONTHLY_LIMIT }, () => {
+        const reply = makeReply()
+        return quotaMiddleware({ body: { userId: user.id } } as never, reply as never)
+          .then(() => reply.getStatus())
+      }),
+    )
+
+    const passed = statuses.filter(s => s === 200).length
+    const blocked = statuses.filter(s => s === 429).length
+
+    // Exactly 1 slot was left → exactly 1 passes
+    expect(passed).toBe(1)
+    expect(blocked).toBe(FREE_MONTHLY_LIMIT - 1)
+
+    // DB count is exactly at the limit (no over-increment)
+    const final = await prisma.user.findUniqueOrThrow({ where: { id: user.id } })
+    expect(final.usedThisMonth).toBe(FREE_MONTHLY_LIMIT)
+  })
+})
+
 describe('Report CRUD (real DB)', () => {
   it('persists a report and updates its status', async () => {
     const user = await createUser()
