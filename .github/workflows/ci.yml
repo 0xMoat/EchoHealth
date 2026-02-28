@@ -29,8 +29,11 @@ jobs:
       - name: Generate Prisma client
         run: pnpm --filter server db:generate
 
-      - name: Run tests
+      - name: Run unit tests
         run: pnpm --filter server test
+
+      - name: Run integration tests
+        run: pnpm --filter server test:integration
 
       - name: Type check
         run: pnpm --filter server build
