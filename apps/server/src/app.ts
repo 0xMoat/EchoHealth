@@ -5,6 +5,7 @@ import { authRoutes } from './routes/auth.js'
 import { uploadRoutes } from './routes/upload.js'
 import { quotaMiddleware } from './middleware/quota.js'
 import { userRoutes } from './routes/user.js'
+import { orderRoutes } from './routes/orders.js'
 
 export async function buildApp() {
   const app = Fastify({ logger: true })
@@ -28,6 +29,7 @@ export async function buildApp() {
   })
 
   await app.register(reportRoutes)
+  await app.register(orderRoutes)
 
   return app
 }
