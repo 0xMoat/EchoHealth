@@ -179,3 +179,16 @@
 .status-failed .status-text {
   color: #991b1b;
 }
+
+.quota-banner {
+  margin: 0 32px 24px;
+  background: linear-gradient(135deg, #0284c7, #0ea5e9);
+  border-radius: 16px;
+  padding: 20px 28px;
+}
+
+.quota-banner-text {
+  color: #fff;
+  font-size: 14px;
+  font-weight: 500;
+}

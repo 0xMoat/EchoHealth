@@ -14,16 +14,37 @@ interface RecentReport {
 interface State {
   reports: RecentReport[]
   loading: boolean
+  usedThisMonth: number
+  isPro: boolean
 }
 
 class IndexPage extends Component<{}, State> {
   state: State = {
     reports: [],
     loading: false,
+    usedThisMonth: 0,
+    isPro: false,
   }
 
   componentDidShow() {
     this.loadRecentReports()
+    this.loadUserQuota()
+  }
+
+  async loadUserQuota() {
+    const userId = Taro.getStorageSync('userId')
+    if (!userId) return
+    try {
+      const res = await Taro.request({
+        url: `${process.env.API_BASE_URL}/user/${userId}`,
+        method: 'GET',
+      })
+      if (res.statusCode === 200) {
+        this.setState({ usedThisMonth: res.data.usedThisMonth, isPro: res.data.isPro })
+      }
+    } catch (e) {
+      console.error('[Index] loadUserQuota failed:', e)
+    }
   }
 
   async loadRecentReports() {
@@ -75,7 +96,7 @@ class IndexPage extends Component<{}, State> {
   }
 
   render() {
-    const { reports, loading } = this.state
+    const { reports, loading, usedThisMonth, isPro } = this.state
 
     return (
       <View className='page'>
@@ -86,6 +107,18 @@ class IndexPage extends Component<{}, State> {
           <Text className='hero-subtitle'>让体检报告说话</Text>
           <Text className='hero-desc'>上传您的体检报告，AI 自动生成通俗易懂的讲解视频</Text>
         </View>
+
+        {/* Quota banner — only shown when free limit exhausted */}
+        {!isPro && usedThisMonth >= 3 && (
+          <View
+            className='quota-banner'
+            onClick={() => Taro.navigateTo({ url: '/pages/upgrade/index' })}
+          >
+            <Text className='quota-banner-text'>
+              ⚡ 本月免费次数已用完 · 升级 Pro 继续使用 →
+            </Text>
+          </View>
+        )}
 
         {/* Upload Button */}
         <View className='upload-btn-wrap'>

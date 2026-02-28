@@ -107,9 +107,14 @@ class UploadPage extends Component<{}, State> {
       } else if (res.statusCode === 429) {
         Taro.showModal({
           title: '本月次数已用完',
-          content: res.data.message || '升级 Pro 可获得更多次数',
-          confirmText: '了解 Pro',
-          cancelText: '取消',
+          content: '免费版每月 3 次，升级 Pro 享 30 次/月',
+          confirmText: '立即升级',
+          cancelText: '下月再来',
+          success: (modalRes) => {
+            if (modalRes.confirm) {
+              Taro.navigateTo({ url: '/pages/upgrade/index' })
+            }
+          },
         })
       } else {
         Taro.showToast({ title: res.data.error || '提交失败', icon: 'none' })
