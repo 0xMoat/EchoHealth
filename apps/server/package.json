@@ -14,17 +14,20 @@
   },
   "dependencies": {
     "@anthropic-ai/sdk": "^0.78.0",
-    "openai": "^4.77.0",
     "@fastify/cors": "^11.2.0",
     "@fastify/multipart": "^9.4.0",
+    "@prisma/adapter-pg": "7.4.1",
     "@prisma/client": "^7.4.1",
     "@remotion/bundler": "4.0.429",
     "@remotion/renderer": "4.0.429",
+    "@types/pg": "^8.16.0",
     "bullmq": "^5.70.1",
     "cos-nodejs-sdk-v5": "^2.15.4",
     "dotenv": "^16.0.0",
     "fastify": "^5.0.0",
     "ioredis": "^5.9.3",
+    "openai": "^4.77.0",
+    "pg": "^8.19.0",
     "tencentcloud-sdk-nodejs-ocr": "^4.1.187"
   },
   "devDependencies": {

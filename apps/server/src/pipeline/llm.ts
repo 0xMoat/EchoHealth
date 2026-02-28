@@ -75,14 +75,36 @@ function parseJsonResponse(text: string): VideoScript {
 }
 
 /**
+ * Call LLM via Groq (OpenAI-compatible API, free tier).
+ */
+async function callGroq(prompt: string): Promise<string> {
+  const apiKey = process.env.GROQ_API_KEY
+  if (!apiKey) throw new Error('Missing GROQ_API_KEY environment variable')
+
+  const model = process.env.GROQ_MODEL ?? 'llama-3.3-70b-versatile'
+
+  const client = new OpenAI({
+    baseURL: 'https://api.groq.com/openai/v1',
+    apiKey,
+  })
+
+  const completion = await client.chat.completions.create({
+    model,
+    max_tokens: 2000,
+    messages: [{ role: 'user', content: prompt }],
+  })
+
+  return completion.choices[0]?.message?.content ?? ''
+}
+
+/**
  * Call LLM via OpenRouter (OpenAI-compatible API).
- * Uses the free model with the longest context window: qwen/qwen3-coder:free (1M ctx).
  */
 async function callOpenRouter(prompt: string): Promise<string> {
   const apiKey = process.env.OPENROUTER_API_KEY
   if (!apiKey) throw new Error('Missing OPENROUTER_API_KEY environment variable')
 
-  const model = process.env.OPENROUTER_MODEL ?? 'qwen/qwen3-coder:free'
+  const model = process.env.OPENROUTER_MODEL ?? 'meta-llama/llama-3.3-70b-instruct:free'
 
   const client = new OpenAI({
     baseURL: 'https://openrouter.ai/api/v1',
@@ -130,9 +152,11 @@ export async function buildVideoScript(params: {
 }): Promise<VideoScript> {
   const prompt = buildPrompt(params)
 
-  const text = process.env.OPENROUTER_API_KEY
-    ? await callOpenRouter(prompt)
-    : await callAnthropic(prompt)
+  const text = process.env.GROQ_API_KEY
+    ? await callGroq(prompt)
+    : process.env.OPENROUTER_API_KEY
+      ? await callOpenRouter(prompt)
+      : await callAnthropic(prompt)
 
   return parseJsonResponse(text)
 }
