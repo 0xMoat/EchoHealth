@@ -128,6 +128,28 @@ describe('quotaMiddleware', () => {
 
     expect(reply.status).toHaveBeenCalledWith(404)
   })
+
+  it('resets isPro when proExpireAt has passed', async () => {
+    const yesterday = new Date(Date.now() - 86_400_000)
+    vi.mocked(prisma.user.findUnique).mockResolvedValue({
+      id: 'u-expired',
+      isPro: true,
+      proExpireAt: yesterday,
+      usedThisMonth: 0,
+      usageResetAt: new Date(),
+    } as never)
+    vi.mocked(prisma.user.updateMany).mockResolvedValue({ count: 1 })
+
+    const reply = makeReply()
+    await quotaMiddleware(makeRequest('u-expired'), reply)
+
+    // Should have reset isPro via update
+    expect(vi.mocked(prisma.user.update)).toHaveBeenCalledWith(
+      expect.objectContaining({ data: expect.objectContaining({ isPro: false }) }),
+    )
+    // Should then proceed with free-tier limit, not block (usedThisMonth=0)
+    expect(reply.status).not.toHaveBeenCalledWith(429)
+  })
 })
 
 describe('quota constants', () => {

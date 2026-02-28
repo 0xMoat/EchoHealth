@@ -31,6 +31,15 @@ export async function quotaMiddleware(
     return
   }
 
+  // Auto-downgrade Pro when subscription has expired
+  if (user.isPro && user.proExpireAt && user.proExpireAt < now) {
+    await prisma.user.update({
+      where: { id: userId },
+      data: { isPro: false },
+    })
+    user.isPro = false
+  }
+
   // Reset counter when we enter a new calendar month
   if (user.usageResetAt < startOfMonth) {
     await prisma.user.update({
