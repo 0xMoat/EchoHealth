@@ -3,6 +3,7 @@ export default defineAppConfig({
     'pages/index/index',
     'pages/upload/index',
     'pages/result/index',
+    'pages/upgrade/index',
   ],
   window: {
     backgroundTextStyle: 'light',

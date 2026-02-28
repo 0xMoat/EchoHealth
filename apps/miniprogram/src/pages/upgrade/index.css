@@ -1,0 +1,104 @@
+.page {
+  padding: 40rpx 32rpx;
+  background: #f8fafc;
+  min-height: 100vh;
+}
+
+.page-title {
+  display: block;
+  font-size: 48rpx;
+  font-weight: 700;
+  color: #0f172a;
+  text-align: center;
+  margin-bottom: 12rpx;
+}
+
+.page-subtitle {
+  display: block;
+  font-size: 28rpx;
+  color: #64748b;
+  text-align: center;
+  margin-bottom: 48rpx;
+}
+
+.table {
+  background: #fff;
+  border-radius: 20rpx;
+  overflow: hidden;
+  box-shadow: 0 2rpx 12rpx rgba(0,0,0,0.06);
+  margin-bottom: 40rpx;
+}
+
+.table-header, .table-row {
+  display: flex;
+  align-items: center;
+  border-bottom: 1rpx solid #f1f5f9;
+}
+
+.table-header {
+  background: #f8fafc;
+  padding: 20rpx 0;
+}
+
+.table-row {
+  padding: 24rpx 0;
+}
+
+.col-label { flex: 3; padding-left: 32rpx; }
+.col-free  { flex: 2; text-align: center; }
+.col-pro   { flex: 2; text-align: center; background: #eff6ff; position: relative; }
+
+.col-title { font-size: 28rpx; font-weight: 600; color: #334155; }
+.col-badge {
+  display: block;
+  font-size: 20rpx;
+  color: #2563eb;
+  font-weight: 700;
+  margin-bottom: 4rpx;
+}
+
+.row-label { font-size: 28rpx; color: #475569; }
+.row-val   { font-size: 28rpx; color: #64748b; }
+.pro-val   { color: #0284c7; font-weight: 600; }
+
+.price-wrap {
+  display: flex;
+  align-items: baseline;
+  justify-content: center;
+  margin-bottom: 32rpx;
+}
+
+.price {
+  font-size: 80rpx;
+  font-weight: 800;
+  color: #0284c7;
+}
+
+.price-unit {
+  font-size: 32rpx;
+  color: #64748b;
+  margin-left: 8rpx;
+}
+
+.subscribe-btn {
+  background: #0284c7;
+  color: #fff;
+  border-radius: 100rpx;
+  font-size: 36rpx;
+  font-weight: 600;
+  padding: 0;
+  height: 96rpx;
+  line-height: 96rpx;
+  margin-bottom: 24rpx;
+}
+
+.subscribe-btn-disabled {
+  background: #94a3b8;
+}
+
+.hint {
+  display: block;
+  text-align: center;
+  font-size: 24rpx;
+  color: #94a3b8;
+}
