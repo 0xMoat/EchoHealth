@@ -8,7 +8,7 @@ vi.mock('bullmq', () => ({
 }))
 
 vi.mock('ioredis', () => ({
-  default: vi.fn().mockImplementation(() => ({ quit: vi.fn().mockResolvedValue(undefined) })),
+  Redis: vi.fn().mockImplementation(() => ({ quit: vi.fn().mockResolvedValue(undefined) })),
 }))
 
 import { getQueue, closeQueue } from '../queue/index.js'
