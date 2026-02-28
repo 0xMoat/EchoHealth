@@ -1,5 +1,16 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest'
 
+// ── Hoisted mocks (accessible before module imports) ──────────────────────────
+const { MockOpenAI, mockChatCreate } = vi.hoisted(() => {
+  const mockChatCreate = vi.fn()
+  const MockOpenAI = vi.fn().mockImplementation(() => ({
+    chat: { completions: { create: mockChatCreate } },
+  }))
+  return { MockOpenAI, mockChatCreate }
+})
+
+vi.mock('openai', () => ({ default: MockOpenAI }))
+
 // Mock Anthropic SDK
 vi.mock('@anthropic-ai/sdk', () => ({
   default: vi.fn().mockImplementation(() => ({
@@ -33,24 +44,34 @@ vi.mock('@anthropic-ai/sdk', () => ({
   })),
 }))
 
-describe('buildVideoScript', () => {
+// ── Shared fixtures ───────────────────────────────────────────────────────────
+const MINIMAL_SCRIPT = {
+  summary: '体检结果良好',
+  details: [],
+  suggestions: '保持健康生活',
+  outro: '感谢使用',
+}
+
+const TWO_INDICATORS = [
+  { name: '白细胞计数', code: 'WBC', value: '6.5', unit: '×10^9/L', referenceRange: '3.5-9.5', status: 'normal' as const },
+  { name: '葡萄糖', code: 'GLU', value: '7.2', unit: 'mmol/L', referenceRange: '3.9-6.1', status: 'high' as const },
+]
+
+// ── Anthropic path tests ──────────────────────────────────────────────────────
+describe('buildVideoScript via Anthropic', () => {
   beforeEach(() => {
+    delete process.env.GROQ_API_KEY
+    delete process.env.OPENROUTER_API_KEY
     process.env.CLAUDE_API_KEY = 'sk-ant-fake-key'
   })
 
   it('returns a script with all required sections', async () => {
     const { buildVideoScript } = await import('../pipeline/llm.js')
-    const indicators = [
-      { name: '白细胞计数', code: 'WBC', value: '6.5', unit: '×10^9/L', referenceRange: '3.5-9.5', status: 'normal' as const },
-      { name: '葡萄糖', code: 'GLU', value: '7.2', unit: 'mmol/L', referenceRange: '3.9-6.1', status: 'high' as const },
-    ]
-
     const script = await buildVideoScript({
-      indicators,
+      indicators: TWO_INDICATORS,
       reportType: 'BLOOD_ROUTINE',
       senderName: '小明',
     })
-
     expect(script.summary).toBeTruthy()
     expect(script.details).toBeInstanceOf(Array)
     expect(script.details).toHaveLength(2)
@@ -60,24 +81,70 @@ describe('buildVideoScript', () => {
 
   it('includes advice only for abnormal indicators', async () => {
     const { buildVideoScript } = await import('../pipeline/llm.js')
-    const indicators = [
-      { name: '白细胞计数', code: 'WBC', value: '6.5', unit: '×10^9/L', referenceRange: '3.5-9.5', status: 'normal' as const },
-      { name: '葡萄糖', code: 'GLU', value: '7.2', unit: 'mmol/L', referenceRange: '3.9-6.1', status: 'high' as const },
-    ]
-    const script = await buildVideoScript({ indicators, reportType: 'BLOOD_ROUTINE', senderName: '小明' })
-
+    const script = await buildVideoScript({ indicators: TWO_INDICATORS, reportType: 'BLOOD_ROUTINE', senderName: '小明' })
     const normalDetail = script.details.find(d => d.indicatorName === '白细胞计数')
     const highDetail = script.details.find(d => d.indicatorName === '葡萄糖')
     expect(normalDetail?.advice).toBeUndefined()
     expect(highDetail?.advice).toBeTruthy()
   })
 
-  it('throws when CLAUDE_API_KEY is missing', async () => {
+  it('throws Missing CLAUDE_API_KEY when all provider keys absent', async () => {
     delete process.env.CLAUDE_API_KEY
     vi.resetModules()
     const { buildVideoScript } = await import('../pipeline/llm.js')
     await expect(
       buildVideoScript({ indicators: [], reportType: 'BLOOD_ROUTINE', senderName: '小明' })
     ).rejects.toThrow('Missing CLAUDE_API_KEY')
+  })
+})
+
+// ── Provider priority chain ───────────────────────────────────────────────────
+describe('provider priority chain', () => {
+  beforeEach(() => {
+    vi.resetModules()
+    MockOpenAI.mockClear()
+    mockChatCreate.mockClear()
+    delete process.env.GROQ_API_KEY
+    delete process.env.OPENROUTER_API_KEY
+    delete process.env.CLAUDE_API_KEY
+    mockChatCreate.mockResolvedValue({
+      choices: [{ message: { content: JSON.stringify(MINIMAL_SCRIPT) } }],
+    })
+  })
+
+  it('calls Groq when GROQ_API_KEY is set', async () => {
+    process.env.GROQ_API_KEY = 'gsk_fake_key'
+    const { buildVideoScript } = await import('../pipeline/llm.js')
+    await buildVideoScript({ indicators: [], reportType: 'BLOOD_ROUTINE', senderName: 'test' })
+    expect(MockOpenAI).toHaveBeenCalledWith(
+      expect.objectContaining({ baseURL: 'https://api.groq.com/openai/v1' })
+    )
+  })
+
+  it('calls OpenRouter when only OPENROUTER_API_KEY is set', async () => {
+    process.env.OPENROUTER_API_KEY = 'sk-or-fake'
+    const { buildVideoScript } = await import('../pipeline/llm.js')
+    await buildVideoScript({ indicators: [], reportType: 'BLOOD_ROUTINE', senderName: 'test' })
+    expect(MockOpenAI).toHaveBeenCalledWith(
+      expect.objectContaining({ baseURL: 'https://openrouter.ai/api/v1' })
+    )
+  })
+
+  it('Groq takes priority over OpenRouter when both keys present', async () => {
+    process.env.GROQ_API_KEY = 'gsk_fake'
+    process.env.OPENROUTER_API_KEY = 'sk-or-fake'
+    const { buildVideoScript } = await import('../pipeline/llm.js')
+    await buildVideoScript({ indicators: [], reportType: 'BLOOD_ROUTINE', senderName: 'test' })
+    expect(MockOpenAI).toHaveBeenCalledOnce()
+    expect(MockOpenAI).toHaveBeenCalledWith(
+      expect.objectContaining({ baseURL: 'https://api.groq.com/openai/v1' })
+    )
+  })
+
+  it('does not call OpenAI when falling back to Anthropic', async () => {
+    process.env.CLAUDE_API_KEY = 'sk-ant-fake'
+    const { buildVideoScript } = await import('../pipeline/llm.js')
+    await buildVideoScript({ indicators: TWO_INDICATORS, reportType: 'BLOOD_ROUTINE', senderName: '小明' })
+    expect(MockOpenAI).not.toHaveBeenCalled()
   })
 })

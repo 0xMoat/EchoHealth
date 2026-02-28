@@ -63,7 +63,7 @@ async function fetchImageAsBase64(url: string): Promise<string> {
   return Buffer.from(buf).toString('base64')
 }
 
-async function runPipeline(job: Job<VideoJobData>): Promise<void> {
+export async function runPipeline(job: Job<VideoJobData>): Promise<void> {
   const { reportId } = job.data
 
   // ── 1. Load report ──────────────────────────────────────────────────────────

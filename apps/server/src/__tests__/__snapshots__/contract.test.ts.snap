@@ -1,0 +1,72 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`API contract — GET /reports > list response shape is stable 1`] = `
+[
+  {
+    "createdAt": "2026-01-15T08:00:00.000Z",
+    "id": "r1",
+    "reportType": "BLOOD_ROUTINE",
+    "status": "COMPLETED",
+    "videoUrl": "https://echohealth-1234.cos.ap-guangzhou.myqcloud.com/videos/r1/output.mp4",
+  },
+  {
+    "createdAt": "2026-01-15T08:00:00.000Z",
+    "id": "r2",
+    "reportType": "PHYSICAL_EXAM",
+    "status": "PENDING",
+  },
+]
+`;
+
+exports[`API contract — GET /reports/:id > COMPLETED report response shape is stable 1`] = `
+{
+  "createdAt": "2026-01-15T08:00:00.000Z",
+  "id": "report-2",
+  "reportType": "PHYSICAL_EXAM",
+  "status": "COMPLETED",
+  "updatedAt": "2026-01-15T08:00:00.000Z",
+  "video": {
+    "createdAt": "2026-01-15T08:00:00.000Z",
+    "durationSec": 26,
+    "url": "https://echohealth-1234.cos.ap-guangzhou.myqcloud.com/videos/report-2/output.mp4",
+  },
+}
+`;
+
+exports[`API contract — GET /reports/:id > FAILED report response shape is stable 1`] = `
+{
+  "createdAt": "2026-01-15T08:00:00.000Z",
+  "errorMsg": "edge-tts: command not found",
+  "id": "report-3",
+  "reportType": "BIOCHEMISTRY",
+  "status": "FAILED",
+  "updatedAt": "2026-01-15T08:00:00.000Z",
+}
+`;
+
+exports[`API contract — GET /reports/:id > PENDING report response shape is stable 1`] = `
+{
+  "createdAt": "2026-01-15T08:00:00.000Z",
+  "id": "report-1",
+  "reportType": "BLOOD_ROUTINE",
+  "status": "PENDING",
+  "updatedAt": "2026-01-15T08:00:00.000Z",
+}
+`;
+
+exports[`API contract — GET /reports/:id > PROCESSING report response shape is stable 1`] = `
+{
+  "createdAt": "2026-01-15T08:00:00.000Z",
+  "id": "report-1",
+  "reportType": "BLOOD_ROUTINE",
+  "status": "PROCESSING",
+  "updatedAt": "2026-01-15T08:00:00.000Z",
+}
+`;
+
+exports[`API contract — POST /reports > 201 response shape is stable 1`] = `
+{
+  "reportId": "report-abc123",
+  "status": "PENDING",
+}
+`;

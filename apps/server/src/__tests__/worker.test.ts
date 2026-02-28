@@ -47,7 +47,7 @@ vi.mock('../pipeline/render.js', () => ({
 
 vi.mock('../pipeline/upload.js', () => ({
   uploadAudio: vi.fn().mockResolvedValue('https://cos.example.com/audio/r1/narration.mp3'),
-  uploadVideo: vi.fn().mockResolvedValue('https://cos.example.com/videos/r1/123.mp4'),
+  uploadVideo: vi.fn().mockResolvedValue('https://cos.example.com/videos/r1/output.mp4'),
 }))
 
 vi.mock('fs/promises', () => ({
@@ -55,20 +55,13 @@ vi.mock('fs/promises', () => ({
   rm: vi.fn().mockResolvedValue(undefined),
 }))
 
-// fetch is global in Node 18+; mock it for image download
+// fetch is global in Node 18+
 global.fetch = vi.fn().mockResolvedValue({
   ok: true,
   arrayBuffer: vi.fn().mockResolvedValue(new ArrayBuffer(8)),
 } as unknown as Response)
 
-// ── Helpers ───────────────────────────────────────────────────────────────────
-
-function makeJob(reportId = 'report-1'): Job {
-  return {
-    data: { reportId },
-    updateProgress: vi.fn().mockResolvedValue(undefined),
-  } as unknown as Job
-}
+// ── Fixtures ──────────────────────────────────────────────────────────────────
 
 const MOCK_REPORT = {
   id: 'report-1',
@@ -78,9 +71,16 @@ const MOCK_REPORT = {
   user: { nickname: '张阿姨' },
 }
 
-// ── Tests ─────────────────────────────────────────────────────────────────────
+function makeJob(reportId = 'report-1'): Job {
+  return {
+    data: { reportId },
+    updateProgress: vi.fn().mockResolvedValue(undefined),
+  } as unknown as Job
+}
 
-describe('runPipeline (via startWorker handler)', () => {
+// ── runPipeline integration tests ─────────────────────────────────────────────
+
+describe('runPipeline', () => {
   beforeEach(() => {
     vi.clearAllMocks()
     mockFindUniqueOrThrow.mockResolvedValue(MOCK_REPORT)
@@ -88,56 +88,77 @@ describe('runPipeline (via startWorker handler)', () => {
     mockTransaction.mockResolvedValue([])
   })
 
-  it('runs the full pipeline and persists the result', async () => {
+  it('runs the full pipeline and marks report COMPLETED', async () => {
+    const { runPipeline } = await import('../queue/worker.js')
     const { renderVideo } = await import('../pipeline/render.js')
-    const { uploadVideo, uploadAudio } = await import('../pipeline/upload.js')
+    const { uploadVideo } = await import('../pipeline/upload.js')
 
-    // Trigger the pipeline by starting the worker and extracting the processor
-    // We test the pipeline by calling the processor directly via the internal export
-    const { startWorker } = await import('../queue/worker.js')
+    const job = makeJob()
+    await runPipeline(job)
 
-    // Grab the processor function reference from the Worker constructor mock
-    // Instead, we re-import the runPipeline via a helper approach:
-    // Since runPipeline is not exported, test via integration assertions on mocks
-    const job = makeJob('report-1')
-
-    // Manually invoke the processor by importing worker internals
-    // We achieve this by calling startWorker and checking mock calls after a tick.
-    // In this test we directly call the processor captured during worker setup.
-
-    // The cleanest approach: test each pipeline step's mocks independently
-    expect(mockFindUniqueOrThrow).toBeDefined()
-    expect(renderVideo).toBeDefined()
-    expect(uploadVideo).toBeDefined()
-    expect(uploadAudio).toBeDefined()
-    expect(job.updateProgress).toBeDefined()
+    expect(mockUpdateReport).toHaveBeenCalledWith(
+      expect.objectContaining({ data: { status: 'PROCESSING' } }),
+    )
+    expect(renderVideo).toHaveBeenCalled()
+    expect(uploadVideo).toHaveBeenCalled()
+    expect(mockTransaction).toHaveBeenCalled()
+    expect(job.updateProgress).toHaveBeenCalledWith(100)
   })
 
-  it('marks report as FAILED when pipeline throws', async () => {
+  it('marks report FAILED and stores errorMsg when pipeline throws', async () => {
+    const { runPipeline } = await import('../queue/worker.js')
     const { renderVideo } = await import('../pipeline/render.js')
     vi.mocked(renderVideo).mockRejectedValueOnce(new Error('render failed'))
 
-    mockFindUniqueOrThrow.mockResolvedValue(MOCK_REPORT)
+    const job = makeJob()
+    await expect(runPipeline(job)).rejects.toThrow('render failed')
 
-    // The FAILED status update should be called
-    // Since we cannot invoke the private processor directly, we verify
-    // that mockUpdateReport would be called with FAILED status in error path
-    expect(mockUpdateReport).toBeDefined()
+    expect(mockUpdateReport).toHaveBeenCalledWith(
+      expect.objectContaining({
+        data: expect.objectContaining({
+          status: 'FAILED',
+          errorMsg: 'render failed',
+        }),
+      }),
+    )
+  })
+
+  it('reports progress at every pipeline stage in order', async () => {
+    const { runPipeline } = await import('../queue/worker.js')
+    const job = makeJob()
+    await runPipeline(job)
+
+    const calls = vi.mocked(job.updateProgress).mock.calls.flat()
+    expect(calls).toEqual([5, 20, 40, 60, 85, 95, 100])
+  })
+
+  it('skips OCR when report already has cached indicators', async () => {
+    const { runPipeline } = await import('../queue/worker.js')
+    const { ocrReportImage } = await import('../pipeline/ocr.js')
+
+    mockFindUniqueOrThrow.mockResolvedValue({
+      ...MOCK_REPORT,
+      indicators: [
+        { name: '白细胞', code: 'WBC', value: '6.5', unit: '×10^9/L', referenceRange: '3.5-9.5', status: 'normal' },
+      ],
+    })
+
+    const job = makeJob()
+    await runPipeline(job)
+    expect(ocrReportImage).not.toHaveBeenCalled()
   })
 })
 
+// ── Timing math (pure logic, no imports needed) ───────────────────────────────
+
 describe('computeDurationSeconds (isolated)', () => {
   it('returns correct duration for 0 indicators (4 slides)', () => {
-    // FPS=30, slides=4, transitions=3
-    // 90+120+0+120+90 - 3*15 = 420 - 45 = 375 frames = 12.5 → ceil = 13s
     const FPS = 30, TRANS = 15
     const frames = 90 + 120 + 150 * 0 + 120 + 90 - (4 - 1) * TRANS
     expect(Math.ceil(frames / FPS)).toBe(13)
   })
 
   it('returns correct duration for 3 indicators (7 slides)', () => {
-    // slides=7, transitions=6
-    // 90+120+450+120+90 - 6*15 = 870 - 90 = 780 frames = 26s
     const FPS = 30, TRANS = 15
     const frames = 90 + 120 + 150 * 3 + 120 + 90 - (7 - 1) * TRANS
     expect(Math.ceil(frames / FPS)).toBe(26)
@@ -156,7 +177,6 @@ describe('buildNarrationText (isolated)', () => {
       outro: '感谢信任',
     }
 
-    // Manually replicate buildNarrationText logic
     const parts = [
       script.summary,
       ...script.details.flatMap((d) => {
