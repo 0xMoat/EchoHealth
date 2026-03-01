@@ -1,0 +1,24 @@
+meta {
+  name: Create Report
+  type: http
+  seq: 2
+}
+
+post {
+  url: {{base_url}}/reports
+  body: json
+  auth: none
+}
+
+headers {
+  Content-Type: application/json
+  x-user-id: {{user_id}}
+}
+
+body:json {
+  {
+    "userId": "{{user_id}}",
+    "reportType": "血常规",
+    "photoUrls": ["PASTE_IMAGE_URL_FROM_UPLOAD"]
+  }
+}

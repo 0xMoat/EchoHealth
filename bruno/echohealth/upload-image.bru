@@ -1,0 +1,19 @@
+meta {
+  name: Upload Image
+  type: http
+  seq: 1
+}
+
+post {
+  url: {{base_url}}/upload/image
+  body: multipartForm
+  auth: none
+}
+
+headers {
+  x-user-id: {{user_id}}
+}
+
+body:multipart-form {
+  file: @file(/path/to/your/medical-report.jpg)
+}
