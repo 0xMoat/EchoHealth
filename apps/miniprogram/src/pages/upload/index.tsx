@@ -58,10 +58,31 @@ class UploadPage extends Component<{}, State> {
       return
     }
 
-    const userId = Taro.getStorageSync('userId')
+    let userId = Taro.getStorageSync('userId')
     if (!userId) {
-      Taro.showToast({ title: '请先登录', icon: 'none' })
-      return
+      // Auto-login if userId not yet stored (race condition on first launch)
+      try {
+        Taro.showLoading({ title: '登录中...' })
+        const loginRes = await Taro.login()
+        const authRes = await Taro.request({
+          url: `${process.env.API_BASE_URL}/auth/login`,
+          method: 'POST',
+          data: { code: loginRes.code },
+        })
+        Taro.hideLoading()
+        if (authRes.statusCode === 200 && authRes.data.userId) {
+          Taro.setStorageSync('userId', authRes.data.userId)
+          Taro.setStorageSync('isPro', authRes.data.isPro)
+          userId = authRes.data.userId
+        } else {
+          Taro.showToast({ title: '登录失败，请重试', icon: 'none' })
+          return
+        }
+      } catch (e) {
+        Taro.hideLoading()
+        Taro.showToast({ title: '登录失败，请重试', icon: 'none' })
+        return
+      }
     }
 
     this.setState({ submitting: true })
