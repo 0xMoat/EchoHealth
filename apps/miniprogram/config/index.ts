@@ -38,7 +38,7 @@ const config: UserConfigExport = {
     API_BASE_URL: JSON.stringify(
       process.env.NODE_ENV === 'production'
         ? 'https://api.echohealth.example.com'
-        : 'http://localhost:3000',
+        : 'http://192.168.2.118:3000',
     ),
   },
 }

@@ -2,7 +2,7 @@
   "miniprogramRoot": "dist/",
   "projectname": "EchoHealth",
   "description": "让体检报告说话",
-  "appid": "wx_YOUR_APPID_HERE",
+  "appid": "wx360136f35986b1a1",
   "setting": {
     "urlCheck": false,
     "es6": false,
