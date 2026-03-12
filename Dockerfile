@@ -29,6 +29,9 @@ RUN pnpm install --frozen-lockfile --filter server...
 COPY apps/server/ ./apps/server/
 COPY packages/video/ ./packages/video/
 
+# Generate Prisma Client (required before TypeScript build)
+RUN pnpm --filter server db:generate
+
 # Build server TypeScript
 RUN pnpm --filter server build
 
