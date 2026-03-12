@@ -29,8 +29,8 @@ RUN pnpm install --frozen-lockfile --filter server...
 COPY apps/server/ ./apps/server/
 COPY packages/video/ ./packages/video/
 
-# Generate Prisma Client (required before TypeScript build)
-RUN pnpm --filter server db:generate
+# Generate Prisma Client (requires DATABASE_URL format, but doesn't connect)
+RUN DATABASE_URL="postgresql://user:pass@localhost:5432/dummy" pnpm --filter server db:generate
 
 # Build server TypeScript
 RUN pnpm --filter server build
