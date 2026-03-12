@@ -34,13 +34,8 @@ const config: UserConfigExport = {
       cssModules: { enable: false },
     },
   },
-  env: {
-    API_BASE_URL: JSON.stringify(
-      process.env.NODE_ENV === 'production'
-        ? 'https://api.echohealth.example.com'
-        : 'http://192.168.2.118:3000',
-    ),
-  },
+  // API_BASE_URL is set in config/dev.ts and config/prod.ts
+  // (shallow merge from env-specific config overwrites this `env` block)
 }
 
 export default {

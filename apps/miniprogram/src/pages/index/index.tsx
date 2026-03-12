@@ -147,32 +147,32 @@ class IndexPage extends Component<{}, State> {
         </View>
 
         {/* Recent Reports */}
-        {reports.length > 0 && (
-          <View className='recent'>
-            <Text className='section-title'>最近记录</Text>
-            {loading ? (
-              <Text className='loading-text'>加载中...</Text>
-            ) : (
-              reports.map((report) => (
-                <View
-                  key={report.id}
-                  className='report-item'
-                  onClick={() => this.handleViewResult(report.id)}
-                >
-                  <View className='report-info'>
-                    <Text className='report-type'>{report.reportType}</Text>
-                    <Text className='report-date'>
-                      {new Date(report.createdAt).toLocaleDateString('zh-CN')}
-                    </Text>
-                  </View>
-                  <View className={`report-status ${this.getStatusClass(report.status)}`}>
-                    <Text className='status-text'>{this.getStatusLabel(report.status)}</Text>
-                  </View>
+        <View className='recent'>
+          <Text className='section-title'>最近记录</Text>
+          {loading ? (
+            <Text className='loading-text'>加载中...</Text>
+          ) : reports.length === 0 ? (
+            <Text className='empty-text'>暂无记录</Text>
+          ) : (
+            reports.map((report) => (
+              <View
+                key={report.id}
+                className='report-item'
+                onClick={() => this.handleViewResult(report.id)}
+              >
+                <View className='report-info'>
+                  <Text className='report-type'>{report.reportType}</Text>
+                  <Text className='report-date'>
+                    {new Date(report.createdAt).toLocaleDateString('zh-CN')}
+                  </Text>
                 </View>
-              ))
-            )}
-          </View>
-        )}
+                <View className={`report-status ${this.getStatusClass(report.status)}`}>
+                  <Text className='status-text'>{this.getStatusLabel(report.status)}</Text>
+                </View>
+              </View>
+            ))
+          )}
+        </View>
       </View>
     )
   }

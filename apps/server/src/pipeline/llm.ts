@@ -66,12 +66,14 @@ ${indicators.map((i) => {
  * Extract and validate JSON from LLM response text.
  */
 function parseJsonResponse(text: string): VideoScript {
-  const start = text.indexOf('{')
-  const end = text.lastIndexOf('}')
+  // Strip markdown code fences if present
+  const stripped = text.replace(/^```(?:json)?\s*/i, '').replace(/\s*```$/i, '').trim()
+  const start = stripped.indexOf('{')
+  const end = stripped.lastIndexOf('}')
   if (start === -1 || end === -1 || end < start) {
     throw new Error('LLM response did not contain valid JSON')
   }
-  return validateVideoScript(JSON.parse(text.slice(start, end + 1)))
+  return validateVideoScript(JSON.parse(stripped.slice(start, end + 1)))
 }
 
 /**
@@ -91,6 +93,7 @@ async function callGroq(prompt: string): Promise<string> {
   const completion = await client.chat.completions.create({
     model,
     max_tokens: 2000,
+    response_format: { type: 'json_object' },
     messages: [{ role: 'user', content: prompt }],
   })
 
