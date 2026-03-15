@@ -3,7 +3,6 @@ import { prisma } from '../db.js'
 import { getQueue } from '../queue/index.js'
 import type { ReportType } from '@prisma/client'
 
-const VALID_REPORT_TYPES = new Set<string>(['BLOOD_ROUTINE', 'BIOCHEMISTRY', 'PHYSICAL_EXAM'])
 
 export async function reportRoutes(app: FastifyInstance) {
   /**
@@ -49,40 +48,22 @@ export async function reportRoutes(app: FastifyInstance) {
    * Creates a Report record and enqueues a video-generation job.
    */
   app.post<{
-    Body: { userId: string; reportType: string; photoUrls: string[] }
+    Body: { userId: string; reportType?: string; photoUrls: string[] }
   }>('/reports', {
     schema: {
       body: {
         type: 'object',
-        required: ['userId', 'reportType', 'photoUrls'],
+        required: ['userId', 'photoUrls'],
         properties: {
           userId: { type: 'string', minLength: 1 },
-          reportType: { type: 'string', minLength: 1 },
+          reportType: { type: 'string' },
           photoUrls: { type: 'array', items: { type: 'string' }, minItems: 1 },
         },
       },
     },
     async handler(request, reply) {
-      const { userId, reportType, photoUrls } = request.body
-
-      // Map free-form reportType to enum; default to PHYSICAL_EXAM
-      const typeMap: Record<string, string> = {
-        '血常规': 'BLOOD_ROUTINE',
-        '血脂': 'BIOCHEMISTRY',
-        '肝功能': 'BIOCHEMISTRY',
-        '肾功能': 'BIOCHEMISTRY',
-        '血糖': 'BIOCHEMISTRY',
-        '尿常规': 'BLOOD_ROUTINE',
-        '综合体检': 'PHYSICAL_EXAM',
-        '心电图': 'PHYSICAL_EXAM',
-        '胸片/CT': 'PHYSICAL_EXAM',
-        '其他': 'PHYSICAL_EXAM',
-      }
-      const type = (typeMap[reportType] || 'PHYSICAL_EXAM') as ReportType
-
-      if (!VALID_REPORT_TYPES.has(type)) {
-        return reply.status(400).send({ error: 'Invalid report type' })
-      }
+      const { userId, photoUrls } = request.body
+      const type = 'PHYSICAL_EXAM' as ReportType
 
       // Verify user exists
       const user = await prisma.user.findUnique({ where: { id: userId } })

@@ -7,7 +7,11 @@ function createCOSClient(): COS {
   if (!secretId || !secretKey) {
     throw new Error('Missing COS_SECRET_ID or COS_SECRET_KEY environment variables')
   }
-  return new COS({ SecretId: secretId, SecretKey: secretKey })
+  const opts: ConstructorParameters<typeof COS>[0] = { SecretId: secretId, SecretKey: secretKey }
+  if (process.env.COS_ACCELERATE === 'true') {
+    opts.Domain = '{Bucket}.cos.accelerate.myqcloud.com'
+  }
+  return new COS(opts)
 }
 
 function getCOSConfig(): { bucket: string; region: string } {
