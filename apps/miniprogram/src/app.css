@@ -1,6 +1,46 @@
 /* Global styles */
 page {
-  background-color: #f0f9ff;
+  background-color: #fafaf9;
   font-family: -apple-system, 'PingFang SC', 'Helvetica Neue', sans-serif;
-  color: #0f172a;
+  color: #1c1917;
+  -webkit-font-smoothing: antialiased;
+}
+
+/* ── Shared Keyframes ── */
+@keyframes fadeUp {
+  from {
+    opacity: 0;
+    transform: translateY(24px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@keyframes scaleIn {
+  from {
+    opacity: 0;
+    transform: scale(0.92);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+/* ── Button press feedback (global) ── */
+button::after {
+  border: none !important;
+}
+
+button:active {
+  transform: scale(0.97) !important;
+  opacity: 0.85 !important;
+  transition: transform 100ms cubic-bezier(0.25, 1, 0.5, 1), opacity 100ms cubic-bezier(0.25, 1, 0.5, 1) !important;
 }

@@ -1,22 +1,16 @@
 import { Component } from 'react'
 import Taro from '@tarojs/taro'
-import { View, Text, Image, Button, Picker } from '@tarojs/components'
+import { View, Text, Image, Button } from '@tarojs/components'
 import './index.css'
-
-const REPORT_TYPES = ['血常规', '尿常规', '肝功能', '肾功能', '血脂', '血糖', '心电图', '胸片/CT', '综合体检', '其他']
 
 interface State {
   photos: string[]
-  reportType: string
-  reportTypeIndex: number
   submitting: boolean
 }
 
 class UploadPage extends Component<{}, State> {
   state: State = {
     photos: [],
-    reportType: REPORT_TYPES[0],
-    reportTypeIndex: 0,
     submitting: false,
   }
 
@@ -44,13 +38,8 @@ class UploadPage extends Component<{}, State> {
     this.setState({ photos: photos.filter((_, i) => i !== index) })
   }
 
-  handleTypeChange(e: any) {
-    const index = Number(e.detail.value)
-    this.setState({ reportTypeIndex: index, reportType: REPORT_TYPES[index] })
-  }
-
   async handleSubmit() {
-    const { photos, reportType, submitting } = this.state
+    const { photos, submitting } = this.state
     if (submitting) return
 
     if (photos.length === 0) {
@@ -60,7 +49,6 @@ class UploadPage extends Component<{}, State> {
 
     let userId = Taro.getStorageSync('userId')
     if (!userId) {
-      // Auto-login if userId not yet stored (race condition on first launch)
       try {
         Taro.showLoading({ title: '登录中...' })
         const loginRes = await Taro.login()
@@ -88,7 +76,6 @@ class UploadPage extends Component<{}, State> {
     this.setState({ submitting: true })
 
     try {
-      // Upload each photo to get URLs
       const photoUrls: string[] = []
       for (let i = 0; i < photos.length; i++) {
         Taro.showLoading({ title: `上传图片 ${i + 1}/${photos.length}` })
@@ -109,19 +96,18 @@ class UploadPage extends Component<{}, State> {
         throw new Error('图片上传失败')
       }
 
-      // Create report
       Taro.showLoading({ title: '提交中...' })
       const res = await Taro.request({
         url: `${process.env.API_BASE_URL}/reports`,
         method: 'POST',
-        data: { userId, reportType, photoUrls },
+        data: { userId, photoUrls },
         header: { 'Content-Type': 'application/json' },
       })
       Taro.hideLoading()
 
       if (res.statusCode === 201) {
         const reportId = res.data.reportId
-        Taro.showToast({ title: '提交成功！', icon: 'success' })
+        Taro.showToast({ title: '提交成功', icon: 'success' })
         setTimeout(() => {
           Taro.redirectTo({ url: `/pages/result/index?reportId=${reportId}` })
         }, 1000)
@@ -149,54 +135,55 @@ class UploadPage extends Component<{}, State> {
   }
 
   render() {
-    const { photos, reportTypeIndex, submitting } = this.state
+    const { photos, submitting } = this.state
 
     return (
       <View className='page'>
         <View className='section'>
           <Text className='section-title'>报告照片</Text>
-          <Text className='section-hint'>请拍摄清晰照片，最多5张</Text>
-          <View className='photo-grid'>
-            {photos.map((photo, index) => (
-              <View key={index} className='photo-item'>
-                <Image src={photo} className='photo-img' mode='aspectFill' />
-                <View
-                  className='photo-remove'
-                  onClick={() => this.handleRemovePhoto(index)}
-                >
-                  <Text className='remove-icon'>×</Text>
+          <Text className='section-hint'>请拍摄清晰的体检报告，最多 5 张</Text>
+          {photos.length === 0 ? (
+            <View className='photo-empty' onClick={this.handlePickPhotos.bind(this)}>
+              <View className='empty-camera'>
+                <View className='camera-body'>
+                  <View className='camera-lens' />
                 </View>
               </View>
-            ))}
-            {photos.length < 5 && (
-              <View className='photo-add' onClick={this.handlePickPhotos.bind(this)}>
-                <Text className='add-icon'>+</Text>
-                <Text className='add-text'>添加照片</Text>
-              </View>
-            )}
-          </View>
-        </View>
-
-        <View className='section'>
-          <Text className='section-title'>报告类型</Text>
-          <Picker
-            mode='selector'
-            range={REPORT_TYPES}
-            value={reportTypeIndex}
-            onChange={this.handleTypeChange.bind(this)}
-          >
-            <View className='picker-value'>
-              <Text className='picker-text'>{REPORT_TYPES[reportTypeIndex]}</Text>
-              <Text className='picker-arrow'>›</Text>
+              <Text className='empty-action'>点击拍照或从相册选择</Text>
+              <Text className='empty-limit'>最多 5 张，建议上传完整报告</Text>
             </View>
-          </Picker>
+          ) : (
+            <View className='photo-grid'>
+              {photos.map((photo, index) => (
+                <View key={index} className='photo-item'>
+                  <Image src={photo} className='photo-img' mode='aspectFill' />
+                  <View
+                    className='photo-remove'
+                    onClick={() => this.handleRemovePhoto(index)}
+                  >
+                    <Text className='remove-icon'>×</Text>
+                  </View>
+                </View>
+              ))}
+              {photos.length < 5 && (
+                <View className='photo-add' onClick={this.handlePickPhotos.bind(this)}>
+                  <Text className='add-icon'>+</Text>
+                  <Text className='add-text'>添加</Text>
+                </View>
+              )}
+            </View>
+          )}
         </View>
 
-        <View className='tips-box'>
-          <Text className='tips-title'>📋 拍摄提示</Text>
-          <Text className='tips-item'>• 确保报告文字清晰可见，避免模糊</Text>
-          <Text className='tips-item'>• 光线充足，减少反光</Text>
-          <Text className='tips-item'>• 完整拍摄每一页数据</Text>
+        <View className='tips-section'>
+          <Text className='tips-title'>上传建议</Text>
+          <Text className='tips-item'>· 报告封面页（含姓名、日期）</Text>
+          <Text className='tips-item'>· 各检验项目页（血常规、生化等）</Text>
+          <Text className='tips-item'>· 报告结论 / 诊断页</Text>
+          <Text className='tips-item'>· 确保文字清晰，光线充足</Text>
+          {photos.length === 1 && (
+            <Text className='tips-warn'>仅 1 张可能遗漏指标，建议上传完整报告</Text>
+          )}
         </View>
 
         <View className='submit-wrap'>
@@ -205,7 +192,7 @@ class UploadPage extends Component<{}, State> {
             onClick={this.handleSubmit.bind(this)}
             disabled={submitting}
           >
-            {submitting ? '生成中...' : '🎬 生成讲解视频'}
+            {submitting ? '生成中...' : '生成讲解视频'}
           </Button>
         </View>
       </View>

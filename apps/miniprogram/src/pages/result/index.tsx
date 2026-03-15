@@ -3,6 +3,15 @@ import Taro from '@tarojs/taro'
 import { View, Text, Video, Button } from '@tarojs/components'
 import './index.css'
 
+function getTypeLabel(type: string): string {
+  const map: Record<string, string> = {
+    PHYSICAL_EXAM: '综合体检',
+    BLOOD_TEST: '血液检查',
+    IMAGING: '影像检查',
+  }
+  return map[type] || '体检报告'
+}
+
 type ReportStatus = 'PENDING' | 'PROCESSING' | 'COMPLETED' | 'FAILED'
 
 interface Report {
@@ -21,25 +30,37 @@ interface State {
   report: Report | null
   loading: boolean
   error: string
+  hintIndex: number
 }
 
 const POLL_INTERVAL = 3000
+
+const WAITING_HINTS = [
+  '通常需要 1-3 分钟，请耐心等待',
+  '正在逐项分析您的体检指标...',
+  '生成通俗易懂的讲解内容...',
+  '快好了，正在合成视频画面...',
+  '您的健康，值得这份等待',
+]
 
 class ResultPage extends Component<{}, State> {
   state: State = {
     report: null,
     loading: true,
     error: '',
+    hintIndex: 0,
   }
 
   private reportId = ''
   private pollTimer: ReturnType<typeof setTimeout> | null = null
+  private hintTimer: ReturnType<typeof setInterval> | null = null
 
   componentDidMount() {
     const params = Taro.getCurrentInstance().router?.params
     this.reportId = params?.reportId || ''
     if (this.reportId) {
       this.fetchReport()
+      this.startHintRotation()
     } else {
       this.setState({ loading: false, error: '报告 ID 缺失' })
     }
@@ -47,12 +68,28 @@ class ResultPage extends Component<{}, State> {
 
   componentWillUnmount() {
     this.clearPoll()
+    this.clearHintRotation()
   }
 
   clearPoll() {
     if (this.pollTimer) {
       clearTimeout(this.pollTimer)
       this.pollTimer = null
+    }
+  }
+
+  startHintRotation() {
+    this.hintTimer = setInterval(() => {
+      this.setState((prev) => ({
+        hintIndex: (prev.hintIndex + 1) % WAITING_HINTS.length,
+      }))
+    }, 5000)
+  }
+
+  clearHintRotation() {
+    if (this.hintTimer) {
+      clearInterval(this.hintTimer)
+      this.hintTimer = null
     }
   }
 
@@ -76,7 +113,6 @@ class ResultPage extends Component<{}, State> {
       }
     } catch (e) {
       this.setState({ loading: false, error: '网络错误，请稍后重试' })
-      // retry after interval even on network error
       this.pollTimer = setTimeout(() => this.fetchReport(), POLL_INTERVAL * 2)
     }
   }
@@ -92,8 +128,8 @@ class ResultPage extends Component<{}, State> {
   getProgressText(status: ReportStatus): string {
     const map: Record<ReportStatus, string> = {
       PENDING: '排队等待中，请稍候...',
-      PROCESSING: 'AI 正在生成您的讲解视频...',
-      COMPLETED: '视频生成完成！',
+      PROCESSING: 'AI 正在生成讲解视频...',
+      COMPLETED: '视频已生成',
       FAILED: '生成失败',
     }
     return map[status]
@@ -101,8 +137,8 @@ class ResultPage extends Component<{}, State> {
 
   getProgressPercent(status: ReportStatus): number {
     const map: Record<ReportStatus, number> = {
-      PENDING: 10,
-      PROCESSING: 60,
+      PENDING: 15,
+      PROCESSING: 65,
       COMPLETED: 100,
       FAILED: 0,
     }
@@ -111,19 +147,21 @@ class ResultPage extends Component<{}, State> {
 
   renderLoading() {
     return (
-      <View className='loading-wrap'>
+      <View className='center-wrap'>
         <View className='spinner' />
-        <Text className='loading-text'>加载中...</Text>
+        <Text className='center-text'>加载中...</Text>
       </View>
     )
   }
 
   renderError() {
     return (
-      <View className='error-wrap'>
-        <Text className='error-icon'>⚠️</Text>
-        <Text className='error-msg'>{this.state.error}</Text>
-        <Button className='retry-btn' onClick={this.handleRetry.bind(this)}>
+      <View className='center-wrap'>
+        <View className='error-circle'>
+          <Text className='error-mark'>!</Text>
+        </View>
+        <Text className='center-title'>{this.state.error}</Text>
+        <Button className='action-btn outline-btn' onClick={this.handleRetry.bind(this)}>
           返回重试
         </Button>
       </View>
@@ -136,24 +174,28 @@ class ResultPage extends Component<{}, State> {
     const isFailed = report.status === 'FAILED'
 
     return (
-      <View className='processing-wrap'>
-        <View className={`status-icon ${isFailed ? 'status-failed' : 'status-processing'}`}>
-          <Text className='status-emoji'>{isFailed ? '❌' : '⚙️'}</Text>
-        </View>
-        <Text className='status-title'>{text}</Text>
+      <View className='center-wrap'>
+        {isFailed ? (
+          <View className='failed-circle'>
+            <Text className='failed-mark'>!</Text>
+          </View>
+        ) : (
+          <View className='processing-ring' />
+        )}
+        <Text className='center-title'>{text}</Text>
         {isFailed && report.errorMsg && (
           <Text className='error-detail'>{report.errorMsg}</Text>
         )}
         {!isFailed && (
-          <View className='progress-bar'>
+          <View className='progress-track'>
             <View className='progress-fill' style={{ width: `${percent}%` }} />
           </View>
         )}
         {!isFailed && (
-          <Text className='progress-hint'>通常需要 1-3 分钟，请耐心等待</Text>
+          <Text className='progress-hint'>{WAITING_HINTS[this.state.hintIndex]}</Text>
         )}
         {isFailed && (
-          <Button className='retry-btn' onClick={this.handleRetry.bind(this)}>
+          <Button className='action-btn primary-btn' onClick={this.handleRetry.bind(this)}>
             重新上传
           </Button>
         )}
@@ -166,6 +208,12 @@ class ResultPage extends Component<{}, State> {
 
     return (
       <View className='completed-wrap'>
+        <View className='success-bar'>
+          <View className='success-check-circle'>
+            <View className='success-check' />
+          </View>
+          <Text className='success-text'>视频已生成，快来看看吧</Text>
+        </View>
         <View className='video-container'>
           <Video
             src={video.url}
@@ -182,26 +230,25 @@ class ResultPage extends Component<{}, State> {
         </View>
 
         <View className='video-info'>
-          <Text className='video-type'>{report.reportType} 讲解视频</Text>
-          <Text className='video-duration'>时长：约 {Math.ceil(video.durationSec)} 秒</Text>
-          <Text className='video-date'>
-            生成于 {new Date(video.createdAt).toLocaleString('zh-CN')}
+          <Text className='video-title'>{getTypeLabel(report.reportType)} 讲解视频</Text>
+          <Text className='video-meta'>
+            时长 {Math.ceil(video.durationSec)} 秒 · {new Date(video.createdAt).toLocaleDateString('zh-CN')}
           </Text>
         </View>
 
         <View className='action-row'>
           <Button
-            className='share-btn'
+            className='action-btn primary-btn'
             onClick={this.handleShare.bind(this)}
             openType='share'
           >
-            📤 分享给家人
+            分享给家人
           </Button>
         </View>
 
         <View className='disclaimer'>
           <Text className='disclaimer-text'>
-            ⚠️ 本视频由 AI 生成，仅供健康知识参考，不作为医学诊断依据。如有疑问请咨询专业医生。
+            本视频由 AI 生成，仅供健康知识参考，不作为医学诊断依据。如有疑问请咨询专业医生。
           </Text>
         </View>
       </View>

@@ -1,104 +1,192 @@
 .page {
-  padding: 40rpx 32rpx;
-  background: #f8fafc;
   min-height: 100vh;
+  background: #fafaf9;
+  padding: 0 24px 64px;
 }
 
-.page-title {
-  display: block;
-  font-size: 48rpx;
+/* ── Header ── */
+.header {
+  padding: 48px 8px 40px;
+  animation: fadeUp 500ms cubic-bezier(0.25, 1, 0.5, 1) both;
+}
+
+.header-eyebrow {
+  display: inline-block;
+  font-size: 22px;
   font-weight: 700;
-  color: #0f172a;
-  text-align: center;
-  margin-bottom: 12rpx;
+  color: #0f766e;
+  background: #ccfbf1;
+  padding: 6px 20px;
+  border-radius: 8px;
+  letter-spacing: 3px;
+  margin-bottom: 20px;
 }
 
-.page-subtitle {
+.header-title {
   display: block;
-  font-size: 28rpx;
-  color: #64748b;
-  text-align: center;
-  margin-bottom: 48rpx;
+  font-size: 48px;
+  font-weight: 700;
+  color: #1c1917;
+  margin-bottom: 12px;
 }
 
-.table {
+.header-desc {
+  display: block;
+  font-size: 28px;
+  color: #78716c;
+}
+
+/* ── Pricing Card ── */
+.pricing-card {
   background: #fff;
-  border-radius: 20rpx;
-  overflow: hidden;
-  box-shadow: 0 2rpx 12rpx rgba(0,0,0,0.06);
-  margin-bottom: 40rpx;
+  border-radius: 20px;
+  padding: 40px 32px;
+  margin-bottom: 24px;
+  animation: fadeUp 500ms cubic-bezier(0.25, 1, 0.5, 1) 150ms both;
 }
 
-.table-header, .table-row {
-  display: flex;
-  align-items: center;
-  border-bottom: 1rpx solid #f1f5f9;
-}
-
-.table-header {
-  background: #f8fafc;
-  padding: 20rpx 0;
-}
-
-.table-row {
-  padding: 24rpx 0;
-}
-
-.col-label { flex: 3; padding-left: 32rpx; }
-.col-free  { flex: 2; text-align: center; }
-.col-pro   { flex: 2; text-align: center; background: #eff6ff; position: relative; }
-
-.col-title { font-size: 28rpx; font-weight: 600; color: #334155; }
-.col-badge {
-  display: block;
-  font-size: 20rpx;
-  color: #2563eb;
-  font-weight: 700;
-  margin-bottom: 4rpx;
-}
-
-.row-label { font-size: 28rpx; color: #475569; }
-.row-val   { font-size: 28rpx; color: #64748b; }
-.pro-val   { color: #0284c7; font-weight: 600; }
-
-.price-wrap {
+.price-row {
   display: flex;
   align-items: baseline;
   justify-content: center;
-  margin-bottom: 32rpx;
+  margin-bottom: 40px;
 }
 
-.price {
-  font-size: 80rpx;
+.price-currency {
+  font-size: 36px;
+  font-weight: 700;
+  color: #1c1917;
+  margin-right: 4px;
+}
+
+.price-amount {
+  font-size: 80px;
   font-weight: 800;
-  color: #0284c7;
+  color: #1c1917;
+  line-height: 1;
 }
 
-.price-unit {
-  font-size: 32rpx;
-  color: #64748b;
-  margin-left: 8rpx;
+.price-period {
+  font-size: 28px;
+  color: #a8a29e;
+  margin-left: 8px;
 }
 
-.subscribe-btn {
-  background: #0284c7;
-  color: #fff;
-  border-radius: 100rpx;
-  font-size: 36rpx;
+/* ── Comparison Table ── */
+.compare-table {
+  margin-bottom: 36px;
+}
+
+.table-head,
+.table-row {
+  display: flex;
+  align-items: center;
+}
+
+.table-head {
+  padding-bottom: 16px;
+  border-bottom: 2px solid #f5f5f4;
+  margin-bottom: 4px;
+}
+
+.table-row {
+  padding: 20px 0;
+  border-bottom: 1px solid #f5f5f4;
+  animation: fadeIn 400ms cubic-bezier(0.25, 1, 0.5, 1) both;
+}
+
+.table-row:nth-child(1) { animation-delay: 250ms; }
+.table-row:nth-child(2) { animation-delay: 350ms; }
+.table-row:nth-child(3) { animation-delay: 450ms; }
+.table-row:nth-child(4) { animation-delay: 550ms; }
+
+.table-row:last-child {
+  border-bottom: none;
+}
+
+.col-label {
+  flex: 3;
+}
+
+.col-plan {
+  flex: 2;
+  text-align: center;
+}
+
+.col-pro {
+  background: #f0fdfa;
+  border-radius: 8px;
+  margin-left: 4px;
+}
+
+.plan-name {
+  font-size: 26px;
   font-weight: 600;
-  padding: 0;
-  height: 96rpx;
-  line-height: 96rpx;
-  margin-bottom: 24rpx;
+  color: #78716c;
+}
+
+.plan-name-pro {
+  color: #0f766e;
+}
+
+.row-label {
+  font-size: 28px;
+  color: #57534e;
+}
+
+.cell-val {
+  font-size: 28px;
+  color: #78716c;
+}
+
+.cell-val-pro {
+  color: #0f766e;
+  font-weight: 600;
+}
+
+.cell-check {
+  font-size: 28px;
+  color: #a8a29e;
+}
+
+.cell-check-pro {
+  color: #0f766e;
+  font-weight: 700;
+}
+
+.cell-dash {
+  font-size: 28px;
+  color: #d6d3d1;
+}
+
+/* ── Subscribe Button ── */
+.subscribe-btn {
+  width: 100%;
+  background: #ea580c !important;
+  color: #fff !important;
+  border-radius: 16px !important;
+  font-size: 32px !important;
+  font-weight: 600 !important;
+  height: auto !important;
+  padding: 28px 0 !important;
+  border: none !important;
+  letter-spacing: 2px;
+  transition: background 200ms cubic-bezier(0.25, 1, 0.5, 1);
+}
+
+.subscribe-btn::after {
+  border: none !important;
 }
 
 .subscribe-btn-disabled {
-  background: #94a3b8;
+  background: #d6d3d1 !important;
 }
 
-.hint {
+/* ── Footer ── */
+.footer-hint {
   display: block;
   text-align: center;
-  font-size: 24rpx;
-  color: #94a3b8;
+  font-size: 24px;
+  color: #a8a29e;
+  animation: fadeIn 500ms cubic-bezier(0.25, 1, 0.5, 1) 600ms both;
 }

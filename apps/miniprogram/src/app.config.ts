@@ -7,8 +7,8 @@ export default defineAppConfig({
   ],
   window: {
     backgroundTextStyle: 'light',
-    navigationBarBackgroundColor: '#0284C7',
-    navigationBarTitleText: 'EchoHealth',
+    navigationBarBackgroundColor: '#0f766e',
+    navigationBarTitleText: '爸妈看懂',
     navigationBarTextStyle: 'white',
   },
   tabBar: undefined,

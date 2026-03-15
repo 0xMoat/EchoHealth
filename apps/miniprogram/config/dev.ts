@@ -1,7 +1,7 @@
 const config = {
   env: {
     NODE_ENV: '"development"',
-    API_BASE_URL: '"https://api-production-20d3.up.railway.app"',
+    API_BASE_URL: '"http://137.131.22.123:3000"',
   },
   defineConstants: {},
   mini: {},

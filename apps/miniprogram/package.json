@@ -4,7 +4,9 @@
   "private": true,
   "scripts": {
     "dev:weapp": "taro build --type weapp --watch",
-    "build:weapp": "taro build --type weapp"
+    "build:weapp": "taro build --type weapp",
+    "test:e2e": "jest --config jest.config.ts --runInBand --forceExit",
+    "test:e2e:verbose": "jest --config jest.config.ts --runInBand --verbose --forceExit"
   },
   "dependencies": {
     "@babel/preset-env": "^7.29.0",
@@ -24,9 +26,13 @@
     "@babel/runtime": "^7.24.0",
     "@tarojs/cli": "4.1.11",
     "@tarojs/webpack5-runner": "4.1.11",
+    "@types/jest": "^30.0.0",
     "@types/node": "^20.0.0",
     "@types/react": "^18.3.0",
     "babel-preset-taro": "4.1.11",
+    "jest": "^30.3.0",
+    "miniprogram-automator": "^0.12.1",
+    "ts-jest": "^29.4.6",
     "typescript": "^5.5.0"
   }
 }
