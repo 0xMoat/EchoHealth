@@ -1,4 +1,5 @@
 import { Worker, Job } from 'bullmq'
+import * as Sentry from '@sentry/node'
 import { mkdir, rm } from 'fs/promises'
 import { tmpdir } from 'os'
 import path from 'path'
@@ -150,6 +151,7 @@ export async function runPipeline(job: Job<VideoJobData>): Promise<void> {
     ])
     await job.updateProgress(100)
   } catch (err) {
+    Sentry.captureException(err, { tags: { reportId } })
     // Mark report as FAILED and preserve the error message
     await prisma.report
       .update({

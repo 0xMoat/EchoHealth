@@ -1,6 +1,6 @@
 # EchoHealth 部署指南
 
-**最后更新：** 2026-02-27
+**最后更新：** 2026-03-14
 
 ---
 
@@ -9,7 +9,11 @@
 - [架构概览](#架构概览)
 - [本地开发环境](#本地开发环境)
 - [环境变量参考](#环境变量参考)
-- [生产部署](#生产部署)
+- [测试](#测试)
+- [生产部署（Docker）](#生产部署docker)
+- [生产部署（PM2 裸机）](#生产部署pm2-裸机)
+- [当前测试环境](#当前测试环境)
+- [Sentry 错误追踪](#sentry-错误追踪)
 - [小程序发布](#小程序发布)
 - [常见问题](#常见问题)
 
@@ -199,13 +203,138 @@ curl http://localhost:3000/health
 | `WX_APPID` | 微信小程序 AppID |
 | `WX_SECRET` | 微信小程序 AppSecret |
 
+### Sentry 错误追踪
+
+| 变量 | 默认值 | 说明 |
+|------|--------|------|
+| `SENTRY_DSN` | （空，Sentry 自动禁用） | Sentry 项目 DSN，必须设为**系统环境变量**（不能只写在 `.env` 中） |
+
+> **为什么不能写在 `.env`？** Sentry 通过 `--import ./dist/instrument.js` 在 Node.js 启动时最先加载，此时 `dotenv` 尚未执行，因此 `.env` 中的变量不可用。必须通过 Docker `-e`、`docker-compose.yml` 的 `environment`、或系统 `export` 设置。
+
 ---
 
-## 生产部署
+## 测试
 
-> 当前阶段为 MVP 开发阶段，以下为推荐的最简生产架构。
+### 单元测试
 
-### 推荐方案：单台云服务器 + 托管数据库
+```bash
+cd apps/server
+pnpm test                  # 运行所有单元测试
+pnpm test:watch            # 监听模式
+```
+
+### 集成测试（需要 Docker）
+
+集成测试使用 testcontainers 自动启动 PostgreSQL 和 Redis 容器：
+
+```bash
+cd apps/server
+pnpm test:integration      # 运行集成测试
+```
+
+> 前置条件：本地 Docker 守护进程必须运行（OrbStack 或 Docker Desktop）
+
+### 测试覆盖范围
+
+| 测试文件 | 覆盖内容 |
+|----------|---------|
+| `app.test.ts` | Fastify 路由注册、health check |
+| `sentry.test.ts` | Sentry captureException 在 pipeline 失败时被调用，带 reportId tag |
+| `worker.test.ts` | Worker pipeline 流程 |
+| `llm.test.ts` | LLM 脚本生成 |
+| `upload.test.ts` | 文件上传到 COS |
+| `orders.test.ts` | 订单相关路由 |
+| `quota.test.ts` | 配额中间件 |
+| `ocr.test.ts` | OCR 文本解析 |
+| `tts.test.ts` | TTS 音频生成 |
+
+### 验证 Sentry 集成
+
+```bash
+# 运行 Sentry 专项测试
+cd apps/server && npx vitest run src/__tests__/sentry.test.ts
+
+# 期望：captureException 被调用，参数包含 { tags: { reportId: 'report-1' } }
+```
+
+---
+
+## 生产部署（Docker）
+
+### Dockerfile
+
+项目根目录的 `Dockerfile` 基于 `node:20-slim`，已包含：
+- Chromium（Remotion 视频渲染）
+- edge-tts（Python TTS）
+- fonts-noto-cjk（中文字体）
+
+### 构建镜像
+
+```bash
+docker build -t echohealth .
+```
+
+### 启动容器
+
+```bash
+# API 进程
+docker run -d \
+  --name echohealth-api \
+  --restart unless-stopped \
+  -p 3000:3000 \
+  -e DATABASE_URL="postgresql://user:pass@host:5432/echohealth" \
+  -e REDIS_URL="redis://host:6379" \
+  -e SENTRY_DSN="https://xxx@xxx.ingest.us.sentry.io/xxx" \
+  -e OPENROUTER_API_KEY="sk-..." \
+  -e TENCENT_SECRET_ID="..." \
+  -e TENCENT_SECRET_KEY="..." \
+  -e COS_SECRET_ID="..." \
+  -e COS_SECRET_KEY="..." \
+  -e COS_BUCKET="..." \
+  -e COS_REGION="ap-guangzhou" \
+  -e WX_APPID="..." \
+  -e WX_SECRET="..." \
+  echohealth \
+  sh -c "npx prisma migrate deploy && node --import ./dist/instrument.js dist/index.js"
+
+# Worker 进程
+docker run -d \
+  --name echohealth-worker \
+  --restart unless-stopped \
+  -e DATABASE_URL="postgresql://user:pass@host:5432/echohealth" \
+  -e REDIS_URL="redis://host:6379" \
+  -e SENTRY_DSN="https://xxx@xxx.ingest.us.sentry.io/xxx" \
+  -e OPENROUTER_API_KEY="sk-..." \
+  -e TENCENT_SECRET_ID="..." \
+  -e TENCENT_SECRET_KEY="..." \
+  -e COS_SECRET_ID="..." \
+  -e COS_SECRET_KEY="..." \
+  -e COS_BUCKET="..." \
+  -e COS_REGION="ap-guangzhou" \
+  echohealth \
+  node --import ./dist/instrument.js dist/queue/start-worker.js
+```
+
+### 更新部署
+
+```bash
+# 拉取最新代码并重新构建
+git pull
+docker build -t echohealth .
+
+# 重启容器
+docker stop echohealth-api echohealth-worker
+docker rm echohealth-api echohealth-worker
+# 重新执行上面的 docker run 命令
+```
+
+---
+
+## 生产部署（PM2 裸机）
+
+> 适用于不使用 Docker 的场景，直接在服务器上运行 Node.js。
+
+### 架构：单台云服务器 + 托管数据库
 
 ```mermaid
 graph LR
@@ -275,15 +404,23 @@ module.exports = {
       name: 'echohealth-api',
       script: 'dist/index.js',
       cwd: '/path/to/EchoHealth/apps/server',
+      node_args: '--import ./dist/instrument.js',
       env_file: '.env',
+      env: {
+        SENTRY_DSN: 'https://xxx@xxx.ingest.us.sentry.io/xxx',
+      },
       instances: 1,
       autorestart: true,
     },
     {
       name: 'echohealth-worker',
-      script: 'dist/worker.js',
+      script: 'dist/queue/start-worker.js',
       cwd: '/path/to/EchoHealth/apps/server',
+      node_args: '--import ./dist/instrument.js',
       env_file: '.env',
+      env: {
+        SENTRY_DSN: 'https://xxx@xxx.ingest.us.sentry.io/xxx',
+      },
       instances: 1,
       autorestart: true,
     },
@@ -295,6 +432,8 @@ pm2 start ecosystem.config.cjs
 pm2 save
 pm2 startup    # 配置开机自启
 ```
+
+> **注意：** `SENTRY_DSN` 必须写在 PM2 的 `env` 中（不能只依赖 `.env` 文件），因为 `--import` 在 `dotenv` 之前执行。
 
 **6. Nginx 反向代理**
 
@@ -314,6 +453,63 @@ server {
 ```
 
 > 配置 HTTPS 推荐使用 Certbot：`certbot --nginx -d api.echohealth.app`
+
+---
+
+## 当前测试环境
+
+| 项目 | 值 |
+|------|-----|
+| 服务器 | Oracle Cloud `137.131.22.123` |
+| 操作系统 | Ubuntu（用户 `ubuntu`） |
+| SSH | `ssh n8n`（~/.ssh/config 已配置） |
+| SSH Key | `~/.ssh/oracle-ssh-keys/ssh-key-2025-07-12.key` |
+| API 地址 | `http://137.131.22.123:3000` |
+| 小程序 dev 配置 | `apps/miniprogram/config/dev.ts` → `API_BASE_URL: "http://137.131.22.123:3000"` |
+
+### 部署验证
+
+```bash
+# 1. API 健康检查
+curl http://137.131.22.123:3000/health
+# 期望: {"status":"ok"}
+
+# 2. SSH 登录查看服务状态
+ssh n8n
+docker ps                        # 查看运行中的容器
+docker logs echohealth-api       # 查看 API 日志
+docker logs echohealth-worker    # 查看 Worker 日志
+```
+
+---
+
+## Sentry 错误追踪
+
+### 架构
+
+```mermaid
+graph LR
+    API[Fastify API] -->|captureException| Sentry
+    Worker[BullMQ Worker] -->|captureException + reportId tag| Sentry
+    Sentry -->|Alert Rule| TG[Telegram Bot]
+```
+
+### 工作方式
+
+1. **`instrument.ts`** — Sentry SDK 初始化入口，通过 `node --import ./dist/instrument.js` 在所有模块加载前执行
+2. **API 进程** — `Sentry.setupFastifyErrorHandler(app)` 自动捕获路由异常；`beforeSend` 过滤 4xx 只上报 5xx
+3. **Worker 进程** — pipeline catch 块中 `Sentry.captureException(err, { tags: { reportId } })` 手动上报
+4. **优雅退出** — API 启动失败和 Worker SIGTERM 时调用 `Sentry.flush(2000)` 确保事件发送完毕
+
+### 配置步骤
+
+1. 在服务器上设置 `SENTRY_DSN` 环境变量（Docker `-e` 或 PM2 `env`）
+2. （可选）Sentry 控制台 → Settings → Integrations → Telegram → 绑定 Bot + 群组
+3. （可选）Sentry 控制台 → Alerts → Create Alert Rule → 选择触发条件 → 通知到 Telegram
+
+### 本地开发
+
+本地不设置 `SENTRY_DSN` 即可，Sentry 自动禁用（`enabled: !!process.env.SENTRY_DSN`）。
 
 ---
 

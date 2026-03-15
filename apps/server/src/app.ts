@@ -1,5 +1,6 @@
 import Fastify from 'fastify'
 import cors from '@fastify/cors'
+import * as Sentry from '@sentry/node'
 import { reportRoutes } from './routes/reports.js'
 import { authRoutes } from './routes/auth.js'
 import { uploadRoutes } from './routes/upload.js'
@@ -30,6 +31,8 @@ export async function buildApp() {
 
   await app.register(reportRoutes)
   await app.register(orderRoutes)
+
+  Sentry.setupFastifyErrorHandler(app)
 
   return app
 }
