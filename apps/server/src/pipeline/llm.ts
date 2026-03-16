@@ -7,6 +7,7 @@ const REPORT_TYPE_MAP: Record<ReportType, string> = {
   BLOOD_ROUTINE: '血常规',
   BIOCHEMISTRY: '生化检查',
   PHYSICAL_EXAM: '体检总报告',
+  GENERAL: '综合健康报告',
 }
 
 export interface ScriptDetail {

@@ -7,34 +7,41 @@ datasource db {
 }
 
 model User {
-  id            String    @id @default(cuid())
-  openid        String    @unique
+  id            String       @id @default(cuid())
+  openid        String?      @unique
   nickname      String?
   avatarUrl     String?
-  isPro         Boolean   @default(false)
+  isPro         Boolean      @default(false)
   proExpireAt   DateTime?
-  usedThisMonth Int       @default(0)
-  usageResetAt  DateTime  @default(now())
+  usedThisMonth Int          @default(0)
+  usageResetAt  DateTime     @default(now())
+  authProvider  AuthProvider @default(WECHAT)
+  email         String?      @unique
+  googleId      String?      @unique
   reports       Report[]
   orders        Order[]
-  createdAt     DateTime  @default(now())
-  updatedAt     DateTime  @updatedAt
+  subscriptions Subscription[]
+  createdAt     DateTime     @default(now())
+  updatedAt     DateTime     @updatedAt
 }
 
 model Report {
-  id        String       @id @default(cuid())
+  id        String        @id @default(cuid())
   userId    String
-  user      User         @relation(fields: [userId], references: [id])
+  user      User          @relation(fields: [userId], references: [id])
   type      ReportType
   photoUrls String[]
   ocrText   String?
   indicators Json?
   script    Json?
   video     Video?
-  status    ReportStatus @default(PENDING)
+  status    ReportStatus  @default(PENDING)
   errorMsg  String?
-  createdAt DateTime     @default(now())
-  updatedAt DateTime     @updatedAt
+  language  VideoLanguage @default(AUTO)
+  inputType InputType     @default(IMAGE)
+  source    ReportSource  @default(MINIPROGRAM)
+  createdAt DateTime      @default(now())
+  updatedAt DateTime      @updatedAt
 
   @@index([userId])
   @@index([status])
@@ -63,10 +70,27 @@ model Order {
   @@index([userId])
 }
 
+model Subscription {
+  id                    String             @id @default(cuid())
+  userId                String
+  user                  User               @relation(fields: [userId], references: [id])
+  provider              PaymentProvider
+  creemSubscriptionId   String?            @unique
+  status                SubscriptionStatus
+  currentPeriodStart    DateTime
+  currentPeriodEnd      DateTime
+  cancelledAt           DateTime?
+  createdAt             DateTime           @default(now())
+  updatedAt             DateTime           @updatedAt
+
+  @@index([userId])
+}
+
 enum ReportType {
   BLOOD_ROUTINE
   BIOCHEMISTRY
   PHYSICAL_EXAM
+  GENERAL
 }
 
 enum ReportStatus {
@@ -80,4 +104,37 @@ enum OrderStatus {
   PENDING
   PAID
   REFUNDED
+}
+
+enum AuthProvider {
+  WECHAT
+  GOOGLE
+}
+
+enum VideoLanguage {
+  AUTO
+  EN
+  ZH
+}
+
+enum InputType {
+  IMAGE
+  PDF
+}
+
+enum ReportSource {
+  MINIPROGRAM
+  WEB
+}
+
+enum PaymentProvider {
+  WECHAT_PAY
+  CREEM
+}
+
+enum SubscriptionStatus {
+  ACTIVE
+  CANCELLED
+  PAST_DUE
+  EXPIRED
 }
