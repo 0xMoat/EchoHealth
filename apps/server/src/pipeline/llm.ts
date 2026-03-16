@@ -10,6 +10,13 @@ const REPORT_TYPE_MAP: Record<ReportType, string> = {
   GENERAL: '综合健康报告',
 }
 
+const REPORT_TYPE_MAP_EN: Record<ReportType, string> = {
+  BLOOD_ROUTINE: 'Blood Routine',
+  BIOCHEMISTRY: 'Biochemistry',
+  PHYSICAL_EXAM: 'Physical Exam',
+  GENERAL: 'General Health Report',
+}
+
 export interface ScriptDetail {
   indicatorName: string
   status: 'normal' | 'high' | 'low'
@@ -31,8 +38,43 @@ function buildPrompt(params: {
   indicators: Indicator[]
   reportType: ReportType
   senderName: string
+  language?: string
 }): string {
   const { indicators, reportType, senderName } = params
+  const lang = params.language || 'zh'
+  const isEnglish = lang === 'en'
+
+  if (isEnglish) {
+    return `You are a warm and professional health advisor explaining a ${REPORT_TYPE_MAP_EN[reportType]} report.
+Use simple, easy-to-understand language. Be caring and reassuring.
+
+Report indicators:
+${indicators.map((i) => {
+      const statusLabel = i.status === 'normal' ? 'Normal'
+        : i.status === 'high' ? 'High'
+        : i.status === 'low' ? 'Low'
+        : 'Pending'
+      return `- ${i.name} (${i.code}): ${i.value} ${i.unit}, reference range ${i.referenceRange}, status: ${statusLabel}`
+    }).join('\n')}
+
+Return ONLY this JSON format:
+{
+  "summary": "1-2 sentence overall conclusion",
+  "details": [
+    {
+      "indicatorName": "indicator name",
+      "status": "normal|high|low",
+      "explanation": "explain this indicator in simple terms",
+      "advice": "only for abnormal indicators, give specific lifestyle advice"
+    }
+  ],
+  "suggestions": "2-3 overall health tips, newline separated",
+  "outro": "This report was interpreted by ${senderName}. This is for reference only - please consult your doctor for any concerns."
+}
+
+Note: Only provide advice for abnormal indicators (high/low). Omit the advice field for normal indicators.`
+  }
+
   return `你是一位温和专业的健康顾问，需要为一位中老年人解读他们的${REPORT_TYPE_MAP[reportType]}报告。
 请用简单易懂的语言，避免使用专业术语，像对父母说话一样亲切。
 
@@ -153,6 +195,7 @@ export async function buildVideoScript(params: {
   indicators: Indicator[]
   reportType: ReportType
   senderName: string
+  language?: string
 }): Promise<VideoScript> {
   const prompt = buildPrompt(params)
 

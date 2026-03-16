@@ -3,17 +3,26 @@ import { promisify } from 'util'
 
 const execAsync = promisify(exec)
 
+export const VOICE_MAP: Record<string, string> = {
+  zh: 'zh-CN-XiaoxiaoNeural',
+  en: 'en-US-JennyNeural',
+}
+
 /**
  * 调用 edge-tts 将文本转换为语音
  * @param text 要转换的文本
  * @param outputPath 输出 mp3 文件路径
- * @param voice 音色，默认使用温柔女声
+ * @param voice 音色，显式指定时优先使用
+ * @param language 语言代码，用于从 VOICE_MAP 选择音色（voice 未指定时生效）
  */
 export async function generateAudio(
   text: string,
   outputPath: string,
-  voice = 'zh-CN-XiaoxiaoNeural'
+  voice?: string,
+  language?: string,
 ): Promise<void> {
+  const selectedVoice = voice || VOICE_MAP[language || 'zh'] || VOICE_MAP.zh
+
   // 转义文本中可能破坏 shell 命令的字符
   const sanitized = text
     .replace(/\\/g, '\\\\')
@@ -24,7 +33,7 @@ export async function generateAudio(
 
   if (!sanitized) throw new Error('Text cannot be empty')
 
-  const cmd = `edge-tts --voice "${voice}" --text "${sanitized}" --write-media "${outputPath}"`
+  const cmd = `edge-tts --voice "${selectedVoice}" --text "${sanitized}" --write-media "${outputPath}"`
 
   try {
     await execAsync(cmd)
