@@ -1,12 +1,15 @@
 // apps/server/src/routes/saas/auth.ts
 import { FastifyInstance } from 'fastify'
 import { OAuth2Client } from 'google-auth-library'
+import rateLimit from '@fastify/rate-limit'
 import { prisma } from '../../db.js'
 import { signToken } from '../../lib/jwt.js'
 
 const GOOGLE_CLIENT_ID = process.env.GOOGLE_CLIENT_ID || ''
 
 export default async function saasAuthRoutes(app: FastifyInstance) {
+  // Stricter rate limit for all auth routes (10 req/min/IP per spec §9)
+  await app.register(rateLimit, { max: 10, timeWindow: '1 minute' })
   app.post('/auth/google', async (request, reply) => {
     const { idToken } = request.body as { idToken?: string }
     if (!idToken) {
