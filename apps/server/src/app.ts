@@ -8,7 +8,10 @@ import { quotaMiddleware } from './middleware/quota.js'
 import { userRoutes } from './routes/user.js'
 import { orderRoutes } from './routes/orders.js'
 import { authHook } from './hooks/auth.js'
+import multipart from '@fastify/multipart'
 import saasAuthRoutes from './routes/saas/auth.js'
+import saasUploadRoutes from './routes/saas/upload.js'
+import saasReportRoutes from './routes/saas/reports.js'
 
 export async function buildApp() {
   const app = Fastify({ logger: true })
@@ -36,6 +39,9 @@ export async function buildApp() {
   await app.register(reportRoutes)
   await app.register(orderRoutes)
   await app.register(saasAuthRoutes, { prefix: '/api/saas' })
+  await app.register(multipart, { limits: { fileSize: 20_000_000 } })
+  await app.register(saasUploadRoutes, { prefix: '/api/saas' })
+  await app.register(saasReportRoutes, { prefix: '/api/saas' })
 
   Sentry.setupFastifyErrorHandler(app)
 
