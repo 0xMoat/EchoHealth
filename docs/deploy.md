@@ -203,6 +203,30 @@ curl http://localhost:3000/health
 | `WX_APPID` | 微信小程序 AppID |
 | `WX_SECRET` | 微信小程序 AppSecret |
 
+### SaaS 认证（Google OAuth）
+
+| 变量 | 说明 |
+|------|------|
+| `GOOGLE_CLIENT_ID` | Google OAuth 2.0 Client ID |
+| `GOOGLE_CLIENT_SECRET` | Google OAuth 2.0 Client Secret |
+| `JWT_SECRET` | JWT 签名密钥（建议 32+ 字符随机字符串） |
+
+### LLM Vision（SaaS 报告解析）
+
+| 变量 | 默认值 | 说明 |
+|------|--------|------|
+| `LLM_VISION_PROVIDER` | `gemini` | Vision OCR 提供商（目前仅支持 `gemini`） |
+| `GEMINI_API_KEY` | | Google Gemini API Key |
+| `LLM_SCRIPT_PROVIDER` | `claude` | 脚本生成 LLM 提供商 |
+
+### CORS
+
+| 变量 | 默认值 | 说明 |
+|------|--------|------|
+| `CORS_ORIGINS` | （空，允许所有来源） | 逗号分隔的允许来源域名列表（生产环境必须设置） |
+
+> **示例：** `CORS_ORIGINS=https://echohealth.app,https://www.echohealth.app`
+
 ### Sentry 错误追踪
 
 | 变量 | 默认值 | 说明 |
@@ -247,6 +271,13 @@ pnpm test:integration      # 运行集成测试
 | `quota.test.ts` | 配额中间件 |
 | `ocr.test.ts` | OCR 文本解析 |
 | `tts.test.ts` | TTS 音频生成 |
+| `jwt.test.ts` | JWT 签发与验证 |
+| `auth-hook.test.ts` | 统一认证 hook（header/JWT/body fallback） |
+| `saas-auth.test.ts` | Google OAuth 登录、/auth/me、/auth/logout |
+| `image.test.ts` | 图片缩放、PDF 页数计数 |
+| `vision.test.ts` | LLM Vision 指标提取（Gemini） |
+| `saas-upload.test.ts` | SaaS 文件上传（分层限制） |
+| `saas-reports.test.ts` | SaaS 报告创建/列表/详情 |
 
 ### 验证 Sentry 集成
 
