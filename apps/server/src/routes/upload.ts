@@ -1,6 +1,7 @@
 import type { FastifyInstance } from 'fastify'
 import multipart from '@fastify/multipart'
 import { uploadImageBuffer } from '../pipeline/upload.js'
+import '../hooks/auth.js'
 
 export async function uploadRoutes(app: FastifyInstance) {
   await app.register(multipart, { limits: { fileSize: 10 * 1024 * 1024 } }) // 10 MB
@@ -17,9 +18,9 @@ export async function uploadRoutes(app: FastifyInstance) {
         return reply.status(400).send({ error: 'No file uploaded' })
       }
 
-      const userId = request.headers['x-user-id'] as string | undefined
+      const userId = (request as any).user?.id
       if (!userId) {
-        return reply.status(401).send({ error: 'Missing x-user-id header' })
+        return reply.status(401).send({ error: 'Authentication required' })
       }
 
       const buf = await data.toBuffer()

@@ -2,6 +2,7 @@ import type { FastifyInstance } from 'fastify'
 import { prisma } from '../db.js'
 import { getQueue } from '../queue/index.js'
 import type { ReportType } from '@prisma/client'
+import '../hooks/auth.js'
 
 
 export async function reportRoutes(app: FastifyInstance) {
@@ -10,19 +11,19 @@ export async function reportRoutes(app: FastifyInstance) {
    * Query: { userId, limit? }
    * Returns recent reports for a user (for mini-program home page).
    */
-  app.get<{ Querystring: { userId: string; limit?: string } }>('/reports', {
+  app.get<{ Querystring: { limit?: string } }>('/reports', {
     schema: {
       querystring: {
         type: 'object',
-        required: ['userId'],
         properties: {
-          userId: { type: 'string', minLength: 1 },
           limit: { type: 'string' },
         },
       },
     },
     async handler(request, reply) {
-      const { userId, limit } = request.query
+      const userId = (request as any).user?.id
+      if (!userId) return reply.status(401).send({ error: 'Auth required' })
+      const { limit } = request.query as { limit?: string }
       const take = Math.min(parseInt(limit || '5', 10) || 5, 20)
 
       const reports = await prisma.report.findMany({
@@ -48,21 +49,22 @@ export async function reportRoutes(app: FastifyInstance) {
    * Creates a Report record and enqueues a video-generation job.
    */
   app.post<{
-    Body: { userId: string; reportType?: string; photoUrls: string[] }
+    Body: { reportType?: string; photoUrls: string[] }
   }>('/reports', {
     schema: {
       body: {
         type: 'object',
-        required: ['userId', 'photoUrls'],
+        required: ['photoUrls'],
         properties: {
-          userId: { type: 'string', minLength: 1 },
           reportType: { type: 'string' },
           photoUrls: { type: 'array', items: { type: 'string' }, minItems: 1 },
         },
       },
     },
     async handler(request, reply) {
-      const { userId, photoUrls } = request.body
+      const userId = (request as any).user?.id
+      if (!userId) return reply.status(401).send({ error: 'Auth required' })
+      const { photoUrls } = request.body
       const type = 'PHYSICAL_EXAM' as ReportType
 
       // Verify user exists

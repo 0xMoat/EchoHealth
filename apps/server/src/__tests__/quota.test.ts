@@ -1,5 +1,5 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest'
-import type { FastifyRequest, FastifyReply } from 'fastify'
+import type { FastifyReply, FastifyRequest } from 'fastify'
 import { FREE_MONTHLY_LIMIT, PRO_MONTHLY_LIMIT } from '../middleware/quota.js'
 
 vi.mock('../db.js', () => ({
@@ -23,7 +23,11 @@ function makeReply() {
 }
 
 function makeRequest(userId: string) {
-  return { body: { userId } } as FastifyRequest<{ Body: { userId?: string } }>
+  return { user: { id: userId } } as unknown as FastifyRequest
+}
+
+function makeRequestNoUser() {
+  return { user: null } as unknown as FastifyRequest
 }
 
 describe('quotaMiddleware', () => {
@@ -112,12 +116,11 @@ describe('quotaMiddleware', () => {
     expect(reply.status).not.toHaveBeenCalledWith(429)
   })
 
-  it('returns 400 when userId is missing', async () => {
-    const req = { body: {} } as FastifyRequest<{ Body: { userId?: string } }>
+  it('returns 401 when no authenticated user', async () => {
     const reply = makeReply()
-    await quotaMiddleware(req, reply)
+    await quotaMiddleware(makeRequestNoUser(), reply)
 
-    expect(reply.status).toHaveBeenCalledWith(400)
+    expect(reply.status).toHaveBeenCalledWith(401)
   })
 
   it('returns 404 when user does not exist', async () => {

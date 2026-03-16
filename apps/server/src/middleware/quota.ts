@@ -1,5 +1,6 @@
 import type { FastifyRequest, FastifyReply } from 'fastify'
 import { prisma } from '../db.js'
+import '../hooks/auth.js'
 
 export const FREE_MONTHLY_LIMIT = 3
 export const PRO_MONTHLY_LIMIT = 30
@@ -13,12 +14,12 @@ export const PRO_MONTHLY_LIMIT = 30
  * so concurrent requests cannot both sneak through the last available slot.
  */
 export async function quotaMiddleware(
-  request: FastifyRequest<{ Body: { userId?: string } }>,
+  request: FastifyRequest,
   reply: FastifyReply,
 ): Promise<void> {
-  const userId = request.body?.userId
+  const userId = (request as any).user?.id
   if (!userId) {
-    reply.status(400).send({ error: 'userId is required' })
+    reply.status(401).send({ error: 'Authentication required' })
     return
   }
 

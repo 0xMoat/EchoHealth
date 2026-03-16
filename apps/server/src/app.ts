@@ -7,11 +7,14 @@ import { uploadRoutes } from './routes/upload.js'
 import { quotaMiddleware } from './middleware/quota.js'
 import { userRoutes } from './routes/user.js'
 import { orderRoutes } from './routes/orders.js'
+import { authHook } from './hooks/auth.js'
 
 export async function buildApp() {
   const app = Fastify({ logger: true })
 
   await app.register(cors, { origin: true })
+
+  app.addHook('preHandler', authHook)
 
   app.get('/health', async () => ({ status: 'ok' }))
 
