@@ -9,7 +9,7 @@ interface TokenPayload {
 
 export function signToken(payload: TokenPayload, expiresIn: string = '7d'): string {
   if (!JWT_SECRET) throw new Error('JWT_SECRET not set')
-  return jwt.sign(payload, JWT_SECRET, { expiresIn })
+  return jwt.sign(payload, JWT_SECRET, { expiresIn: expiresIn as any })
 }
 
 export function verifyToken(token: string): TokenPayload {
