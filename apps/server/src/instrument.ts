@@ -3,7 +3,7 @@ import * as Sentry from '@sentry/node'
 Sentry.init({
   dsn: process.env.SENTRY_DSN,
   environment: process.env.NODE_ENV ?? 'development',
-  release: process.env.RAILWAY_GIT_COMMIT_SHA ?? 'local',
+  release: process.env.GIT_COMMIT_SHA ?? 'local',
   enabled: !!process.env.SENTRY_DSN,
   integrations: [Sentry.fastifyIntegration()],
   beforeSend(event) {

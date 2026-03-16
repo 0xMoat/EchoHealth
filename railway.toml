@@ -1,8 +1,0 @@
-[build]
-dockerfilePath = "Dockerfile"
-
-[deploy]
-startCommand = "npx prisma migrate deploy && node --import ./dist/instrument.js dist/index.js"
-healthcheckPath = "/health"
-healthcheckTimeout = 30
-restartPolicyType = "ON_FAILURE"
