@@ -63,6 +63,7 @@ model Order {
   amount        Int
   status        OrderStatus @default(PENDING)
   wxPayOrderId  String?     @unique
+  creemOrderId  String?     @unique
   paidAt        DateTime?
   createdAt     DateTime    @default(now())
   updatedAt     DateTime    @updatedAt
