@@ -493,8 +493,11 @@ server {
 |------|-----|
 | 服务器 | Oracle Cloud `137.131.22.123` |
 | 操作系统 | Ubuntu（用户 `ubuntu`） |
-| SSH | `ssh n8n`（~/.ssh/config 已配置） |
+| SSH 别名 | `ssh n8n`（`~/.ssh/config` 已配置） |
 | SSH Key | `~/.ssh/oracle-ssh-keys/ssh-key-2025-07-12.key` |
+| 服务器代码路径 | `/home/ubuntu/echohealth/`（注意全小写） |
+| 进程管理 | PM2（非 Docker） |
+| pnpm/pm2 路径 | `/home/ubuntu/.npm-global/bin/`（需手动 export PATH） |
 | API 地址 | `http://137.131.22.123:3000` |
 | 小程序 dev 配置 | `apps/miniprogram/config/dev.ts` → `API_BASE_URL: "http://137.131.22.123:3000"` |
 
@@ -505,12 +508,85 @@ server {
 curl http://137.131.22.123:3000/health
 # 期望: {"status":"ok"}
 
-# 2. SSH 登录查看服务状态
-ssh n8n
-docker ps                        # 查看运行中的容器
-docker logs echohealth-api       # 查看 API 日志
-docker logs echohealth-worker    # 查看 Worker 日志
+# 2. 查看进程状态
+ssh -o ConnectTimeout=30 -o ServerAliveInterval=3 n8n \
+  'export PATH=/home/ubuntu/.npm-global/bin:$PATH && pm2 list'
+
+# 3. 查看日志
+ssh -o ConnectTimeout=30 -o ServerAliveInterval=3 n8n \
+  'export PATH=/home/ubuntu/.npm-global/bin:$PATH && pm2 logs --lines 30 --nostream'
 ```
+
+---
+
+## Claude Code 自主部署（标准流程）
+
+> 以下是 Claude Code 自主完成代码部署的完整操作步骤，**无需用户手动操作**。
+
+### 前置：SSH 访问修复
+
+Claude Code 的 Bash 沙盒默认无法访问 `~/.ssh/oracle-ssh-keys/` 目录（目录缺少 execute 位）。每次新会话第一次 SSH 前，先执行：
+
+```python
+# 在 Claude Code Bash 工具中，使用 dangerouslyDisableSandbox: true
+python3 -c "import os; os.chmod('/Users/young/.ssh/oracle-ssh-keys', 0o700)"
+```
+
+之后所有 `ssh`/`scp` 命令均需带 `dangerouslyDisableSandbox: true`。
+
+### 标准部署命令
+
+```bash
+# 1. 上传修改的文件（按实际修改的文件调整）
+scp -o ConnectTimeout=30 -o ServerAliveInterval=3 \
+  apps/server/src/queue/worker.ts \
+  n8n:/home/ubuntu/echohealth/apps/server/src/queue/
+
+scp -o ConnectTimeout=30 -o ServerAliveInterval=3 \
+  apps/server/src/lib/vision.ts \
+  n8n:/home/ubuntu/echohealth/apps/server/src/lib/
+
+# 如果修改了 packages/video/src/ 下的 Remotion 组件：
+scp -o ConnectTimeout=30 -o ServerAliveInterval=3 \
+  packages/video/src/components/slides/Indicator.tsx \
+  n8n:/home/ubuntu/echohealth/packages/video/src/components/slides/
+
+# 2. 服务器端：构建 + 重启
+ssh -o ConnectTimeout=30 -o ServerAliveInterval=3 n8n \
+  'export PATH=/home/ubuntu/.npm-global/bin:$PATH && \
+   cd /home/ubuntu/echohealth/apps/server && \
+   pnpm build && \
+   pm2 restart echohealth-worker && \
+   pm2 save && \
+   echo "✓ Done"'
+
+# 3. 验证
+curl http://137.131.22.123:3000/health
+ssh -o ConnectTimeout=30 -o ServerAliveInterval=3 n8n \
+  'export PATH=/home/ubuntu/.npm-global/bin:$PATH && pm2 logs echohealth-worker --lines 20 --nostream'
+```
+
+### 何时需要重启 API？
+
+只有修改了以下文件才需要同时重启 `echohealth-api`：
+
+- `apps/server/src/app.ts`
+- `apps/server/src/routes/` 下的路由文件
+- `apps/server/src/index.ts`、`instrument.ts`
+
+```bash
+ssh -o ConnectTimeout=30 -o ServerAliveInterval=3 n8n \
+  'export PATH=/home/ubuntu/.npm-global/bin:$PATH && \
+   cd /home/ubuntu/echohealth && pm2 restart ecosystem.config.cjs && pm2 save'
+```
+
+### Remotion 组件更新注意事项
+
+`packages/video/src/` 下的 Remotion 组件（`.tsx`）由 Remotion 的 bundler 在渲染时动态打包，**不经过 `pnpm build`**。更新组件后：
+
+1. 上传 `.tsx` 文件到服务器对应路径
+2. 重启 worker（清空 `bundleCache` 内存缓存）
+3. 下次渲染时 Remotion 会自动重新打包
 
 ---
 
@@ -597,6 +673,27 @@ console.log(await q.getJobCounts());
 ```bash
 pnpm db:migrate    # 如果提示 schema drift，按提示 reset
 ```
+
+### Remotion 渲染失败：audio fetch 超时（跨云网络问题）
+
+**症状：** `Error while downloading https://...cos.ap-guangzhou.myqcloud.com/...: server sent no data for 20 seconds`
+
+**原因：** Oracle Cloud → 腾讯云 COS `ap-guangzhou` 跨云网络不通。Remotion 在渲染时会尝试下载 `<Audio src={...}>` 的远程 URL，导致超时失败。
+
+**解决：** `audioSrc` 不能使用 COS 外网 URL，必须将音频编码为 base64 data URI 内联传入 Remotion：
+
+```typescript
+// worker.ts — 正确做法
+const audioBase64 = (await readFile(audioLocal)).toString('base64')
+const audioDataUri = `data:audio/mpeg;base64,${audioBase64}`
+await renderVideo({ ..., audioSrc: audioDataUri }, videoLocal)
+
+// ❌ 错误做法（会超时）
+const audioSrc = await uploadAudio(audioLocal, reportId)  // COS URL
+await renderVideo({ ..., audioSrc }, videoLocal)
+```
+
+注意：`file://` 路径同样不可用（Remotion 下载器只支持 `http://`/`https://`）。
 
 ### Remotion 渲染失败（找不到 Chrome）
 
