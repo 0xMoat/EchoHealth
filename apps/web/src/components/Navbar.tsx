@@ -20,19 +20,19 @@ export default function Navbar() {
             <>
               <Link
                 href="/dashboard"
-                className="text-sm font-medium text-neutral-600 transition-colors hover:text-neutral-900"
+                className="rounded-md px-2 py-1 text-sm font-medium text-neutral-600 transition-colors hover:text-neutral-900 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-neutral-900 focus-visible:ring-offset-2"
               >
                 Dashboard
               </Link>
               <Link
                 href="/upload"
-                className="rounded-lg bg-neutral-900 px-4 py-2 text-sm font-medium text-white transition-colors hover:bg-neutral-700"
+                className="rounded-lg bg-neutral-900 px-4 py-2 text-sm font-medium text-white transition-colors hover:bg-neutral-700 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-neutral-900 focus-visible:ring-offset-2"
               >
                 New Report
               </Link>
               <button
                 onClick={() => logout()}
-                className="text-sm font-medium text-neutral-500 transition-colors hover:text-neutral-700"
+                className="rounded-md px-2 py-1 text-sm font-medium text-neutral-500 transition-colors hover:text-neutral-700 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-neutral-900 focus-visible:ring-offset-2"
               >
                 Sign out
               </button>
@@ -40,7 +40,7 @@ export default function Navbar() {
           ) : (
             <Link
               href="/login"
-              className="rounded-lg bg-neutral-900 px-4 py-2 text-sm font-medium text-white transition-colors hover:bg-neutral-700"
+              className="rounded-lg bg-neutral-900 px-4 py-2 text-sm font-medium text-white transition-colors hover:bg-neutral-700 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-neutral-900 focus-visible:ring-offset-2"
             >
               Sign in
             </Link>

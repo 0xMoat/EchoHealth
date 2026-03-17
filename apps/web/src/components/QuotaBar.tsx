@@ -10,14 +10,14 @@ export default function QuotaBar({ used, isPro }: QuotaBarProps) {
   const pct = Math.min((used / max) * 100, 100)
 
   return (
-    <div className="space-y-1">
+    <div className="space-y-1.5">
       <div className="flex justify-between text-sm text-neutral-600">
         <span>Monthly usage</span>
-        <span>{used} / {max}</span>
+        <span className="tabular-nums">{used}&nbsp;/&nbsp;{max}</span>
       </div>
       <div className="h-2 overflow-hidden rounded-full bg-neutral-200">
         <div
-          className="h-full rounded-full bg-neutral-900 transition-all"
+          className="h-full rounded-full bg-neutral-900 transition-[width] duration-500"
           style={{ width: `${pct}%` }}
         />
       </div>

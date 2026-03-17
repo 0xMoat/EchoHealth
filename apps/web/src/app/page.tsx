@@ -7,7 +7,7 @@ const steps = [
     title: 'Upload',
     description: 'Take a photo or upload a PDF of your health checkup report.',
     icon: (
-      <svg className="h-6 w-6" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor">
+      <svg className="h-6 w-6" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" aria-hidden="true">
         <path strokeLinecap="round" strokeLinejoin="round" d="M3 16.5v2.25A2.25 2.25 0 0 0 5.25 21h13.5A2.25 2.25 0 0 0 21 18.75V16.5m-13.5-9L12 3m0 0 4.5 4.5M12 3v13.5" />
       </svg>
     ),
@@ -17,7 +17,7 @@ const steps = [
     title: 'AI Analysis',
     description: 'Our AI reads every metric, flags anomalies, and prepares a clear breakdown.',
     icon: (
-      <svg className="h-6 w-6" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor">
+      <svg className="h-6 w-6" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" aria-hidden="true">
         <path strokeLinecap="round" strokeLinejoin="round" d="M9.75 3.104v5.714a2.25 2.25 0 0 1-.659 1.591L5 14.5M9.75 3.104c-.251.023-.501.05-.75.082m.75-.082a24.301 24.301 0 0 1 4.5 0m0 0v5.714c0 .597.237 1.17.659 1.591L19.8 15.3M14.25 3.104c.251.023.501.05.75.082M19.8 15.3l-1.57.393A9.065 9.065 0 0 1 12 15a9.065 9.065 0 0 0-6.23.693L5 14.5m14.8.8 1.402 1.402c1.232 1.232.65 3.318-1.067 3.611A48.309 48.309 0 0 1 12 21a48.25 48.25 0 0 1-8.135-.687c-1.718-.293-2.3-2.379-1.067-3.61L5 14.5" />
       </svg>
     ),
@@ -27,7 +27,7 @@ const steps = [
     title: 'Watch Video',
     description: 'Receive a personalized video that walks you through your results in plain language.',
     icon: (
-      <svg className="h-6 w-6" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor">
+      <svg className="h-6 w-6" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" aria-hidden="true">
         <path strokeLinecap="round" strokeLinejoin="round" d="M5.25 5.653c0-.856.917-1.398 1.667-.986l11.54 6.347a1.125 1.125 0 0 1 0 1.972l-11.54 6.347a1.125 1.125 0 0 1-1.667-.986V5.653Z" />
       </svg>
     ),
@@ -58,7 +58,7 @@ export default function Home() {
               </span>
             </div>
 
-            <h1 className="text-4xl font-bold leading-[1.1] tracking-tight text-neutral-900 sm:text-5xl lg:text-6xl">
+            <h1 className="text-4xl font-bold leading-[1.1] tracking-tight text-neutral-900 text-balance sm:text-5xl lg:text-6xl">
               Your Health Report,{' '}
               <span className="relative">
                 Explained in Video
@@ -74,16 +74,16 @@ export default function Home() {
             <div className="mt-10 flex flex-wrap items-center gap-4">
               <Link
                 href="/upload"
-                className="inline-flex items-center gap-2 rounded-lg bg-neutral-900 px-6 py-3 text-sm font-medium text-white shadow-lg shadow-neutral-900/10 transition-all hover:bg-neutral-700 hover:shadow-neutral-900/20"
+                className="inline-flex items-center gap-2 rounded-lg bg-neutral-900 px-6 py-3 text-sm font-medium text-white shadow-lg shadow-neutral-900/10 transition-[background-color,box-shadow] hover:bg-neutral-700 hover:shadow-neutral-900/20 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-neutral-900 focus-visible:ring-offset-2"
               >
                 Try it free
-                <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor">
+                <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor" aria-hidden="true">
                   <path strokeLinecap="round" strokeLinejoin="round" d="M13.5 4.5 21 12m0 0-7.5 7.5M21 12H3" />
                 </svg>
               </Link>
               <a
                 href="#how-it-works"
-                className="inline-flex items-center gap-2 rounded-lg border border-neutral-200 bg-white px-6 py-3 text-sm font-medium text-neutral-700 transition-all hover:border-neutral-300 hover:bg-neutral-50"
+                className="inline-flex items-center gap-2 rounded-lg border border-neutral-200 bg-white px-6 py-3 text-sm font-medium text-neutral-700 transition-[border-color,background-color] hover:border-neutral-300 hover:bg-neutral-50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-neutral-900 focus-visible:ring-offset-2"
               >
                 How it works
               </a>
@@ -98,7 +98,7 @@ export default function Home() {
               <div className="absolute inset-12 rounded-full border border-neutral-200/50" />
               <div className="absolute inset-[4.5rem] rounded-full bg-neutral-100" />
               <div className="absolute inset-0 flex items-center justify-center">
-                <svg className="h-10 w-10 text-neutral-400" fill="none" viewBox="0 0 24 24" strokeWidth={1} stroke="currentColor">
+                <svg className="h-10 w-10 text-neutral-400" fill="none" viewBox="0 0 24 24" strokeWidth={1} stroke="currentColor" aria-hidden="true">
                   <path strokeLinecap="round" strokeLinejoin="round" d="M5.25 5.653c0-.856.917-1.398 1.667-.986l11.54 6.347a1.125 1.125 0 0 1 0 1.972l-11.54 6.347a1.125 1.125 0 0 1-1.667-.986V5.653Z" />
                 </svg>
               </div>
@@ -114,7 +114,7 @@ export default function Home() {
             <span className="text-xs font-medium uppercase tracking-widest text-neutral-500">
               How it works
             </span>
-            <h2 className="mt-3 text-3xl font-bold tracking-tight text-neutral-900 sm:text-4xl">
+            <h2 className="mt-3 text-3xl font-bold tracking-tight text-neutral-900 text-balance sm:text-4xl">
               Three simple steps
             </h2>
             <p className="mt-4 text-base leading-relaxed text-neutral-600">
@@ -126,7 +126,7 @@ export default function Home() {
             {steps.map((step) => (
               <div
                 key={step.number}
-                className="group relative rounded-2xl border border-neutral-200 bg-white p-8 transition-all hover:border-neutral-300 hover:shadow-sm"
+                className="group relative rounded-2xl border border-neutral-200 bg-white p-8 transition-[border-color,box-shadow] hover:border-neutral-300 hover:shadow-sm"
               >
                 <div className="mb-6 flex items-center justify-between">
                   <div className="flex h-11 w-11 items-center justify-center rounded-xl bg-neutral-100 text-neutral-700 transition-colors group-hover:bg-neutral-900 group-hover:text-white">

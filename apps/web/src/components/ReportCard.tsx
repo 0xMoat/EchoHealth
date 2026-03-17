@@ -2,20 +2,22 @@ import Link from 'next/link'
 import type { Report } from '@/types'
 import StatusBadge from './StatusBadge'
 
+const dateFormatter = new Intl.DateTimeFormat(undefined, {
+  month: 'short',
+  day: 'numeric',
+  year: 'numeric',
+})
+
 export default function ReportCard({ report }: { report: Report }) {
-  const date = new Date(report.createdAt).toLocaleDateString('en-US', {
-    month: 'short',
-    day: 'numeric',
-    year: 'numeric',
-  })
+  const date = dateFormatter.format(new Date(report.createdAt))
 
   return (
     <Link
       href={`/result/${report.id}`}
-      className="group block rounded-xl border border-neutral-200 p-5 transition-all hover:border-neutral-300 hover:shadow-sm"
+      className="group block rounded-xl border border-neutral-200 p-5 transition-[border-color,box-shadow] hover:border-neutral-300 hover:shadow-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-neutral-900 focus-visible:ring-offset-2"
     >
       <div className="flex items-start justify-between">
-        <div className="space-y-1">
+        <div className="min-w-0 flex-1 space-y-1">
           <p className="font-medium text-neutral-900 group-hover:text-neutral-700">
             {report.type === 'GENERAL' ? 'Health Report' : report.type.replace(/_/g, ' ').toLowerCase().replace(/\b\w/g, c => c.toUpperCase())}
           </p>

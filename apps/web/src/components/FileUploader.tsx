@@ -50,7 +50,7 @@ export default function FileUploader({ files, onChange, maxFiles, accept }: File
           className="hidden"
           onChange={(e) => e.target.files && handleFiles(e.target.files)}
         />
-        <svg className="h-10 w-10 text-neutral-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
+        <svg className="h-10 w-10 text-neutral-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5} aria-hidden="true">
           <path strokeLinecap="round" strokeLinejoin="round" d="M12 16.5V9.75m0 0l3 3m-3-3l-3 3M6.75 19.5a4.5 4.5 0 01-1.41-8.775 5.25 5.25 0 0110.338-2.32 3 3 0 013.4 3.178A3.38 3.38 0 0118 15.75" />
         </svg>
         <p className="mt-3 text-sm text-neutral-600">
@@ -72,9 +72,10 @@ export default function FileUploader({ files, onChange, maxFiles, accept }: File
               <button
                 type="button"
                 onClick={() => removeFile(i)}
-                className="ml-4 text-neutral-400 transition-colors hover:text-red-600"
+                aria-label={`Remove ${file.name}`}
+                className="ml-4 rounded-md text-neutral-400 transition-colors hover:text-red-600 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-neutral-900 focus-visible:ring-offset-2"
               >
-                <svg className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
+                <svg className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5} aria-hidden="true">
                   <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
                 </svg>
               </button>
