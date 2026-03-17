@@ -10,6 +10,7 @@ export interface User {
   isPro: boolean
   usedThisMonth: number
   proExpireAt: string | null
+  usageResetAt: string | null
 }
 
 export interface Video {
