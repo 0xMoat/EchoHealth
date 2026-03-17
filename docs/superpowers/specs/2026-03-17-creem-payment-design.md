@@ -63,11 +63,14 @@ EchoHealth Web 端面向海外华人市场（欧美为主），需要集成 Cree
 - 当额度耗尽时，替换拖拽上传区域为拦截卡片
 - 展示：`🔒 You've used all 3 free reports`
 - 两个 CTA：`Subscribe $4.99/mo`（主） + `$7.99 Pass`（次）
-- 底部显示下次重置时间
+- 底部显示下次重置时间（来自 `/auth/me` 返回的 `usageResetAt` 字段）
 
 ### 3.5 Dashboard 升级成功提示
 - 支付完成跳转 `/dashboard?upgraded=true`
-- 显示 Toast：`🎉 Welcome to Pro! You now have 30 reports/month.`
+- 前端轮询 `/api/saas/auth/me`，最多 5 次（每次间隔 2s）
+- **Toast 仅在轮询确认 `isPro=true` 后显示**（防止直接访问 URL 伪造成功状态）
+- Toast 内容：`🎉 Welcome to Pro! You now have 30 reports/month.`
+- 轮询超时（10s）后回退显示：`Payment received — your Pro access will activate shortly.`
 
 ---
 
@@ -104,15 +107,21 @@ src/
 ### 5.1 新增路由：`routes/saas/creem.ts`
 
 ```
-GET  /api/saas/creem/checkout?plan=monthly|pass
+POST /api/saas/creem/checkout
+     → body: { plan: "monthly" | "pass" }
      → 需要登录（authHook）
      → 调用 Creem API 创建 checkout session
      → 返回 { checkoutUrl: string }
+     注意：创建 checkout session 是状态变更操作，用 POST 不用 GET，
+     防止 prefetcher/爬虫意外触发
 
 POST /api/saas/creem/webhook
      → 不走 authHook（Creem 直接调用）
-     → 验证 Creem 签名（HMAC）
-     → 根据事件类型更新数据库
+     → 必须捕获 rawBody（Buffer）用于 HMAC 验签，需注册
+       @fastify/rawbody 插件，webhook 路由使用 config: { rawBody: true }
+     → verifyWebhookSignature(rawBody: Buffer, signature: string) → boolean
+     → 验签失败立即返回 400
+     → 根据事件类型更新数据库（含幂等检查，见 5.3）
 ```
 
 ### 5.2 新增文件：`lib/creem.ts`
@@ -124,13 +133,18 @@ Creem SDK 封装：
 
 ### 5.3 Webhook 事件处理
 
+**幂等性要求（必须实现）**：Creem 会在服务器未返回 2xx 时自动重试，所有写库操作必须做幂等去重：
+- 一次性购买：以 `creemOrderId` 为唯一键做 `upsert`，而非 `create`
+- 订阅事件：以 `creemSubscriptionId` 为唯一键做 `upsert`，而非 `create`
+
 | 事件 | 处理逻辑 |
 |------|----------|
-| `checkout.completed`（一次性） | `isPro=true`, `proExpireAt=+30天`, 创建 Order 记录 |
-| `subscription.active` | `isPro=true`, `proExpireAt=currentPeriodEnd`, upsert Subscription |
-| `subscription.renewed` | 更新 `proExpireAt=newPeriodEnd`, Subscription.currentPeriodEnd |
-| `subscription.cancelled` | `Subscription.status=CANCELLED`（isPro 不变，到期自动降级） |
-| `subscription.expired` | `isPro=false`, Subscription.status=EXPIRED |
+| `checkout.completed`（一次性） | 以 `creemOrderId` upsert Order；`isPro=true`, `proExpireAt=+30天` |
+| `subscription.active` | 以 `creemSubscriptionId` upsert Subscription；`isPro=true`, `proExpireAt=currentPeriodEnd` |
+| `subscription.renewed` | 以 `creemSubscriptionId` 更新 `proExpireAt=newPeriodEnd`, `Subscription.currentPeriodEnd` |
+| `subscription.cancelled` | `Subscription.status=CANCELLED`（`isPro` 不变，quota 中间件在 `proExpireAt` 过期时自动降级） |
+
+**关于 `subscription.expired` 事件**：不依赖此事件。Creem 可能不可靠地触发它，且现有 `quota.ts` 中间件已在每次请求时检查 `proExpireAt < now` 并将 `isPro` 降级，这是更可靠的过期检测机制。若收到此事件，仅更新 `Subscription.status=EXPIRED` 即可，不额外处理 `isPro`。
 
 ### 5.4 数据库变更（Prisma）
 
@@ -138,16 +152,29 @@ Order 表新增可选字段：
 ```prisma
 model Order {
   // ...existing fields...
-  creemOrderId  String?   // Creem checkout session ID
+  creemOrderId  String?   @unique  // Creem checkout session ID，唯一约束用于幂等去重
 }
 ```
 
 Subscription 表已有 `creemSubscriptionId` 和 `provider` 字段，无需变更。
 
+**`constants.ts` 目标值**（实现时以此为准，覆盖现有 pro 限制）：
+```typescript
+FREE:  { images: 3,  pdfPages: 3,  fileSize: 5,  pdfSize: 10, monthly: 3  }
+PRO:   { images: 10, pdfPages: 20, fileSize: 20, pdfSize: 20, monthly: 30 }
+// 新增定价常量
+PRO_MONTHLY_PRICE = 4.99   // USD
+PASS_PRICE        = 7.99   // USD
+PASS_DAYS         = 30
+```
+
 ### 5.5 路由注册（`app.ts`）
 
 ```typescript
-// creem webhook 必须在 rawBody 中间件之前注册，且不走 authHook
+// 1. 先注册 @fastify/rawbody 插件（webhook 路由需要）
+await app.register(import('@fastify/rawbody'))
+
+// 2. 注册 creem 路由，webhook 子路由不走 authHook
 app.register(creemRoutes, { prefix: '/api/saas/creem' })
 ```
 
@@ -157,16 +184,19 @@ app.register(creemRoutes, { prefix: '/api/saas/creem' })
 
 ```
 用户点击升级按钮
-  → GET /api/saas/creem/checkout?plan=monthly
+  → POST /api/saas/creem/checkout { plan: "monthly" }
   → 后端创建 Creem Checkout Session（携带 userId metadata + successUrl）
   → 前端重定向到 Creem 托管结账页
   → 用户在 Creem 完成支付
   → Creem Webhook → POST /api/saas/creem/webhook → 更新数据库
   → Creem 跳转 successUrl: /dashboard?upgraded=true
-  → 前端刷新用户状态，显示成功 Toast
+  → 前端轮询 /api/saas/auth/me（最多 5 次，每次间隔 2s）直到 isPro=true
+  → 确认 isPro=true 后显示 Toast：🎉 Welcome to Pro!
 ```
 
-**注意**：`isPro` 状态更新依赖 Webhook，可能有 1–5 秒延迟。前端在 `/dashboard?upgraded=true` 时轮询 `/api/saas/auth/me` 最多 3 次（每次 2 秒），直到 `isPro=true`。
+**升级成功 Toast 触发条件**：`?upgraded=true` query param 存在时开始轮询，Toast 仅在轮询确认 `isPro=true` 后显示，不在跳转后立即显示（防止伪造）。轮询超时（10 秒）后显示"支付成功，权益将在几分钟内生效"提示。
+
+**`/api/saas/auth/me` 响应需包含 `usageResetAt`**：上传拦截卡片需要显示下次额度重置时间，`/auth/me` 的 select 字段需包含 `usageResetAt`。
 
 ---
 
