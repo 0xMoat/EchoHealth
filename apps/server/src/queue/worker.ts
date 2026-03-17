@@ -1,6 +1,6 @@
 import { Worker, Job } from 'bullmq'
 import * as Sentry from '@sentry/node'
-import { mkdir, rm } from 'fs/promises'
+import { mkdir, rm, readFile } from 'fs/promises'
 import { tmpdir } from 'os'
 import path from 'path'
 import { prisma } from '../db.js'
@@ -8,9 +8,10 @@ import { ocrReportImage, parseOcrText } from '../pipeline/ocr.js'
 import { buildVideoScript } from '../pipeline/llm.js'
 import { generateAudio } from '../pipeline/tts.js'
 import { renderVideo } from '../pipeline/render.js'
-import { uploadVideo, uploadAudio } from '../pipeline/upload.js'
-import { extractIndicatorsFromImages, extractIndicatorsFromPdf } from '../lib/vision.js'
+import { uploadVideo } from '../pipeline/upload.js'
+import { generateScriptFromImages, generateScriptFromPdf } from '../lib/vision.js'
 import { resizeImageForVision } from '../lib/image.js'
+import { getLangfuse } from '../lib/observability.js'
 import { getConnection } from './index.js'
 import type { VideoScript } from '../pipeline/llm.js'
 import type { Indicator } from '../pipeline/ocr.js'
@@ -78,78 +79,99 @@ async function fetchAsBuffer(url: string): Promise<Buffer> {
   return Buffer.from(buf)
 }
 
+/**
+ * Returns a step timer. Call `done(detail?)` to log elapsed time.
+ * Output: [rid] ✓ step-name      1234ms · optional detail
+ */
+function makeTimer(rid: string) {
+  return function step(name: string) {
+    const t = Date.now()
+    return (detail = '') => {
+      const ms = Date.now() - t
+      const suffix = detail ? ` · ${detail}` : ''
+      console.log(`[${rid}] ✓ ${name.padEnd(18)} ${ms}ms${suffix}`)
+    }
+  }
+}
+
 export async function runPipeline(job: Job<VideoJobData>): Promise<void> {
   const { reportId } = job.data
+  const rid = reportId.slice(-8)
+  const step = makeTimer(rid)
+
+  console.log(`[${rid}] ── pipeline start  reportId=${reportId}`)
 
   // ── 1. Load report ──────────────────────────────────────────────────────────
+  let done = step('load-report')
   const report = await prisma.report.findUniqueOrThrow({
     where: { id: reportId },
     include: { user: true },
   })
+  done(`source=${report.source} type=${report.type} lang=${report.language}`)
 
   // ── 2. Mark as PROCESSING ───────────────────────────────────────────────────
-  await prisma.report.update({
-    where: { id: reportId },
-    data: { status: 'PROCESSING' },
-  })
+  done = step('mark-processing')
+  await prisma.report.update({ where: { id: reportId }, data: { status: 'PROCESSING' } })
   await job.updateProgress(5)
+  done()
+
+  // Init Langfuse trace (no-op if keys not set)
+  const lf = getLangfuse()
+  lf?.trace({
+    id: reportId,
+    name: 'video-generation-pipeline',
+    metadata: {
+      source: report.source,
+      inputType: report.inputType,
+      reportType: report.type,
+      language: report.language,
+      userId: report.userId,
+    },
+  })
 
   const tmpDir = path.join(tmpdir(), 'echohealth', reportId)
   await mkdir(tmpDir, { recursive: true })
 
   try {
-    // Resolve language: lowercase for downstream consumers
-    let language: string = (report.language as string || 'zh').toLowerCase()
-    if (language === 'auto') language = 'zh' // default; may be overwritten by vision detection
+    let language: string = ((report.language as string) || 'zh').toLowerCase()
+    if (language === 'auto') language = 'zh'
 
-    // ── 3. OCR / Vision ───────────────────────────────────────────────────────
-    let indicators = report.indicators as Indicator[] | null
-    if (!indicators) {
-      if (report.source === 'WEB') {
-        // ── Web path: LLM Vision via Gemini ──
-        const reportLang = (report.language as string) || 'AUTO'
+    // ── 3+4. Vision + Script ──────────────────────────────────────────────────
+    let script: VideoScript
 
-        if (report.inputType === 'PDF') {
-          const pdfBuffer = await fetchAsBuffer(report.photoUrls[0])
-          const visionResult = await extractIndicatorsFromPdf(pdfBuffer, reportLang)
-          indicators = visionResult.indicators.map((vi) => ({
-            name: vi.name,
-            code: vi.name.toUpperCase().replace(/\s+/g, '_'),
-            value: vi.value,
-            unit: vi.unit,
-            referenceRange: vi.referenceRange,
-            status: vi.status,
-          }))
-          if (reportLang === 'AUTO') language = visionResult.language
-        } else {
-          // IMAGE input
-          const rawBuffers = await Promise.all(report.photoUrls.map(fetchAsBuffer))
-          const resizedBuffers = await Promise.all(rawBuffers.map(resizeImageForVision))
-          const visionResult = await extractIndicatorsFromImages(resizedBuffers, reportLang)
-          indicators = visionResult.indicators.map((vi) => ({
-            name: vi.name,
-            code: vi.name.toUpperCase().replace(/\s+/g, '_'),
-            value: vi.value,
-            unit: vi.unit,
-            referenceRange: vi.referenceRange,
-            status: vi.status,
-          }))
-          if (reportLang === 'AUTO') language = visionResult.language
-        }
+    if (report.source === 'WEB') {
+      const reportLang = (report.language as string) || 'AUTO'
+      const senderName = report.user.nickname ?? '家人'
 
-        // Persist detected language if it was AUTO
-        const updateData: Record<string, unknown> = {
-          indicators: indicators as unknown as Prisma.InputJsonValue,
-        }
-        if ((report.language as string) === 'AUTO') {
-          updateData.language = language.toUpperCase()
-        }
-        await prisma.report.update({
-          where: { id: reportId },
-          data: updateData,
-        })
+      let result
+      if (report.inputType === 'PDF') {
+        done = step('pdf-extract+script')
+        const pdfBuffer = await fetchAsBuffer(report.photoUrls[0])
+        result = await generateScriptFromPdf(pdfBuffer, reportLang, report.type as string, senderName, reportId)
+        done(`lang=${result.detectedLanguage} indicators=${result.script.details.length}`)
       } else {
-        // ── Miniprogram path: Tencent OCR (unchanged) ──
+        done = step('vision+script')
+        const rawBuffers = await Promise.all(report.photoUrls.map(fetchAsBuffer))
+        const resizedBuffers = await Promise.all(rawBuffers.map(resizeImageForVision))
+        result = await generateScriptFromImages(resizedBuffers, reportLang, report.type as string, senderName, reportId)
+        done(`lang=${result.detectedLanguage} indicators=${result.script.details.length} images=${resizedBuffers.length}`)
+      }
+
+      script = result.script
+      if (reportLang === 'AUTO') language = result.detectedLanguage
+
+      await prisma.report.update({
+        where: { id: reportId },
+        data: {
+          script: script as unknown as Prisma.InputJsonValue,
+          ...(reportLang === 'AUTO' && { language: language.toUpperCase() as any }),
+        },
+      })
+    } else {
+      // ── Miniprogram path: Tencent OCR → Groq LLM ─────────────────────────────
+      let indicators = report.indicators as Indicator[] | null
+      if (!indicators) {
+        done = step('ocr')
         const texts: string[] = []
         for (const photoUrl of report.photoUrls) {
           const base64 = await fetchImageAsBase64(photoUrl)
@@ -157,6 +179,7 @@ export async function runPipeline(job: Job<VideoJobData>): Promise<void> {
         }
         const rawText = texts.join('\n')
         indicators = parseOcrText(rawText)
+        done(`indicators=${indicators.length}`)
         await prisma.report.update({
           where: { id: reportId },
           data: {
@@ -165,69 +188,72 @@ export async function runPipeline(job: Job<VideoJobData>): Promise<void> {
           },
         })
       }
-    }
-    await job.updateProgress(20)
 
-    // ── 4. LLM script ─────────────────────────────────────────────────────────
-    const script = await buildVideoScript({
-      indicators,
-      reportType: report.type as ReportType,
-      senderName: report.user.nickname ?? '家人',
-      language,
-    })
-    await prisma.report.update({
-      where: { id: reportId },
-      data: { script: script as unknown as Prisma.InputJsonValue },
-    })
+      done = step('llm-script')
+      script = await buildVideoScript({
+        indicators,
+        reportType: report.type as ReportType,
+        senderName: report.user.nickname ?? '家人',
+        language,
+      })
+      done(`details=${script.details.length}`)
+      await prisma.report.update({
+        where: { id: reportId },
+        data: { script: script as unknown as Prisma.InputJsonValue },
+      })
+    }
     await job.updateProgress(40)
 
-    // ── 5. TTS → upload audio ─────────────────────────────────────────────────
+    // ── 5. TTS (local only, no COS upload needed before render) ──────────────
+    done = step('tts')
     const narration = buildNarrationText(script, language)
     const audioLocal = path.join(tmpDir, 'narration.mp3')
     await generateAudio(narration, audioLocal, undefined, language)
-    const audioSrc = await uploadAudio(audioLocal, reportId)
+    const audioBase64 = (await readFile(audioLocal)).toString('base64')
+    const audioDataUri = `data:audio/mpeg;base64,${audioBase64}`
+    done(`chars=${narration.length} lang=${language}`)
     await job.updateProgress(60)
 
-    // ── 6. Render video ───────────────────────────────────────────────────────
+    // ── 6. Render video (embed audio as data URI — avoids cross-cloud fetch) ──
+    done = step('video-render')
     const videoLocal = path.join(tmpDir, 'output.mp4')
-    const renderReportType = report.type === 'GENERAL' ? 'PHYSICAL_EXAM' : report.type
+    const renderReportType = (report.type as string) === 'GENERAL' ? 'PHYSICAL_EXAM' : report.type
     await renderVideo(
       {
         script,
         reportType: renderReportType as 'BLOOD_ROUTINE' | 'BIOCHEMISTRY' | 'PHYSICAL_EXAM',
         senderName: report.user.nickname ?? '家人',
-        audioSrc,
+        audioSrc: audioDataUri,
       },
       videoLocal,
     )
+    done()
     await job.updateProgress(85)
 
     // ── 7. Upload video ───────────────────────────────────────────────────────
+    done = step('upload-video')
     const cosUrl = await uploadVideo(videoLocal, reportId)
+    done()
     await job.updateProgress(95)
 
     // ── 8. Persist result ─────────────────────────────────────────────────────
+    done = step('persist')
     const duration = computeDurationSeconds(script.details.length)
     await prisma.$transaction([
       prisma.video.create({ data: { reportId, cosUrl, duration } }),
-      prisma.report.update({
-        where: { id: reportId },
-        data: { status: 'COMPLETED' },
-      }),
+      prisma.report.update({ where: { id: reportId }, data: { status: 'COMPLETED' } }),
     ])
+    done(`duration=${duration}s cosUrl=${cosUrl.slice(0, 40)}...`)
     await job.updateProgress(100)
+
+    console.log(`[${rid}] ── pipeline done`)
   } catch (err) {
+    const msg = err instanceof Error ? err.message : String(err)
+    console.error(`[${rid}] ✗ pipeline failed: ${msg}`)
     Sentry.captureException(err, { tags: { reportId } })
-    // Mark report as FAILED and preserve the error message
     await prisma.report
-      .update({
-        where: { id: reportId },
-        data: {
-          status: 'FAILED',
-          errorMsg: err instanceof Error ? err.message : String(err),
-        },
-      })
-      .catch(() => {}) // don't shadow the original error
+      .update({ where: { id: reportId }, data: { status: 'FAILED', errorMsg: msg } })
+      .catch(() => {})
     throw err
   } finally {
     await rm(tmpDir, { recursive: true, force: true }).catch(() => {})
