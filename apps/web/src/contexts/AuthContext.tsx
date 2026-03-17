@@ -42,7 +42,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   }
 
   const logout = async () => {
-    await apiFetch('/api/saas/auth/logout', { method: 'POST' })
+    await apiFetch('/api/saas/auth/logout', { method: 'POST', body: '{}' })
     setUser(null)
   }
 

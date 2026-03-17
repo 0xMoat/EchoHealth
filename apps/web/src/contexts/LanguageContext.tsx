@@ -1,21 +1,22 @@
 'use client'
 
 import React, { createContext, useContext, useEffect, useState } from 'react'
-import en from '../lib/translations/en'
+import en, { type TranslationKey } from '../lib/translations/en'
 import zh from '../lib/translations/zh'
 
 type Lang = 'en' | 'zh'
+type Translations = Record<TranslationKey, string>
 
 interface LanguageContextValue {
   lang: Lang
   setLang: (lang: Lang) => void
-  t: typeof en
+  t: Translations
 }
 
 const LanguageContext = createContext<LanguageContextValue>({
   lang: 'en',
   setLang: () => {},
-  t: en,
+  t: en as Translations,
 })
 
 function detectLang(): Lang {
@@ -39,7 +40,7 @@ export function LanguageProvider({ children }: { children: React.ReactNode }) {
     localStorage.setItem('lang', l)
   }
 
-  const t = lang === 'zh' ? zh : en
+  const t = (lang === 'zh' ? zh : en) as Translations
 
   return (
     <LanguageContext.Provider value={{ lang, setLang, t }}>

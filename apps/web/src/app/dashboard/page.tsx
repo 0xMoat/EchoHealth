@@ -1,6 +1,6 @@
 'use client'
 
-import { useEffect, useState } from 'react'
+import { Suspense, useEffect, useState } from 'react'
 import { useRouter, useSearchParams } from 'next/navigation'
 import Link from 'next/link'
 import { useAuth } from '@/contexts/AuthContext'
@@ -10,11 +10,54 @@ import QuotaBar from '@/components/QuotaBar'
 import ReportCard from '@/components/ReportCard'
 import type { Report } from '@/types'
 
-export default function DashboardPage() {
-  const { user, loading, refresh } = useAuth()
-  const router = useRouter()
-  const t = useT()
+// Inner component that uses useSearchParams (must be wrapped in Suspense)
+function UpgradeChecker({ onToast }: { onToast: (msg: string) => void }) {
   const searchParams = useSearchParams()
+  const t = useT()
+  const { refresh } = useAuth()
+
+  useEffect(() => {
+    if (!searchParams.get('upgraded')) return
+
+    // Clean the URL immediately
+    window.history.replaceState({}, '', '/dashboard')
+
+    const MAX_ATTEMPTS = 5
+    const INTERVAL_MS = 2000
+
+    const pollRaw = async (): Promise<boolean> => {
+      try {
+        const data = await apiFetch<{ isPro: boolean }>('/api/saas/auth/me')
+        if (data.isPro) {
+          await refresh() // update global auth state
+          onToast(t.welcomePro)
+          return true
+        }
+      } catch { /* ignore */ }
+      return false
+    }
+
+    const run = async () => {
+      for (let i = 0; i < MAX_ATTEMPTS; i++) {
+        const done = await pollRaw()
+        if (done) return
+        if (i < MAX_ATTEMPTS - 1) {
+          await new Promise(resolve => setTimeout(resolve, INTERVAL_MS))
+        }
+      }
+      // Timeout — show pending message
+      onToast(t.paymentPending)
+    }
+
+    run()
+  }, []) // eslint-disable-line react-hooks/exhaustive-deps
+
+  return null
+}
+
+export default function DashboardPage() {
+  const { user, loading } = useAuth()
+  const router = useRouter()
   const [reports, setReports] = useState<Report[]>([])
   const [reportsLoading, setReportsLoading] = useState(true)
   const [toast, setToast] = useState<string | null>(null)
@@ -44,43 +87,6 @@ export default function DashboardPage() {
     return () => { cancelled = true }
   }, [user])
 
-  // Poll for isPro after Creem redirects back with ?upgraded=true
-  useEffect(() => {
-    if (!searchParams.get('upgraded')) return
-
-    // Clean the URL immediately
-    window.history.replaceState({}, '', '/dashboard')
-
-    const MAX_ATTEMPTS = 5
-    const INTERVAL_MS = 2000
-
-    const pollRaw = async (): Promise<boolean> => {
-      try {
-        const data = await apiFetch<{ isPro: boolean }>('/api/saas/auth/me')
-        if (data.isPro) {
-          await refresh() // update global auth state
-          setToast(t.welcomePro)
-          return true
-        }
-      } catch { /* ignore */ }
-      return false
-    }
-
-    const run = async () => {
-      for (let i = 0; i < MAX_ATTEMPTS; i++) {
-        const done = await pollRaw()
-        if (done) return
-        if (i < MAX_ATTEMPTS - 1) {
-          await new Promise(resolve => setTimeout(resolve, INTERVAL_MS))
-        }
-      }
-      // Timeout — show pending message
-      setToast(t.paymentPending)
-    }
-
-    run()
-  }, []) // eslint-disable-line react-hooks/exhaustive-deps
-
   // Auto-dismiss toast after 6 seconds
   useEffect(() => {
     if (!toast) return
@@ -103,6 +109,10 @@ export default function DashboardPage() {
 
   return (
     <>
+    {/* Suspense boundary for useSearchParams */}
+    <Suspense fallback={null}>
+      <UpgradeChecker onToast={setToast} />
+    </Suspense>
     <main className="mx-auto min-h-[calc(100vh-4rem)] max-w-5xl px-6 py-10">
       {/* Header */}
       <div className="mb-8 flex flex-col gap-6 sm:flex-row sm:items-end sm:justify-between">
