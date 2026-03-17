@@ -230,7 +230,7 @@ WEB_BASE_URL=https://echohealth.example.com   # 支付成功/取消跳转基础 
 | `src/components/QuotaBar.tsx` | 修改 | 额度耗尽时显示升级 CTA |
 | `src/app/upload/page.tsx` | 修改 | 额度耗尽时替换为拦截卡片 |
 | `src/app/dashboard/page.tsx` | 修改 | `?upgraded=true` 显示成功 Toast + 轮询 |
-| `src/lib/constants.ts` | 修改 | 添加 `PRO_MONTHLY_PRICE`、`PASS_PRICE` 常量 |
+| `src/lib/constants.ts` | 修改 | 添加 `PRO_MONTHLY_PRICE`、`PASS_PRICE`、`PASS_DAYS` 常量；**更新现有 `pro` 限制**：images 5→10、pdfPages 5→20、fileSize 10→20 |
 
 ### 后端（`apps/server/`）
 
@@ -238,7 +238,8 @@ WEB_BASE_URL=https://echohealth.example.com   # 支付成功/取消跳转基础 
 |------|------|------|
 | `src/routes/saas/creem.ts` | 新增 | checkout + webhook 路由 |
 | `src/lib/creem.ts` | 新增 | Creem SDK 封装 |
-| `src/app.ts` | 修改 | 注册 creem 路由 |
+| `src/app.ts` | 修改 | 注册 `@fastify/rawbody` 插件 + creem 路由 |
+| `src/routes/saas/auth.ts` | 修改 | `/auth/me` select 字段增加 `usageResetAt`（上传拦截卡片显示重置时间需要） |
 | `prisma/schema.prisma` | 修改 | Order 添加 `creemOrderId` 字段 |
 | `prisma/migrations/` | 新增 | 对应 migration 文件 |
 
