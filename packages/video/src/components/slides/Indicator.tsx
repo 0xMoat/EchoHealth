@@ -15,16 +15,18 @@ type Props = {
   total: number;
 };
 
-const STATUS_CONFIG = {
+const STATUS_CONFIG: Record<string, { color: string; bg: string; icon: string }> = {
   normal: { color: COLORS.normal, bg: COLORS.normalBg, icon: "✓" },
   high: { color: COLORS.high, bg: COLORS.highBg, icon: "↑" },
   low: { color: COLORS.low, bg: COLORS.lowBg, icon: "↓" },
 };
 
+const FALLBACK_CFG = STATUS_CONFIG.normal;
+
 export const Indicator: React.FC<Props> = ({ detail, index, total }) => {
   const frame = useCurrentFrame();
   const { fps } = useVideoConfig();
-  const cfg = STATUS_CONFIG[detail.status];
+  const cfg = STATUS_CONFIG[detail.status] ?? FALLBACK_CFG;
 
   // Header badge: scale spring entrance
   const badgeScale = spring({ frame, fps, config: { damping: 12, stiffness: 120 } });
