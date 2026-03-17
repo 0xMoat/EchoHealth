@@ -13,6 +13,8 @@ import multipart from '@fastify/multipart'
 import saasAuthRoutes from './routes/saas/auth.js'
 import saasUploadRoutes from './routes/saas/upload.js'
 import saasReportRoutes from './routes/saas/reports.js'
+import rawBody from 'fastify-raw-body'
+import creemRoutes from './routes/saas/creem.js'
 
 export async function buildApp() {
   const app = Fastify({ logger: true })
@@ -26,6 +28,8 @@ export async function buildApp() {
     credentials: true,
   })
 
+  await app.register(rawBody)
+
   await app.register(rateLimit, {
     max: 100,
     timeWindow: '1 minute',
@@ -34,6 +38,8 @@ export async function buildApp() {
   // Origin header validation for non-GET routes (CSRF protection)
   app.addHook('preHandler', async (request, reply) => {
     if (request.method !== 'GET' && request.method !== 'HEAD' && request.method !== 'OPTIONS') {
+      // Skip CSRF check for Creem webhook (external POST from Creem servers)
+      if (request.url === '/api/saas/creem/webhook') return
       const origin = request.headers.origin
       if (ALLOWED_ORIGINS !== true && origin && !(ALLOWED_ORIGINS as string[]).includes(origin)) {
         return reply.status(403).send({ error: 'Forbidden origin' })
@@ -65,6 +71,7 @@ export async function buildApp() {
   await app.register(multipart, { limits: { fileSize: 20_000_000 } })
   await app.register(saasUploadRoutes, { prefix: '/api/saas' })
   await app.register(saasReportRoutes, { prefix: '/api/saas' })
+  await app.register(creemRoutes, { prefix: '/api/saas/creem' })
 
   Sentry.setupFastifyErrorHandler(app)
 
