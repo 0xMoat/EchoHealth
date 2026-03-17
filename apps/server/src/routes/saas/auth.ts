@@ -52,7 +52,7 @@ export default async function saasAuthRoutes(app: FastifyInstance) {
     }
     const user = await prisma.user.findUnique({
       where: { id: request.user.id },
-      select: { id: true, email: true, nickname: true, avatarUrl: true, isPro: true, usedThisMonth: true, proExpireAt: true },
+      select: { id: true, email: true, nickname: true, avatarUrl: true, isPro: true, usedThisMonth: true, proExpireAt: true, usageResetAt: true },
     })
     if (!user) {
       return reply.status(404).send({ error: 'User not found' })
