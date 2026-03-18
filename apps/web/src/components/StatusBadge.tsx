@@ -1,17 +1,28 @@
-import type { ReportStatus } from '@/types'
+'use client'
 
-const STATUS_CONFIG: Record<ReportStatus, { label: string; className: string }> = {
-  PENDING: { label: 'Pending', className: 'bg-amber-100 text-amber-800' },
-  PROCESSING: { label: 'Processing', className: 'bg-blue-100 text-blue-800' },
-  COMPLETED: { label: 'Completed', className: 'bg-green-100 text-green-800' },
-  FAILED: { label: 'Failed', className: 'bg-red-100 text-red-800' },
+import type { ReportStatus } from '@/types'
+import { useT } from '@/hooks/useT'
+
+const STATUS_CLASSES: Record<ReportStatus, string> = {
+  PENDING: 'bg-amber-100 text-amber-800',
+  PROCESSING: 'bg-blue-100 text-blue-800',
+  COMPLETED: 'bg-green-100 text-green-800',
+  FAILED: 'bg-red-100 text-red-800',
+}
+
+const STATUS_KEYS: Record<ReportStatus, 'statusPending' | 'statusProcessing' | 'statusCompleted' | 'statusFailed'> = {
+  PENDING: 'statusPending',
+  PROCESSING: 'statusProcessing',
+  COMPLETED: 'statusCompleted',
+  FAILED: 'statusFailed',
 }
 
 export default function StatusBadge({ status }: { status: ReportStatus }) {
-  const config = STATUS_CONFIG[status]
+  const t = useT()
+
   return (
-    <span className={`inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-medium ${config.className}`}>
-      {config.label}
+    <span className={`inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-medium ${STATUS_CLASSES[status]}`}>
+      {t[STATUS_KEYS[status]]}
     </span>
   )
 }

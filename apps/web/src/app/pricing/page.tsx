@@ -36,7 +36,7 @@ export default function PricingPage() {
   return (
     <main
       id="main-content"
-      className="min-h-screen bg-gradient-to-br from-orange-50 via-fuchsia-50 to-rose-50 px-6 py-16"
+      className="min-h-screen px-6 py-16"
     >
       <div className="mx-auto max-w-4xl">
         {/* Header */}
@@ -55,11 +55,11 @@ export default function PricingPage() {
           {/* Free */}
           <div className="flex animate-fadeInUp" style={{ animationDelay: '0ms' }}>
           <div className="flex flex-1 flex-col rounded-2xl border border-neutral-200 bg-white p-6 shadow-sm">
-            <p className="text-xs font-bold uppercase tracking-widest text-slate-400">{t.freePlan}</p>
+            <p className="text-xs font-bold uppercase tracking-widest text-slate-500">{t.freePlan}</p>
             <div className="mt-3 flex items-baseline gap-1">
               <span className="text-4xl font-extrabold text-slate-800">$0</span>
             </div>
-            <p className="mt-1 text-xs text-slate-400">{t.forever}</p>
+            <p className="mt-1 text-xs text-slate-500">{t.forever}</p>
 
             <ul className="mt-6 flex-1 space-y-2 text-sm text-slate-600">
               <li className="flex items-center gap-2"><CheckIcon />{t.free3Reports}</li>
@@ -69,7 +69,7 @@ export default function PricingPage() {
               <li className="flex items-center gap-2 opacity-40"><XIcon />{t.freeQueue}</li>
             </ul>
 
-            <div className="mt-6 rounded-lg bg-neutral-100 py-2.5 text-center text-sm font-semibold text-slate-400">
+            <div className="mt-6 rounded-lg bg-neutral-100 py-2.5 text-center text-sm font-semibold text-slate-500">
               {isProUser ? t.freePlan : t.currentPlan}
             </div>
           </div>
@@ -80,10 +80,6 @@ export default function PricingPage() {
           <div
             className="relative flex flex-1 flex-col overflow-hidden rounded-2xl bg-gradient-to-br from-red-400 to-orange-600 p-6 shadow-lg"
           >
-            {/* decorative circles */}
-            <div className="pointer-events-none absolute -right-5 -top-5 h-20 w-20 rounded-full bg-white/10" />
-            <div className="pointer-events-none absolute -bottom-8 -left-3 h-24 w-24 rounded-full bg-white/5" />
-
             {/* POPULAR badge */}
             <span className="absolute right-4 top-4 rounded-full bg-white/25 px-2.5 py-1 text-[10px] font-bold text-white">
               {t.popular}
@@ -121,7 +117,7 @@ export default function PricingPage() {
             <div className="mt-3 flex items-baseline gap-1">
               <span className="text-4xl font-extrabold text-slate-800">${PASS_PRICE}</span>
             </div>
-            <p className="mt-1 text-xs text-slate-400">{t.oneTime}</p>
+            <p className="mt-1 text-xs text-slate-500">{t.oneTime}</p>
 
             <ul className="mt-6 flex-1 space-y-2 text-sm text-slate-600">
               <li className="flex items-center gap-2"><CheckIcon />{t.passAllPro}</li>
@@ -148,7 +144,7 @@ export default function PricingPage() {
         )}
 
         {/* Trust footer */}
-        <p className="mt-10 text-center text-xs text-slate-400">{t.secureCheckout}</p>
+        <p className="mt-10 text-center text-xs text-slate-500">{t.secureCheckout}</p>
       </div>
     </main>
   )

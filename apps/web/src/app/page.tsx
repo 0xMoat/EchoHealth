@@ -1,167 +1,277 @@
+'use client'
+
 import Link from 'next/link'
 import Footer from '@/components/Footer'
+import { useT } from '@/hooks/useT'
+import { PRO_MONTHLY_PRICE, PASS_PRICE } from '@/lib/constants'
 
-const steps = [
-  {
-    number: '01',
-    title: 'Upload',
-    description: 'Take a photo or upload a PDF of your health checkup report.',
-    icon: (
-      <svg className="h-6 w-6" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" aria-hidden="true">
-        <path strokeLinecap="round" strokeLinejoin="round" d="M3 16.5v2.25A2.25 2.25 0 0 0 5.25 21h13.5A2.25 2.25 0 0 0 21 18.75V16.5m-13.5-9L12 3m0 0 4.5 4.5M12 3v13.5" />
-      </svg>
-    ),
-  },
-  {
-    number: '02',
-    title: 'AI Analysis',
-    description: 'Our AI reads every metric, flags anomalies, and prepares a clear breakdown.',
-    icon: (
-      <svg className="h-6 w-6" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" aria-hidden="true">
-        <path strokeLinecap="round" strokeLinejoin="round" d="M9.75 3.104v5.714a2.25 2.25 0 0 1-.659 1.591L5 14.5M9.75 3.104c-.251.023-.501.05-.75.082m.75-.082a24.301 24.301 0 0 1 4.5 0m0 0v5.714c0 .597.237 1.17.659 1.591L19.8 15.3M14.25 3.104c.251.023.501.05.75.082M19.8 15.3l-1.57.393A9.065 9.065 0 0 1 12 15a9.065 9.065 0 0 0-6.23.693L5 14.5m14.8.8 1.402 1.402c1.232 1.232.65 3.318-1.067 3.611A48.309 48.309 0 0 1 12 21a48.25 48.25 0 0 1-8.135-.687c-1.718-.293-2.3-2.379-1.067-3.61L5 14.5" />
-      </svg>
-    ),
-  },
-  {
-    number: '03',
-    title: 'Watch Video',
-    description: 'Receive a personalized video that walks you through your results in plain language.',
-    icon: (
-      <svg className="h-6 w-6" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" aria-hidden="true">
-        <path strokeLinecap="round" strokeLinejoin="round" d="M5.25 5.653c0-.856.917-1.398 1.667-.986l11.54 6.347a1.125 1.125 0 0 1 0 1.972l-11.54 6.347a1.125 1.125 0 0 1-1.667-.986V5.653Z" />
-      </svg>
-    ),
-  },
+const stepIcons = [
+  <svg key="upload" className="h-6 w-6" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" aria-hidden="true">
+    <path strokeLinecap="round" strokeLinejoin="round" d="M3 16.5v2.25A2.25 2.25 0 0 0 5.25 21h13.5A2.25 2.25 0 0 0 21 18.75V16.5m-13.5-9L12 3m0 0 4.5 4.5M12 3v13.5" />
+  </svg>,
+  <svg key="ai" className="h-6 w-6" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" aria-hidden="true">
+    <path strokeLinecap="round" strokeLinejoin="round" d="M9.75 3.104v5.714a2.25 2.25 0 0 1-.659 1.591L5 14.5M9.75 3.104c-.251.023-.501.05-.75.082m.75-.082a24.301 24.301 0 0 1 4.5 0m0 0v5.714c0 .597.237 1.17.659 1.591L19.8 15.3M14.25 3.104c.251.023.501.05.75.082M19.8 15.3l-1.57.393A9.065 9.065 0 0 1 12 15a9.065 9.065 0 0 0-6.23.693L5 14.5m14.8.8 1.402 1.402c1.232 1.232.65 3.318-1.067 3.611A48.309 48.309 0 0 1 12 21a48.25 48.25 0 0 1-8.135-.687c-1.718-.293-2.3-2.379-1.067-3.61L5 14.5" />
+  </svg>,
+  <svg key="video" className="h-6 w-6" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" aria-hidden="true">
+    <path strokeLinecap="round" strokeLinejoin="round" d="M5.25 5.653c0-.856.917-1.398 1.667-.986l11.54 6.347a1.125 1.125 0 0 1 0 1.972l-11.54 6.347a1.125 1.125 0 0 1-1.667-.986V5.653Z" />
+  </svg>,
 ]
 
 export default function Home() {
+  const t = useT()
+
+  const steps = [
+    { number: '01', title: t.stepUploadTitle, description: t.stepUploadDesc, icon: stepIcons[0] },
+    { number: '02', title: t.stepAITitle, description: t.stepAIDesc, icon: stepIcons[1] },
+    { number: '03', title: t.stepVideoTitle, description: t.stepVideoDesc, icon: stepIcons[2] },
+  ]
+
+  const benefits = [
+    { title: t.benefit1Title, desc: t.benefit1Desc },
+    { title: t.benefit2Title, desc: t.benefit2Desc },
+    { title: t.benefit3Title, desc: t.benefit3Desc },
+  ]
+
+  const testimonials = [
+    { quote: t.testimonial1Quote, author: t.testimonial1Author, role: t.testimonial1Role },
+    { quote: t.testimonial2Quote, author: t.testimonial2Author, role: t.testimonial2Role },
+  ]
+
   return (
     <>
-      {/* Hero */}
-      <section id="main-content" className="relative overflow-hidden">
-        {/* Subtle dot grid background */}
-        <div
-          className="pointer-events-none absolute inset-0 opacity-[0.03]"
-          style={{
-            backgroundImage: 'radial-gradient(circle, #000 1px, transparent 1px)',
-            backgroundSize: '24px 24px',
-          }}
-        />
-
-        <div className="relative mx-auto max-w-5xl px-6 pb-24 pt-28 sm:pb-32 sm:pt-36">
+      {/* ── 1. Hero ── */}
+      <section id="main-content" className="overflow-hidden">
+        <div className="mx-auto max-w-5xl px-6 pb-16 pt-28 sm:pb-20 sm:pt-36">
           <div className="max-w-2xl">
-            {/* Eyebrow */}
-            <div className="mb-6 flex items-center gap-2">
-              <div className="h-px w-8 bg-neutral-400" />
-              <span className="text-xs font-medium uppercase tracking-widest text-slate-500">
-                AI-Powered Health Insights
-              </span>
-            </div>
-
             <h1 className="font-display text-4xl font-bold leading-[1.1] tracking-tight text-slate-800 text-balance sm:text-5xl lg:text-6xl">
-              Your Health Report,{' '}
-              <span className="relative">
-                Explained in Video
-                <span className="absolute -bottom-1 left-0 h-[3px] w-full bg-neutral-900/10" />
-              </span>
+              {t.heroTitle1}{' '}
+              <span className="text-cyan-700">{t.heroTitle2}</span>
             </h1>
 
-            <p className="mt-6 max-w-lg text-lg leading-relaxed text-slate-600">
-              Upload your checkup results and get a personalized video that
-              breaks down every metric in plain, understandable language.
+            <p className="mt-6 max-w-lg text-lg leading-relaxed text-slate-500">
+              {t.heroDesc}
             </p>
 
             <div className="mt-10 flex flex-wrap items-center gap-4">
               <Link
                 href="/upload"
-                className="inline-flex items-center gap-2 rounded-lg bg-cyan-600 px-6 py-3 text-sm font-medium text-white shadow-lg shadow-cyan-600/10 transition-[background-color,box-shadow] hover:bg-cyan-700 hover:shadow-neutral-900/20 active:scale-[0.98] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-cyan-600 focus-visible:ring-offset-2"
+                className="inline-flex items-center gap-2 rounded-lg bg-cyan-600 px-6 py-3 text-sm font-medium text-white shadow-sm transition-[background-color] hover:bg-cyan-700 active:scale-[0.98] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-cyan-600 focus-visible:ring-offset-2"
               >
-                Try it free
+                {t.tryItFree}
                 <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor" aria-hidden="true">
                   <path strokeLinecap="round" strokeLinejoin="round" d="M13.5 4.5 21 12m0 0-7.5 7.5M21 12H3" />
                 </svg>
               </Link>
               <a
                 href="#how-it-works"
-                className="inline-flex items-center gap-2 rounded-lg border border-neutral-200 bg-white px-6 py-3 text-sm font-medium text-slate-700 transition-[border-color,background-color] hover:border-neutral-300 hover:bg-neutral-50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-neutral-900 focus-visible:ring-offset-2"
+                className="text-sm font-medium text-slate-500 transition-colors hover:text-slate-800"
               >
-                How it works
+                {t.howItWorks} &darr;
               </a>
             </div>
           </div>
 
-          {/* Decorative element */}
-          <div className="pointer-events-none absolute right-0 top-1/2 hidden -translate-y-1/2 lg:block">
-            <div className="relative h-72 w-72">
-              <div className="absolute inset-0 rounded-full border border-neutral-200" />
-              <div className="absolute inset-6 rounded-full border border-neutral-200/70" />
-              <div className="absolute inset-12 rounded-full border border-neutral-200/50" />
-              <div className="absolute inset-[4.5rem] rounded-full bg-neutral-100" />
-              <div className="absolute inset-0 flex items-center justify-center">
-                <svg className="h-10 w-10 text-slate-400" fill="none" viewBox="0 0 24 24" strokeWidth={1} stroke="currentColor" aria-hidden="true">
+          {/* Product preview placeholder */}
+          <div className="mt-16 overflow-hidden rounded-xl border border-neutral-200 bg-neutral-50">
+            <div className="flex aspect-video items-center justify-center">
+              <div className="flex flex-col items-center gap-3 text-slate-400">
+                <svg className="h-12 w-12" fill="none" viewBox="0 0 24 24" strokeWidth={1} stroke="currentColor" aria-hidden="true">
                   <path strokeLinecap="round" strokeLinejoin="round" d="M5.25 5.653c0-.856.917-1.398 1.667-.986l11.54 6.347a1.125 1.125 0 0 1 0 1.972l-11.54 6.347a1.125 1.125 0 0 1-1.667-.986V5.653Z" />
                 </svg>
+                <span className="text-sm">{t.heroPreview}</span>
               </div>
             </div>
           </div>
         </div>
       </section>
 
-      {/* How It Works */}
-      <section id="how-it-works" className="border-t border-neutral-200 bg-neutral-50/50">
-        <div className="mx-auto max-w-5xl px-6 py-24 sm:py-32">
-          <div className="mb-16 max-w-lg">
-            <span className="text-xs font-medium uppercase tracking-widest text-slate-500">
-              How it works
-            </span>
-            <h2 className="font-display mt-3 text-3xl font-bold tracking-tight text-slate-800 text-balance sm:text-4xl">
-              Three simple steps
-            </h2>
-            <p className="mt-4 text-base leading-relaxed text-slate-600">
-              From paper report to video explanation in under two minutes.
-            </p>
-          </div>
+      {/* ── 2. Benefits (核心优势) ── */}
+      <section className="border-t border-neutral-200">
+        <div className="mx-auto max-w-5xl px-6 py-20 sm:py-28">
+          <h2 className="font-display text-3xl font-bold tracking-tight text-slate-800 text-balance sm:text-4xl">
+            {t.benefitsTitle}
+          </h2>
+          <p className="mt-3 max-w-md text-base text-slate-500">
+            {t.benefitsSubtitle}
+          </p>
 
-          <div className="grid gap-6 sm:grid-cols-3">
-            {steps.map((step, index) => (
-              <div
-                key={step.number}
-                className="animate-fadeInUp"
-                style={{ animationDelay: `${index * 150}ms` }}
-              >
-              <div
-                className="group relative rounded-2xl border border-neutral-200 bg-white p-8 transition-[border-color,box-shadow] hover:border-neutral-300 hover:shadow-sm"
-              >
-                <div className="mb-6 flex items-center justify-between">
-                  <div className="flex h-11 w-11 items-center justify-center rounded-xl bg-neutral-100 text-slate-700 transition-colors group-hover:bg-neutral-900 group-hover:text-white">
-                    {step.icon}
-                  </div>
-                  <span className="text-xs font-medium tabular-nums text-slate-300">
-                    {step.number}
-                  </span>
-                </div>
-                <h3 className="text-lg font-semibold text-slate-800">
-                  {step.title}
-                </h3>
-                <p className="mt-2 text-sm leading-relaxed text-slate-600">
-                  {step.description}
-                </p>
-              </div>
+          <div className="mt-14 grid grid-cols-1 gap-10 sm:grid-cols-3 sm:gap-12">
+            {benefits.map((b, i) => (
+              <div key={i} className="animate-fadeInUp" style={{ animationDelay: `${i * 100}ms` }}>
+                <div className="mb-4 h-0.5 w-8 rounded-full bg-cyan-600" />
+                <h3 className="text-base font-semibold text-slate-800">{b.title}</h3>
+                <p className="mt-2 text-sm leading-relaxed text-slate-500">{b.desc}</p>
               </div>
             ))}
-          </div>
-
-          {/* Connector line between cards (visual only, hidden on mobile) */}
-          <div className="mt-8 hidden items-center justify-center gap-2 sm:flex">
-            <div className="h-px w-16 bg-neutral-300" />
-            <div className="h-1.5 w-1.5 rounded-full bg-neutral-300" />
-            <div className="h-px w-16 bg-neutral-300" />
-            <div className="h-1.5 w-1.5 rounded-full bg-neutral-300" />
-            <div className="h-px w-16 bg-neutral-300" />
           </div>
         </div>
       </section>
 
+      {/* ── 3. How It Works ── */}
+      <section id="how-it-works" className="border-t border-neutral-200">
+        <div className="mx-auto max-w-5xl px-6 py-20 sm:py-28">
+          <h2 className="font-display text-3xl font-bold tracking-tight text-slate-800 text-balance sm:text-4xl">
+            {t.threeSteps}
+          </h2>
+          <p className="mt-3 max-w-md text-base text-slate-500">
+            {t.threeStepsDesc}
+          </p>
+
+          <div className="mt-14 space-y-12 sm:space-y-0 sm:grid sm:grid-cols-3 sm:gap-x-12">
+            {steps.map((step, index) => (
+              <div
+                key={step.number}
+                className="animate-fadeInUp"
+                style={{ animationDelay: `${index * 120}ms` }}
+              >
+                <div className="mb-4 flex items-center gap-3">
+                  <span className="font-display text-3xl font-bold text-slate-200">{step.number}</span>
+                  <div className="flex h-9 w-9 items-center justify-center rounded-lg bg-slate-100 text-slate-600">
+                    {step.icon}
+                  </div>
+                </div>
+                <h3 className="text-base font-semibold text-slate-800">
+                  {step.title}
+                </h3>
+                <p className="mt-1.5 text-sm leading-relaxed text-slate-500">
+                  {step.description}
+                </p>
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* ── 4. Features (功能介绍) ── */}
+      <section className="border-t border-neutral-200">
+        <div className="mx-auto max-w-5xl px-6 py-20 sm:py-28">
+          <h2 className="font-display text-3xl font-bold tracking-tight text-slate-800 text-balance sm:text-4xl">
+            {t.featuresTitle}
+          </h2>
+
+          {/* Feature 1: text left, mockup right */}
+          <div className="mt-16 grid grid-cols-1 items-center gap-10 sm:grid-cols-2 sm:gap-16">
+            <div>
+              <h3 className="font-display text-xl font-bold text-slate-800">{t.feature1Title}</h3>
+              <p className="mt-3 text-sm leading-relaxed text-slate-500">{t.feature1Desc}</p>
+            </div>
+            <div className="flex aspect-[4/3] items-center justify-center rounded-xl border border-neutral-200 bg-neutral-50" aria-label={t.featureMockReport}>
+              <div className="flex flex-col items-center gap-2 text-slate-300">
+                <svg className="h-10 w-10" fill="none" viewBox="0 0 24 24" strokeWidth={1} stroke="currentColor" aria-hidden="true">
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M19.5 14.25v-2.625a3.375 3.375 0 0 0-3.375-3.375h-1.5A1.125 1.125 0 0 1 13.5 7.125v-1.5a3.375 3.375 0 0 0-3.375-3.375H8.25m0 12.75h7.5m-7.5 3H12M10.5 2.25H5.625c-.621 0-1.125.504-1.125 1.125v17.25c0 .621.504 1.125 1.125 1.125h12.75c.621 0 1.125-.504 1.125-1.125V11.25a9 9 0 0 0-9-9Z" />
+                </svg>
+                <span className="text-xs">{t.featureMockReport}</span>
+              </div>
+            </div>
+          </div>
+
+          {/* Feature 2: mockup left, text right */}
+          <div className="mt-16 grid grid-cols-1 items-center gap-10 sm:grid-cols-2 sm:gap-16">
+            <div className="order-last sm:order-first flex aspect-[4/3] items-center justify-center rounded-xl border border-neutral-200 bg-neutral-50" aria-label={t.featureMockVideo}>
+              <div className="flex flex-col items-center gap-2 text-slate-300">
+                <svg className="h-10 w-10" fill="none" viewBox="0 0 24 24" strokeWidth={1} stroke="currentColor" aria-hidden="true">
+                  <path strokeLinecap="round" strokeLinejoin="round" d="m15.75 10.5 4.72-4.72a.75.75 0 0 1 1.28.53v11.38a.75.75 0 0 1-1.28.53l-4.72-4.72M4.5 18.75h9a2.25 2.25 0 0 0 2.25-2.25v-9a2.25 2.25 0 0 0-2.25-2.25h-9A2.25 2.25 0 0 0 2.25 7.5v9a2.25 2.25 0 0 0 2.25 2.25Z" />
+                </svg>
+                <span className="text-xs">{t.featureMockVideo}</span>
+              </div>
+            </div>
+            <div>
+              <h3 className="font-display text-xl font-bold text-slate-800">{t.feature2Title}</h3>
+              <p className="mt-3 text-sm leading-relaxed text-slate-500">{t.feature2Desc}</p>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* ── 5. Testimonials (用户证言) ── */}
+      <section className="bg-neutral-50">
+        <div className="mx-auto max-w-5xl px-6 py-20 sm:py-28">
+          <h2 className="font-display text-3xl font-bold tracking-tight text-slate-800 text-balance sm:text-4xl">
+            {t.testimonialsTitle}
+          </h2>
+
+          <div className="mt-12 grid grid-cols-1 gap-8 sm:grid-cols-2 sm:gap-12">
+            {testimonials.map((item, i) => (
+              <blockquote key={i} className="animate-fadeInUp" style={{ animationDelay: `${i * 120}ms` }}>
+                <p className="text-base leading-relaxed text-slate-700">
+                  &ldquo;{item.quote}&rdquo;
+                </p>
+                <footer className="mt-4">
+                  <p className="text-sm font-semibold text-slate-800">{item.author}</p>
+                  <p className="text-sm text-slate-500">{item.role}</p>
+                </footer>
+              </blockquote>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* ── 6. CTA (行动召唤) ── */}
+      <section className="bg-slate-900">
+        <div className="mx-auto max-w-5xl px-6 py-20 text-center sm:py-28">
+          <h2 className="font-display text-3xl font-bold tracking-tight text-white sm:text-4xl">
+            {t.ctaTitle}
+          </h2>
+          <p className="mx-auto mt-4 max-w-md text-base text-slate-400">
+            {t.ctaDesc}
+          </p>
+          <Link
+            href="/upload"
+            className="mt-8 inline-flex items-center gap-2 rounded-lg bg-cyan-600 px-6 py-3 text-sm font-medium text-white shadow-sm transition-[background-color] hover:bg-cyan-500 active:scale-[0.98] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-cyan-500 focus-visible:ring-offset-2 focus-visible:ring-offset-slate-900"
+          >
+            {t.ctaButton}
+            <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor" aria-hidden="true">
+              <path strokeLinecap="round" strokeLinejoin="round" d="M13.5 4.5 21 12m0 0-7.5 7.5M21 12H3" />
+            </svg>
+          </Link>
+        </div>
+      </section>
+
+      {/* ── 7. Pricing preview (价格方案) ── */}
+      <section className="border-t border-neutral-200">
+        <div className="mx-auto max-w-5xl px-6 py-20 sm:py-28">
+          <div className="text-center">
+            <h2 className="font-display text-3xl font-bold tracking-tight text-slate-800 sm:text-4xl">
+              {t.pricingPreviewTitle}
+            </h2>
+            <p className="mt-3 text-base text-slate-500">{t.pricingPreviewDesc}</p>
+          </div>
+
+          <div className="mx-auto mt-12 grid max-w-3xl grid-cols-1 gap-4 sm:grid-cols-3">
+            {/* Free */}
+            <div className="rounded-xl border border-neutral-200 px-6 py-5 text-center">
+              <p className="text-xs font-bold uppercase tracking-widest text-slate-500">{t.freePlan}</p>
+              <p className="mt-2 text-3xl font-extrabold text-slate-800">$0</p>
+              <p className="mt-1 text-xs text-slate-500">{t.forever}</p>
+            </div>
+
+            {/* Pro */}
+            <div className="rounded-xl bg-gradient-to-br from-red-400 to-orange-600 px-6 py-5 text-center text-white">
+              <p className="text-xs font-bold uppercase tracking-widest text-white/80">{t.proPlan}</p>
+              <p className="mt-2 text-3xl font-extrabold">${PRO_MONTHLY_PRICE}<span className="text-base font-medium text-white/70">{t.pricingPreviewPerMonth}</span></p>
+              <p className="mt-1 text-xs text-white/70">{t.cancelAnytime}</p>
+            </div>
+
+            {/* Pass */}
+            <div className="rounded-xl border-2 border-amber-300 px-6 py-5 text-center">
+              <p className="text-xs font-bold uppercase tracking-widest text-amber-600">{t.passTitle}</p>
+              <p className="mt-2 text-3xl font-extrabold text-slate-800">${PASS_PRICE}</p>
+              <p className="mt-1 text-xs text-slate-500">{t.pricingPreviewOneTime}</p>
+            </div>
+          </div>
+
+          <div className="mt-8 text-center">
+            <Link
+              href="/pricing"
+              className="text-sm font-medium text-cyan-700 transition-colors hover:text-cyan-800"
+            >
+              {t.pricingPreviewLink} &rarr;
+            </Link>
+          </div>
+        </div>
+      </section>
+
+      {/* ── 8. Footer ── */}
       <Footer />
     </>
   )

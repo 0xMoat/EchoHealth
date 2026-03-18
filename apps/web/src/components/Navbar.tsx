@@ -35,7 +35,7 @@ export default function Navbar() {
       <button
         onClick={() => setLang('en')}
         aria-label="Switch to English"
-        className={`rounded-full px-2.5 py-1 font-medium transition-colors ${
+        className={`min-h-[44px] min-w-[44px] rounded-full px-3 py-2 font-medium transition-colors ${
           lang === 'en' ? 'bg-white text-slate-800 shadow-sm' : 'text-slate-500 hover:text-slate-700'
         }`}
       >
@@ -44,7 +44,7 @@ export default function Navbar() {
       <button
         onClick={() => setLang('zh')}
         aria-label="切换到中文"
-        className={`rounded-full px-2.5 py-1 font-medium transition-colors ${
+        className={`min-h-[44px] min-w-[44px] rounded-full px-3 py-2 font-medium transition-colors ${
           lang === 'zh' ? 'bg-white text-slate-800 shadow-sm' : 'text-slate-500 hover:text-slate-700'
         }`}
       >
@@ -69,15 +69,15 @@ export default function Navbar() {
             <>
               <Link
                 href="/dashboard"
-                className="rounded-md px-2 py-1 text-sm font-medium text-slate-600 transition-colors hover:text-slate-800 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-neutral-900 focus-visible:ring-offset-2"
+                className="rounded-md px-3 py-2 text-sm font-medium text-slate-600 transition-colors hover:text-slate-800 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-neutral-900 focus-visible:ring-offset-2"
               >
-                Dashboard
+                {t.dashboard}
               </Link>
               <Link
                 href="/upload"
                 className="rounded-lg bg-cyan-600 px-4 py-2 text-sm font-medium text-white transition-colors hover:bg-cyan-700 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-cyan-600 focus-visible:ring-offset-2"
               >
-                New Report
+                {t.newReport}
               </Link>
               {/* Upgrade button for non-Pro users; Pro badge for Pro users */}
               {user.isPro ? (
@@ -94,9 +94,9 @@ export default function Navbar() {
               )}
               <button
                 onClick={() => logout()}
-                className="rounded-md px-2 py-1 text-sm font-medium text-slate-500 transition-colors hover:text-slate-700 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-neutral-900 focus-visible:ring-offset-2"
+                className="rounded-md px-3 py-2 text-sm font-medium text-slate-500 transition-colors hover:text-slate-700 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-neutral-900 focus-visible:ring-offset-2"
               >
-                Sign out
+                {t.signOut}
               </button>
             </>
           ) : (
@@ -104,7 +104,7 @@ export default function Navbar() {
               href="/login"
               className="rounded-lg bg-cyan-600 px-4 py-2 text-sm font-medium text-white transition-colors hover:bg-cyan-700 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-cyan-600 focus-visible:ring-offset-2"
             >
-              Sign in
+              {t.signIn}
             </Link>
           )}
           {/* Language switcher — always visible */}
@@ -144,13 +144,13 @@ export default function Navbar() {
                 href="/dashboard"
                 className="rounded-lg px-3 py-2.5 text-sm font-medium text-slate-700 transition-colors hover:bg-neutral-50"
               >
-                Dashboard
+                {t.dashboard}
               </Link>
               <Link
                 href="/upload"
                 className="rounded-lg px-3 py-2.5 text-sm font-medium text-slate-700 transition-colors hover:bg-neutral-50"
               >
-                New Report
+                {t.newReport}
               </Link>
               {user.isPro ? (
                 <span className="inline-flex w-fit rounded-full bg-gradient-to-r from-orange-400 to-rose-500 px-3 py-1 text-xs font-semibold text-white">
@@ -168,7 +168,7 @@ export default function Navbar() {
                 onClick={() => { logout(); setMenuOpen(false) }}
                 className="rounded-lg px-3 py-2.5 text-left text-sm font-medium text-slate-500 transition-colors hover:bg-neutral-50 hover:text-slate-700"
               >
-                Sign out
+                {t.signOut}
               </button>
             </div>
           ) : (
@@ -176,7 +176,7 @@ export default function Navbar() {
               href="/login"
               className="block rounded-lg bg-cyan-600 px-4 py-2.5 text-center text-sm font-medium text-white transition-colors hover:bg-cyan-700"
             >
-              Sign in
+              {t.signIn}
             </Link>
           )}
         </div>

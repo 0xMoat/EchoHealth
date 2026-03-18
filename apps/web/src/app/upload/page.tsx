@@ -39,7 +39,7 @@ export default function UploadPage() {
   const handleSubmit = async () => {
     if (files.length === 0) return
     if (quotaRemaining <= 0) {
-      setError('Monthly quota exhausted. Upgrade to Pro for more.')
+      setError(t.quotaExhausted)
       return
     }
 
@@ -71,7 +71,7 @@ export default function UploadPage() {
       if (err instanceof ApiError) {
         setError(err.message)
       } else {
-        setError('Upload failed. Please try again.')
+        setError(t.uploadFailed)
       }
     } finally {
       setUploading(false)
@@ -80,11 +80,11 @@ export default function UploadPage() {
 
   return (
     <main id="main-content" className="mx-auto max-w-2xl px-6 py-12">
-      <h1 className="font-display text-2xl font-bold tracking-tight text-slate-800 text-balance">Upload Health Report</h1>
+      <h1 className="font-display text-2xl font-bold tracking-tight text-slate-800 text-balance">{t.uploadTitle}</h1>
       <p className="mt-2 text-slate-600">
-        Upload images or a PDF of your health checkup report.
+        {t.uploadDesc}
         {quotaRemaining > 0
-          ? ` You have ${quotaRemaining} report${quotaRemaining === 1 ? '' : 's'} remaining this month.`
+          ? ` ${(quotaRemaining === 1 ? t.reportsRemainingOne : t.reportsRemaining).replace('{n}', String(quotaRemaining))}`
           : ''}
       </p>
 
@@ -111,8 +111,8 @@ export default function UploadPage() {
             </Link>
           </div>
           {user.usageResetAt && (
-            <p className="mt-4 text-xs text-slate-400">
-              Resets on {new Date(user.usageResetAt).toLocaleDateString(undefined, { month: 'short', day: 'numeric' })}
+            <p className="mt-4 text-xs text-slate-500">
+              {t.resetsOn} {new Date(user.usageResetAt).toLocaleDateString(undefined, { month: 'short', day: 'numeric' })}
               {' · '}
               <Link href="/pricing" className="text-blue-500 underline">{t.seePricing}</Link>
             </p>
@@ -130,7 +130,7 @@ export default function UploadPage() {
 
           {/* Language selection */}
           <fieldset>
-            <legend className="text-sm font-medium text-slate-800">Video Language</legend>
+            <legend className="text-sm font-medium text-slate-800">{t.videoLanguage}</legend>
             <div className="mt-3 flex gap-3">
               {LANGUAGE_OPTIONS.map(opt => (
                 <button
@@ -168,9 +168,9 @@ export default function UploadPage() {
                   <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
                   <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z" />
                 </svg>
-                Uploading{'\u2026'}
+                {t.uploading}
               </>
-            ) : 'Generate Video'}
+            ) : t.generateVideo}
           </button>
         </div>
       )}

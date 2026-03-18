@@ -1,6 +1,7 @@
 'use client'
 
 import { useCallback, useState, type DragEvent } from 'react'
+import { useT } from '@/hooks/useT'
 
 interface FileUploaderProps {
   files: File[]
@@ -10,6 +11,7 @@ interface FileUploaderProps {
 }
 
 export default function FileUploader({ files, onChange, maxFiles, accept }: FileUploaderProps) {
+  const t = useT()
   const [dragOver, setDragOver] = useState(false)
 
   const handleFiles = useCallback(
@@ -54,10 +56,10 @@ export default function FileUploader({ files, onChange, maxFiles, accept }: File
           <path strokeLinecap="round" strokeLinejoin="round" d="M12 16.5V9.75m0 0l3 3m-3-3l-3 3M6.75 19.5a4.5 4.5 0 01-1.41-8.775 5.25 5.25 0 0110.338-2.32 3 3 0 013.4 3.178A3.38 3.38 0 0118 15.75" />
         </svg>
         <p className="mt-3 text-sm text-slate-600">
-          Drag files here or <span className="font-medium text-slate-800">browse</span>
+          {t.dragOrBrowse} <span className="font-medium text-slate-800">{t.browse}</span>
         </p>
         <p className="mt-1 text-xs text-slate-500">
-          Images (JPEG, PNG, WebP) or PDF · Max {maxFiles} files
+          {t.fileHint.replace('{n}', String(maxFiles))}
         </p>
       </label>
 
@@ -72,8 +74,8 @@ export default function FileUploader({ files, onChange, maxFiles, accept }: File
               <button
                 type="button"
                 onClick={() => removeFile(i)}
-                aria-label={`Remove ${file.name}`}
-                className="ml-4 rounded-md text-slate-400 transition-colors hover:text-red-600 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-neutral-900 focus-visible:ring-offset-2"
+                aria-label={t.removeFile.replace('{name}', file.name)}
+                className="ml-4 rounded-md p-1 text-slate-500 transition-colors hover:text-red-600 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-neutral-900 focus-visible:ring-offset-2"
               >
                 <svg className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5} aria-hidden="true">
                   <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />

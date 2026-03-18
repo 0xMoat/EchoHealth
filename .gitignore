@@ -59,6 +59,7 @@ uploads/
 
 # ===== skills 缓存 =====
 skills/*/cache/
+.superpowers/
 
 # ===== Redis =====
 dump.rdb

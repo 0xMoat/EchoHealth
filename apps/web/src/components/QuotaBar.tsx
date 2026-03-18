@@ -18,15 +18,15 @@ export default function QuotaBar({ used, isPro }: QuotaBarProps) {
   return (
     <div className="space-y-1.5">
       <div className="flex justify-between text-sm text-slate-600">
-        <span>Monthly usage</span>
+        <span>{t.monthlyUsage}</span>
         <span className={`tabular-nums ${isAtLimit ? 'font-semibold text-red-500' : ''}`}>
           {used}&nbsp;/&nbsp;{max}
         </span>
       </div>
       <div className="h-2 overflow-hidden rounded-full bg-neutral-200">
         <div
-          className={`h-full rounded-full transition-[width] duration-500 ${isAtLimit ? 'bg-red-500' : 'bg-cyan-600'}`}
-          style={{ width: `${pct}%` }}
+          className={`h-full w-full origin-left rounded-full transition-transform duration-500 ${isAtLimit ? 'bg-red-500' : 'bg-cyan-600'}`}
+          style={{ transform: `scaleX(${pct / 100})` }}
         />
       </div>
       {isAtLimit && (
