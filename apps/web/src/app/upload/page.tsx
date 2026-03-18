@@ -80,8 +80,8 @@ export default function UploadPage() {
 
   return (
     <main className="mx-auto max-w-2xl px-6 py-12">
-      <h1 className="text-2xl font-bold tracking-tight text-neutral-900 text-balance">Upload Health Report</h1>
-      <p className="mt-2 text-neutral-600">
+      <h1 className="font-display text-2xl font-bold tracking-tight text-slate-800 text-balance">Upload Health Report</h1>
+      <p className="mt-2 text-slate-600">
         Upload images or a PDF of your health checkup report.
         {quotaRemaining > 0
           ? ` You have ${quotaRemaining} report${quotaRemaining === 1 ? '' : 's'} remaining this month.`
@@ -92,8 +92,8 @@ export default function UploadPage() {
         /* ── Quota exhausted blocker ── */
         <div className="mt-8 flex flex-col items-center rounded-2xl border border-dashed border-amber-300 bg-gradient-to-br from-amber-50 to-orange-50 px-8 py-12 text-center">
           <span className="text-5xl">🔒</span>
-          <h2 className="mt-4 text-lg font-bold text-neutral-900">{t.allFreeUsed}</h2>
-          <p className="mt-2 whitespace-pre-line text-sm text-neutral-500">{t.upgradeToKeep}</p>
+          <h2 className="mt-4 text-lg font-bold text-slate-800">{t.allFreeUsed}</h2>
+          <p className="mt-2 whitespace-pre-line text-sm text-slate-500">{t.upgradeToKeep}</p>
           <div className="mt-6 flex flex-wrap justify-center gap-3">
             <Link
               href="/pricing"
@@ -109,7 +109,7 @@ export default function UploadPage() {
             </Link>
           </div>
           {user.usageResetAt && (
-            <p className="mt-4 text-xs text-neutral-400">
+            <p className="mt-4 text-xs text-slate-400">
               Resets on {new Date(user.usageResetAt).toLocaleDateString(undefined, { month: 'short', day: 'numeric' })}
               {' · '}
               <Link href="/pricing" className="text-blue-500 underline">{t.seePricing}</Link>
@@ -128,7 +128,7 @@ export default function UploadPage() {
 
           {/* Language selection */}
           <fieldset>
-            <legend className="text-sm font-medium text-neutral-900">Video Language</legend>
+            <legend className="text-sm font-medium text-slate-800">Video Language</legend>
             <div className="mt-3 flex gap-3">
               {LANGUAGE_OPTIONS.map(opt => (
                 <button
@@ -138,7 +138,7 @@ export default function UploadPage() {
                   className={`rounded-lg border px-4 py-2 text-sm font-medium transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-neutral-900 focus-visible:ring-offset-2 ${
                     language === opt.value
                       ? 'border-neutral-900 bg-neutral-900 text-white'
-                      : 'border-neutral-300 text-neutral-700 hover:bg-neutral-50'
+                      : 'border-neutral-300 text-slate-700 hover:bg-neutral-50'
                   }`}
                 >
                   {opt.label}
@@ -158,7 +158,7 @@ export default function UploadPage() {
           <button
             onClick={handleSubmit}
             disabled={files.length === 0 || uploading}
-            className="w-full rounded-lg bg-neutral-900 px-6 py-3 text-sm font-medium text-white transition-colors hover:bg-neutral-700 disabled:cursor-not-allowed disabled:opacity-50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-neutral-900 focus-visible:ring-offset-2"
+            className="w-full rounded-lg bg-cyan-600 px-6 py-3 text-sm font-medium text-white transition-colors hover:bg-cyan-700 active:scale-[0.98] disabled:cursor-not-allowed disabled:opacity-50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-cyan-600 focus-visible:ring-offset-2"
           >
             {uploading ? 'Uploading\u2026' : 'Generate Video'}
           </button>

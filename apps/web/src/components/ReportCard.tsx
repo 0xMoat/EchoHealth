@@ -14,7 +14,7 @@ export default function ReportCard({ report }: { report: Report }) {
   return (
     <Link
       href={`/result/${report.id}`}
-      className="group block rounded-xl border border-neutral-200 p-5 transition-[border-color,box-shadow] hover:border-neutral-300 hover:shadow-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-neutral-900 focus-visible:ring-offset-2"
+      className="group block cursor-pointer rounded-xl border border-neutral-200 p-5 transition-all duration-200 hover:-translate-y-0.5 hover:border-neutral-300 hover:shadow-md focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-cyan-600 focus-visible:ring-offset-2"
     >
       <div className="flex items-start justify-between">
         <div className="min-w-0 flex-1 space-y-1">

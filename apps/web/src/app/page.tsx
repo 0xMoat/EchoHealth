@@ -53,12 +53,12 @@ export default function Home() {
             {/* Eyebrow */}
             <div className="mb-6 flex items-center gap-2">
               <div className="h-px w-8 bg-neutral-400" />
-              <span className="text-xs font-medium uppercase tracking-widest text-neutral-500">
+              <span className="text-xs font-medium uppercase tracking-widest text-slate-500">
                 AI-Powered Health Insights
               </span>
             </div>
 
-            <h1 className="text-4xl font-bold leading-[1.1] tracking-tight text-neutral-900 text-balance sm:text-5xl lg:text-6xl">
+            <h1 className="font-display text-4xl font-bold leading-[1.1] tracking-tight text-slate-800 text-balance sm:text-5xl lg:text-6xl">
               Your Health Report,{' '}
               <span className="relative">
                 Explained in Video
@@ -66,7 +66,7 @@ export default function Home() {
               </span>
             </h1>
 
-            <p className="mt-6 max-w-lg text-lg leading-relaxed text-neutral-600">
+            <p className="mt-6 max-w-lg text-lg leading-relaxed text-slate-600">
               Upload your checkup results and get a personalized video that
               breaks down every metric in plain, understandable language.
             </p>
@@ -74,7 +74,7 @@ export default function Home() {
             <div className="mt-10 flex flex-wrap items-center gap-4">
               <Link
                 href="/upload"
-                className="inline-flex items-center gap-2 rounded-lg bg-neutral-900 px-6 py-3 text-sm font-medium text-white shadow-lg shadow-neutral-900/10 transition-[background-color,box-shadow] hover:bg-neutral-700 hover:shadow-neutral-900/20 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-neutral-900 focus-visible:ring-offset-2"
+                className="inline-flex items-center gap-2 rounded-lg bg-cyan-600 px-6 py-3 text-sm font-medium text-white shadow-lg shadow-cyan-600/10 transition-[background-color,box-shadow] hover:bg-cyan-700 hover:shadow-neutral-900/20 active:scale-[0.98] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-cyan-600 focus-visible:ring-offset-2"
               >
                 Try it free
                 <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor" aria-hidden="true">
@@ -83,7 +83,7 @@ export default function Home() {
               </Link>
               <a
                 href="#how-it-works"
-                className="inline-flex items-center gap-2 rounded-lg border border-neutral-200 bg-white px-6 py-3 text-sm font-medium text-neutral-700 transition-[border-color,background-color] hover:border-neutral-300 hover:bg-neutral-50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-neutral-900 focus-visible:ring-offset-2"
+                className="inline-flex items-center gap-2 rounded-lg border border-neutral-200 bg-white px-6 py-3 text-sm font-medium text-slate-700 transition-[border-color,background-color] hover:border-neutral-300 hover:bg-neutral-50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-neutral-900 focus-visible:ring-offset-2"
               >
                 How it works
               </a>
@@ -98,7 +98,7 @@ export default function Home() {
               <div className="absolute inset-12 rounded-full border border-neutral-200/50" />
               <div className="absolute inset-[4.5rem] rounded-full bg-neutral-100" />
               <div className="absolute inset-0 flex items-center justify-center">
-                <svg className="h-10 w-10 text-neutral-400" fill="none" viewBox="0 0 24 24" strokeWidth={1} stroke="currentColor" aria-hidden="true">
+                <svg className="h-10 w-10 text-slate-400" fill="none" viewBox="0 0 24 24" strokeWidth={1} stroke="currentColor" aria-hidden="true">
                   <path strokeLinecap="round" strokeLinejoin="round" d="M5.25 5.653c0-.856.917-1.398 1.667-.986l11.54 6.347a1.125 1.125 0 0 1 0 1.972l-11.54 6.347a1.125 1.125 0 0 1-1.667-.986V5.653Z" />
                 </svg>
               </div>
@@ -111,37 +111,42 @@ export default function Home() {
       <section id="how-it-works" className="border-t border-neutral-200 bg-neutral-50/50">
         <div className="mx-auto max-w-5xl px-6 py-24 sm:py-32">
           <div className="mb-16 max-w-lg">
-            <span className="text-xs font-medium uppercase tracking-widest text-neutral-500">
+            <span className="text-xs font-medium uppercase tracking-widest text-slate-500">
               How it works
             </span>
-            <h2 className="mt-3 text-3xl font-bold tracking-tight text-neutral-900 text-balance sm:text-4xl">
+            <h2 className="font-display mt-3 text-3xl font-bold tracking-tight text-slate-800 text-balance sm:text-4xl">
               Three simple steps
             </h2>
-            <p className="mt-4 text-base leading-relaxed text-neutral-600">
+            <p className="mt-4 text-base leading-relaxed text-slate-600">
               From paper report to video explanation in under two minutes.
             </p>
           </div>
 
           <div className="grid gap-6 sm:grid-cols-3">
-            {steps.map((step) => (
+            {steps.map((step, index) => (
               <div
                 key={step.number}
+                className="animate-fadeInUp"
+                style={{ animationDelay: `${index * 150}ms` }}
+              >
+              <div
                 className="group relative rounded-2xl border border-neutral-200 bg-white p-8 transition-[border-color,box-shadow] hover:border-neutral-300 hover:shadow-sm"
               >
                 <div className="mb-6 flex items-center justify-between">
-                  <div className="flex h-11 w-11 items-center justify-center rounded-xl bg-neutral-100 text-neutral-700 transition-colors group-hover:bg-neutral-900 group-hover:text-white">
+                  <div className="flex h-11 w-11 items-center justify-center rounded-xl bg-neutral-100 text-slate-700 transition-colors group-hover:bg-neutral-900 group-hover:text-white">
                     {step.icon}
                   </div>
-                  <span className="text-xs font-medium tabular-nums text-neutral-300">
+                  <span className="text-xs font-medium tabular-nums text-slate-300">
                     {step.number}
                   </span>
                 </div>
-                <h3 className="text-lg font-semibold text-neutral-900">
+                <h3 className="text-lg font-semibold text-slate-800">
                   {step.title}
                 </h3>
-                <p className="mt-2 text-sm leading-relaxed text-neutral-600">
+                <p className="mt-2 text-sm leading-relaxed text-slate-600">
                   {step.description}
                 </p>
+              </div>
               </div>
             ))}
           </div>

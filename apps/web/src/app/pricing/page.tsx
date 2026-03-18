@@ -53,7 +53,8 @@ export default function PricingPage() {
         {/* Cards grid */}
         <div className="grid grid-cols-1 gap-5 sm:grid-cols-3">
           {/* Free */}
-          <div className="flex flex-col rounded-2xl border border-neutral-200 bg-white p-6 shadow-sm">
+          <div className="flex animate-fadeInUp" style={{ animationDelay: '0ms' }}>
+          <div className="flex flex-1 flex-col rounded-2xl border border-neutral-200 bg-white p-6 shadow-sm">
             <p className="text-xs font-bold uppercase tracking-widest text-neutral-400">{t.freePlan}</p>
             <div className="mt-3 flex items-baseline gap-1">
               <span className="text-4xl font-extrabold text-neutral-900">$0</span>
@@ -72,10 +73,12 @@ export default function PricingPage() {
               {isProUser ? t.freePlan : t.currentPlan}
             </div>
           </div>
+          </div>
 
           {/* Pro Monthly */}
+          <div className="flex animate-fadeInUp" style={{ animationDelay: '100ms' }}>
           <div
-            className="relative flex flex-col overflow-hidden rounded-2xl p-6 shadow-lg"
+            className="relative flex flex-1 flex-col overflow-hidden rounded-2xl p-6 shadow-lg"
             style={{ background: 'linear-gradient(135deg, #ff6b6b, #ee5a24)' }}
           >
             {/* decorative circles */}
@@ -105,14 +108,16 @@ export default function PricingPage() {
             <button
               onClick={() => handleUpgrade('monthly')}
               disabled={!!loading || isProUser}
-              className="mt-6 w-full rounded-xl bg-white/25 py-2.5 text-sm font-bold text-white transition-colors hover:bg-white/35 disabled:cursor-not-allowed disabled:opacity-60"
+              className="mt-6 w-full rounded-xl bg-white/25 py-2.5 text-sm font-bold text-white transition-colors hover:bg-white/35 active:scale-[0.98] disabled:cursor-not-allowed disabled:opacity-60"
             >
               {loading === 'monthly' ? '…' : isProUser ? t.currentPlan : t.subscribeNow}
             </button>
           </div>
+          </div>
 
           {/* 30-Day Pass */}
-          <div className="flex flex-col rounded-2xl border-2 border-amber-300 bg-white p-6 shadow-sm">
+          <div className="flex animate-fadeInUp" style={{ animationDelay: '200ms' }}>
+          <div className="flex flex-1 flex-col rounded-2xl border-2 border-amber-300 bg-white p-6 shadow-sm">
             <p className="text-xs font-bold uppercase tracking-widest text-amber-600">{t.passTitle}</p>
             <div className="mt-3 flex items-baseline gap-1">
               <span className="text-4xl font-extrabold text-neutral-900">${PASS_PRICE}</span>
@@ -130,10 +135,11 @@ export default function PricingPage() {
             <button
               onClick={() => handleUpgrade('pass')}
               disabled={!!loading || isProUser}
-              className="mt-6 w-full rounded-xl border border-amber-300 bg-amber-50 py-2.5 text-sm font-bold text-amber-800 transition-colors hover:bg-amber-100 disabled:cursor-not-allowed disabled:opacity-60"
+              className="mt-6 w-full rounded-xl border border-amber-300 bg-amber-50 py-2.5 text-sm font-bold text-amber-800 transition-colors hover:bg-amber-100 active:scale-[0.98] disabled:cursor-not-allowed disabled:opacity-60"
             >
               {loading === 'pass' ? '…' : isProUser ? t.currentPlan : t.buyPassBtn}
             </button>
+          </div>
           </div>
         </div>
 

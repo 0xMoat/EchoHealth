@@ -99,7 +99,7 @@ export default function DashboardPage() {
       <main className="flex min-h-[calc(100vh-4rem)] items-center justify-center">
         <div className="flex flex-col items-center gap-3">
           <div className="h-8 w-8 animate-spin rounded-full border-2 border-neutral-200 border-t-neutral-900" />
-          <p className="text-sm text-neutral-500">Loading&hellip;</p>
+          <p className="text-sm text-slate-500">Loading&hellip;</p>
         </div>
       </main>
     )
@@ -117,14 +117,14 @@ export default function DashboardPage() {
       {/* Header */}
       <div className="mb-8 flex flex-col gap-6 sm:flex-row sm:items-end sm:justify-between">
         <div>
-          <p className="text-sm font-medium text-neutral-500">Welcome back</p>
-          <h1 className="mt-1 text-2xl font-bold tracking-tight text-neutral-900">
+          <p className="text-sm font-medium text-slate-500">Welcome back</p>
+          <h1 className="font-display mt-1 text-2xl font-bold tracking-tight text-slate-800">
             {user.nickname || 'Your Dashboard'}
           </h1>
         </div>
         <Link
           href="/upload"
-          className="inline-flex w-fit items-center gap-2 rounded-lg bg-neutral-900 px-5 py-2.5 text-sm font-medium text-white shadow-sm transition-[background-color] hover:bg-neutral-700 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-neutral-900 focus-visible:ring-offset-2"
+          className="inline-flex w-fit items-center gap-2 rounded-lg bg-cyan-600 px-5 py-2.5 text-sm font-medium text-white shadow-sm transition-[background-color] hover:bg-cyan-700 active:scale-[0.98] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-cyan-600 focus-visible:ring-offset-2"
         >
           <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor" aria-hidden="true">
             <path strokeLinecap="round" strokeLinejoin="round" d="M12 4.5v15m7.5-7.5h-15" />
@@ -141,9 +141,9 @@ export default function DashboardPage() {
       {/* Reports Section */}
       <div>
         <div className="mb-5 flex items-center justify-between">
-          <h2 className="text-lg font-semibold text-neutral-900">Your Reports</h2>
+          <h2 className="text-lg font-semibold text-slate-800">Your Reports</h2>
           {!reportsLoading && reports.length > 0 && (
-            <span className="text-sm text-neutral-500">
+            <span className="text-sm text-slate-500">
               {reports.length} report{reports.length !== 1 ? 's' : ''}
             </span>
           )}
@@ -171,17 +171,17 @@ export default function DashboardPage() {
           /* Empty state */
           <div className="rounded-2xl border border-dashed border-neutral-300 bg-neutral-50/50 py-16 text-center">
             <div className="mx-auto mb-4 flex h-12 w-12 items-center justify-center rounded-xl bg-neutral-100">
-              <svg className="h-6 w-6 text-neutral-400" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" aria-hidden="true">
+              <svg className="h-6 w-6 text-slate-400" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" aria-hidden="true">
                 <path strokeLinecap="round" strokeLinejoin="round" d="M19.5 14.25v-2.625a3.375 3.375 0 0 0-3.375-3.375h-1.5A1.125 1.125 0 0 1 13.5 7.125v-1.5a3.375 3.375 0 0 0-3.375-3.375H8.25m3.75 9v6m3-3H9m1.5-12H5.625c-.621 0-1.125.504-1.125 1.125v17.25c0 .621.504 1.125 1.125 1.125h12.75c.621 0 1.125-.504 1.125-1.125V11.25a9 9 0 0 0-9-9Z" />
               </svg>
             </div>
-            <p className="font-medium text-neutral-700">No reports yet</p>
-            <p className="mt-1 text-sm text-neutral-500">
+            <p className="font-medium text-slate-700">No reports yet</p>
+            <p className="mt-1 text-sm text-slate-500">
               Upload your first health report to get started.
             </p>
             <Link
               href="/upload"
-              className="mt-6 inline-flex items-center gap-2 rounded-lg bg-neutral-900 px-5 py-2.5 text-sm font-medium text-white transition-[background-color] hover:bg-neutral-700 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-neutral-900 focus-visible:ring-offset-2"
+              className="mt-6 inline-flex items-center gap-2 rounded-lg bg-cyan-600 px-5 py-2.5 text-sm font-medium text-white transition-[background-color] hover:bg-cyan-700 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-cyan-600 focus-visible:ring-offset-2"
             >
               Upload Report
               <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor" aria-hidden="true">
@@ -192,8 +192,14 @@ export default function DashboardPage() {
         ) : (
           /* Report list */
           <div className="space-y-3">
-            {reports.map((report) => (
-              <ReportCard key={report.id} report={report} />
+            {reports.map((report, index) => (
+              <div
+                key={report.id}
+                className="animate-fadeIn"
+                style={{ animationDelay: `${index * 60}ms` }}
+              >
+                <ReportCard report={report} />
+              </div>
             ))}
           </div>
         )}
@@ -201,8 +207,10 @@ export default function DashboardPage() {
     </main>
     {/* Success toast */}
     {toast && (
-      <div className="fixed bottom-6 left-1/2 z-50 -translate-x-1/2 rounded-xl bg-neutral-900 px-5 py-3 text-sm font-medium text-white shadow-lg">
-        {toast}
+      <div role="status" aria-live="polite" className="fixed bottom-6 left-1/2 z-50 -translate-x-1/2">
+        <div className="animate-slideUp rounded-xl bg-neutral-900 px-5 py-3 text-sm font-medium text-white shadow-lg">
+          {toast}
+        </div>
       </div>
     )}
     </>
