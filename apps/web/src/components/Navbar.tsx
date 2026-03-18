@@ -11,7 +11,7 @@ export default function Navbar() {
   return (
     <nav className="sticky top-0 z-50 border-b border-neutral-200 bg-white/80 backdrop-blur-md">
       <div className="mx-auto flex h-16 max-w-5xl items-center justify-between px-6">
-        <Link href="/" className="text-xl font-bold tracking-tight text-neutral-900">
+        <Link href="/" className="text-xl font-bold tracking-tight text-slate-900">
           EchoHealth
         </Link>
 
@@ -22,13 +22,13 @@ export default function Navbar() {
             <>
               <Link
                 href="/dashboard"
-                className="rounded-md px-2 py-1 text-sm font-medium text-neutral-600 transition-colors hover:text-neutral-900 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-neutral-900 focus-visible:ring-offset-2"
+                className="rounded-md px-2 py-1 text-sm font-medium text-slate-600 transition-colors hover:text-slate-800 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-neutral-900 focus-visible:ring-offset-2"
               >
                 Dashboard
               </Link>
               <Link
                 href="/upload"
-                className="rounded-lg bg-neutral-900 px-4 py-2 text-sm font-medium text-white transition-colors hover:bg-neutral-700 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-neutral-900 focus-visible:ring-offset-2"
+                className="rounded-lg bg-cyan-600 px-4 py-2 text-sm font-medium text-white transition-colors hover:bg-cyan-700 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-cyan-600 focus-visible:ring-offset-2"
               >
                 New Report
               </Link>
@@ -47,7 +47,7 @@ export default function Navbar() {
               )}
               <button
                 onClick={() => logout()}
-                className="rounded-md px-2 py-1 text-sm font-medium text-neutral-500 transition-colors hover:text-neutral-700 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-neutral-900 focus-visible:ring-offset-2"
+                className="rounded-md px-2 py-1 text-sm font-medium text-slate-500 transition-colors hover:text-slate-700 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-neutral-900 focus-visible:ring-offset-2"
               >
                 Sign out
               </button>
@@ -55,7 +55,7 @@ export default function Navbar() {
           ) : (
             <Link
               href="/login"
-              className="rounded-lg bg-neutral-900 px-4 py-2 text-sm font-medium text-white transition-colors hover:bg-neutral-700 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-neutral-900 focus-visible:ring-offset-2"
+              className="rounded-lg bg-cyan-600 px-4 py-2 text-sm font-medium text-white transition-colors hover:bg-cyan-700 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-cyan-600 focus-visible:ring-offset-2"
             >
               Sign in
             </Link>
@@ -65,7 +65,7 @@ export default function Navbar() {
             <button
               onClick={() => setLang('en')}
               className={`rounded-full px-2.5 py-1 font-medium transition-colors ${
-                lang === 'en' ? 'bg-white text-neutral-900 shadow-sm' : 'text-neutral-500 hover:text-neutral-700'
+                lang === 'en' ? 'bg-white text-slate-800 shadow-sm' : 'text-slate-500 hover:text-slate-700'
               }`}
             >
               {t.langEN}
@@ -73,7 +73,7 @@ export default function Navbar() {
             <button
               onClick={() => setLang('zh')}
               className={`rounded-full px-2.5 py-1 font-medium transition-colors ${
-                lang === 'zh' ? 'bg-white text-neutral-900 shadow-sm' : 'text-neutral-500 hover:text-neutral-700'
+                lang === 'zh' ? 'bg-white text-slate-800 shadow-sm' : 'text-slate-500 hover:text-slate-700'
               }`}
             >
               {t.langZH}

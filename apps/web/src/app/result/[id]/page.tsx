@@ -56,7 +56,7 @@ export default function ResultPage() {
       <main className="flex min-h-[calc(100vh-4rem)] items-center justify-center">
         <div className="flex flex-col items-center gap-3">
           <div className="h-8 w-8 animate-spin rounded-full border-2 border-neutral-200 border-t-neutral-900" />
-          <p className="text-sm text-neutral-500">Loading&hellip;</p>
+          <p className="text-sm text-slate-500">Loading&hellip;</p>
         </div>
       </main>
     )
@@ -73,13 +73,13 @@ export default function ResultPage() {
               <path strokeLinecap="round" strokeLinejoin="round" d="M12 9v3.75m-9.303 3.376c-.866 1.5.217 3.374 1.948 3.374h14.71c1.73 0 2.813-1.874 1.948-3.374L13.949 3.378c-.866-1.5-3.032-1.5-3.898 0L2.697 16.126ZM12 15.75h.007v.008H12v-.008Z" />
             </svg>
           </div>
-          <p className="font-medium text-neutral-900">{error || 'Report not found'}</p>
-          <p className="mt-1 text-sm text-neutral-500">
+          <p className="font-medium text-slate-800">{error || 'Report not found'}</p>
+          <p className="mt-1 text-sm text-slate-500">
             The report could not be loaded. Please try again.
           </p>
           <Link
             href="/dashboard"
-            className="mt-6 inline-flex items-center gap-2 rounded-lg bg-neutral-900 px-5 py-2.5 text-sm font-medium text-white transition-[background-color] hover:bg-neutral-700 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-neutral-900 focus-visible:ring-offset-2"
+            className="mt-6 inline-flex items-center gap-2 rounded-lg bg-cyan-600 px-5 py-2.5 text-sm font-medium text-white transition-[background-color] hover:bg-cyan-700 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-cyan-600 focus-visible:ring-offset-2"
           >
             Back to Dashboard
           </Link>
@@ -112,11 +112,11 @@ export default function ResultPage() {
             <div className="absolute inset-9 rounded-full bg-neutral-100" />
             <div className="absolute inset-0 flex items-center justify-center">
               {isPending ? (
-                <svg className="h-8 w-8 text-neutral-400" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" aria-hidden="true">
+                <svg className="h-8 w-8 text-slate-400" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" aria-hidden="true">
                   <path strokeLinecap="round" strokeLinejoin="round" d="M12 6v6h4.5m4.5 0a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z" />
                 </svg>
               ) : (
-                <svg className="h-8 w-8 animate-spin text-neutral-500" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" aria-hidden="true">
+                <svg className="h-8 w-8 animate-spin text-slate-500" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" aria-hidden="true">
                   <path strokeLinecap="round" strokeLinejoin="round" d="M16.023 9.348h4.992v-.001M2.985 19.644v-4.992m0 0h4.992m-4.993 0 3.181 3.183a8.25 8.25 0 0 0 13.803-3.7M4.031 9.865a8.25 8.25 0 0 1 13.803-3.7l3.181 3.182" />
                 </svg>
               )}
@@ -125,17 +125,17 @@ export default function ResultPage() {
 
           <StatusBadge status={report.status} />
 
-          <h1 className="mt-6 text-2xl font-bold tracking-tight text-neutral-900">
+          <h1 className="font-display mt-6 text-2xl font-bold tracking-tight text-slate-800">
             {isPending ? 'Waiting in Queue\u2026' : 'Generating Your Video\u2026'}
           </h1>
 
-          <p className="mt-3 max-w-md text-sm leading-relaxed text-neutral-500">
+          <p className="mt-3 max-w-md text-sm leading-relaxed text-slate-500">
             {isPending
               ? 'Your report is queued and will begin processing shortly. Sit tight.'
               : 'Our AI is analyzing your health report and creating a personalized video explanation.'}
           </p>
 
-          <p className="mt-6 text-xs text-neutral-400">
+          <p className="mt-6 text-xs text-slate-400">
             This usually takes 1&ndash;3 minutes
           </p>
 
@@ -170,15 +170,15 @@ export default function ResultPage() {
 
           <StatusBadge status={report.status} />
 
-          <h1 className="mt-4 text-xl font-bold text-neutral-900">Video Generation Failed</h1>
-          <p className="mt-2 text-sm text-neutral-600">
+          <h1 className="font-display mt-4 text-xl font-bold text-slate-800">Video Generation Failed</h1>
+          <p className="mt-2 text-sm text-slate-600">
             {report.errorMsg || 'Something went wrong while generating your video. Please try again.'}
           </p>
 
           <div className="mt-8 flex flex-wrap items-center justify-center gap-3">
             <Link
               href="/upload"
-              className="inline-flex items-center gap-2 rounded-lg bg-neutral-900 px-5 py-2.5 text-sm font-medium text-white transition-[background-color] hover:bg-neutral-700 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-neutral-900 focus-visible:ring-offset-2"
+              className="inline-flex items-center gap-2 rounded-lg bg-cyan-600 px-5 py-2.5 text-sm font-medium text-white transition-[background-color] hover:bg-cyan-700 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-cyan-600 focus-visible:ring-offset-2"
             >
               Try Again
               <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor" aria-hidden="true">
@@ -187,7 +187,7 @@ export default function ResultPage() {
             </Link>
             <Link
               href="/dashboard"
-              className="inline-flex items-center gap-2 rounded-lg border border-neutral-200 bg-white px-5 py-2.5 text-sm font-medium text-neutral-700 transition-[border-color,background-color] hover:border-neutral-300 hover:bg-neutral-50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-neutral-900 focus-visible:ring-offset-2"
+              className="inline-flex items-center gap-2 rounded-lg border border-neutral-200 bg-white px-5 py-2.5 text-sm font-medium text-slate-700 transition-[border-color,background-color] hover:border-neutral-300 hover:bg-neutral-50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-neutral-900 focus-visible:ring-offset-2"
             >
               Back to Dashboard
             </Link>
@@ -215,7 +215,7 @@ export default function ResultPage() {
           <div>
             <div className="mb-2 flex items-center gap-3">
               <StatusBadge status={report.status} />
-              <span className="text-xs text-neutral-400">
+              <span className="text-xs text-slate-400">
                 {new Intl.DateTimeFormat(undefined, {
                   year: 'numeric',
                   month: 'short',
@@ -223,7 +223,7 @@ export default function ResultPage() {
                 }).format(new Date(report.createdAt))}
               </span>
             </div>
-            <h1 className="text-2xl font-bold tracking-tight text-neutral-900">
+            <h1 className="font-display text-2xl font-bold tracking-tight text-slate-800">
               Your Video Report
             </h1>
           </div>
@@ -240,7 +240,7 @@ export default function ResultPage() {
             <a
               href={report.video.cosUrl}
               download
-              className="inline-flex items-center gap-2 rounded-lg bg-neutral-900 px-5 py-2.5 text-sm font-medium text-white shadow-sm transition-[background-color] hover:bg-neutral-700 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-neutral-900 focus-visible:ring-offset-2"
+              className="inline-flex items-center gap-2 rounded-lg bg-cyan-600 px-5 py-2.5 text-sm font-medium text-white shadow-sm transition-[background-color] hover:bg-cyan-700 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-cyan-600 focus-visible:ring-offset-2"
             >
               <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor" aria-hidden="true">
                 <path strokeLinecap="round" strokeLinejoin="round" d="M3 16.5v2.25A2.25 2.25 0 0 0 5.25 21h13.5A2.25 2.25 0 0 0 21 18.75V16.5M16.5 12 12 16.5m0 0L7.5 12m4.5 4.5V3" />
@@ -250,7 +250,7 @@ export default function ResultPage() {
           )}
           <Link
             href="/upload"
-            className="inline-flex items-center gap-2 rounded-lg border border-neutral-200 bg-white px-5 py-2.5 text-sm font-medium text-neutral-700 transition-[border-color,background-color] hover:border-neutral-300 hover:bg-neutral-50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-neutral-900 focus-visible:ring-offset-2"
+            className="inline-flex items-center gap-2 rounded-lg border border-neutral-200 bg-white px-5 py-2.5 text-sm font-medium text-slate-700 transition-[border-color,background-color] hover:border-neutral-300 hover:bg-neutral-50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-neutral-900 focus-visible:ring-offset-2"
           >
             <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor" aria-hidden="true">
               <path strokeLinecap="round" strokeLinejoin="round" d="M12 4.5v15m7.5-7.5h-15" />
@@ -259,7 +259,7 @@ export default function ResultPage() {
           </Link>
           <Link
             href="/dashboard"
-            className="inline-flex items-center gap-2 text-sm font-medium text-neutral-500 transition-colors hover:text-neutral-700"
+            className="inline-flex items-center gap-2 text-sm font-medium text-slate-500 transition-colors hover:text-slate-700"
           >
             Back to Dashboard
           </Link>

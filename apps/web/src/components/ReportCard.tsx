@@ -18,15 +18,15 @@ export default function ReportCard({ report }: { report: Report }) {
     >
       <div className="flex items-start justify-between">
         <div className="min-w-0 flex-1 space-y-1">
-          <p className="font-medium text-neutral-900 group-hover:text-neutral-700">
+          <p className="font-medium text-slate-800 group-hover:text-slate-700">
             {report.type === 'GENERAL' ? 'Health Report' : report.type.replace(/_/g, ' ').toLowerCase().replace(/\b\w/g, c => c.toUpperCase())}
           </p>
-          <p className="text-sm text-neutral-500">{date}</p>
+          <p className="text-sm text-slate-500">{date}</p>
         </div>
         <StatusBadge status={report.status} />
       </div>
       {report.status === 'COMPLETED' && report.video && (
-        <p className="mt-3 text-sm text-neutral-500">
+        <p className="mt-3 text-sm text-slate-500">
           Video ready · {Math.round(report.video.duration)}s
         </p>
       )}

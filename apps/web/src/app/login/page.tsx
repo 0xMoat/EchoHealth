@@ -20,7 +20,7 @@ export default function LoginPage() {
       <main className="flex min-h-[calc(100vh-4rem)] items-center justify-center">
         <div className="flex flex-col items-center gap-3">
           <div className="h-8 w-8 animate-spin rounded-full border-2 border-neutral-200 border-t-neutral-900" />
-          <p className="text-sm text-neutral-500">Loading&hellip;</p>
+          <p className="text-sm text-slate-500">Loading&hellip;</p>
         </div>
       </main>
     )
@@ -50,10 +50,10 @@ export default function LoginPage() {
               </svg>
             </div>
 
-            <h1 className="text-xl font-bold tracking-tight text-neutral-900">
+            <h1 className="font-display text-xl font-bold tracking-tight text-slate-800">
               Sign in to EchoHealth
             </h1>
-            <p className="mt-2 text-sm leading-relaxed text-neutral-500">
+            <p className="mt-2 text-sm leading-relaxed text-slate-500">
               Get AI-powered video explanations of your health reports.
             </p>
           </div>
@@ -64,7 +64,7 @@ export default function LoginPage() {
         </div>
 
         {/* Subtle bottom text */}
-        <p className="mt-6 text-center text-xs text-neutral-400">
+        <p className="mt-6 text-center text-xs text-slate-400">
           By signing in, you agree to our terms of service.
         </p>
       </div>

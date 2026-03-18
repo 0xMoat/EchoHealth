@@ -44,10 +44,10 @@ export default function PricingPage() {
           <p className="mb-3 text-xs font-bold uppercase tracking-[3px] text-rose-500">
             {t.pricingTagline}
           </p>
-          <h1 className="text-4xl font-extrabold tracking-tight text-neutral-900">
+          <h1 className="font-display text-4xl font-extrabold tracking-tight text-slate-800">
             {t.pricingTitle}
           </h1>
-          <p className="mt-3 text-neutral-500">{t.pricingSubtitle}</p>
+          <p className="mt-3 text-slate-500">{t.pricingSubtitle}</p>
         </div>
 
         {/* Cards grid */}
@@ -55,13 +55,13 @@ export default function PricingPage() {
           {/* Free */}
           <div className="flex animate-fadeInUp" style={{ animationDelay: '0ms' }}>
           <div className="flex flex-1 flex-col rounded-2xl border border-neutral-200 bg-white p-6 shadow-sm">
-            <p className="text-xs font-bold uppercase tracking-widest text-neutral-400">{t.freePlan}</p>
+            <p className="text-xs font-bold uppercase tracking-widest text-slate-400">{t.freePlan}</p>
             <div className="mt-3 flex items-baseline gap-1">
-              <span className="text-4xl font-extrabold text-neutral-900">$0</span>
+              <span className="text-4xl font-extrabold text-slate-800">$0</span>
             </div>
-            <p className="mt-1 text-xs text-neutral-400">{t.forever}</p>
+            <p className="mt-1 text-xs text-slate-400">{t.forever}</p>
 
-            <ul className="mt-6 flex-1 space-y-2 text-sm text-neutral-600">
+            <ul className="mt-6 flex-1 space-y-2 text-sm text-slate-600">
               <li className="flex items-center gap-2"><CheckIcon />{t.free3Reports}</li>
               <li className="flex items-center gap-2"><CheckIcon />{t.freeImagesAndPdf}</li>
               <li className="flex items-center gap-2"><CheckIcon />{t.freeAutoLang}</li>
@@ -69,7 +69,7 @@ export default function PricingPage() {
               <li className="flex items-center gap-2 opacity-40"><XIcon />{t.freeQueue}</li>
             </ul>
 
-            <div className="mt-6 rounded-lg bg-neutral-100 py-2.5 text-center text-sm font-semibold text-neutral-400">
+            <div className="mt-6 rounded-lg bg-neutral-100 py-2.5 text-center text-sm font-semibold text-slate-400">
               {isProUser ? t.freePlan : t.currentPlan}
             </div>
           </div>
@@ -120,11 +120,11 @@ export default function PricingPage() {
           <div className="flex flex-1 flex-col rounded-2xl border-2 border-amber-300 bg-white p-6 shadow-sm">
             <p className="text-xs font-bold uppercase tracking-widest text-amber-600">{t.passTitle}</p>
             <div className="mt-3 flex items-baseline gap-1">
-              <span className="text-4xl font-extrabold text-neutral-900">${PASS_PRICE}</span>
+              <span className="text-4xl font-extrabold text-slate-800">${PASS_PRICE}</span>
             </div>
-            <p className="mt-1 text-xs text-neutral-400">{t.oneTime}</p>
+            <p className="mt-1 text-xs text-slate-400">{t.oneTime}</p>
 
-            <ul className="mt-6 flex-1 space-y-2 text-sm text-neutral-600">
+            <ul className="mt-6 flex-1 space-y-2 text-sm text-slate-600">
               <li className="flex items-center gap-2"><CheckIcon />{t.passAllPro}</li>
               <li className="flex items-center gap-2"><CheckIcon />{t.pass30Reports}</li>
               <li className="flex items-center gap-2"><CheckIcon />{t.passExamSeason}</li>
@@ -149,7 +149,7 @@ export default function PricingPage() {
         )}
 
         {/* Trust footer */}
-        <p className="mt-10 text-center text-xs text-neutral-400">{t.secureCheckout}</p>
+        <p className="mt-10 text-center text-xs text-slate-400">{t.secureCheckout}</p>
       </div>
     </main>
   )
@@ -173,7 +173,7 @@ function CheckIconWhite() {
 
 function XIcon() {
   return (
-    <svg className="h-4 w-4 shrink-0 text-neutral-300" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor">
+    <svg className="h-4 w-4 shrink-0 text-slate-300" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor">
       <path strokeLinecap="round" strokeLinejoin="round" d="M6 18 18 6M6 6l12 12" />
     </svg>
   )
