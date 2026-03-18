@@ -79,7 +79,7 @@ export default function UploadPage() {
   }
 
   return (
-    <main className="mx-auto max-w-2xl px-6 py-12">
+    <main id="main-content" className="mx-auto max-w-2xl px-6 py-12">
       <h1 className="font-display text-2xl font-bold tracking-tight text-slate-800 text-balance">Upload Health Report</h1>
       <p className="mt-2 text-slate-600">
         Upload images or a PDF of your health checkup report.
@@ -91,7 +91,9 @@ export default function UploadPage() {
       {quotaRemaining <= 0 ? (
         /* ── Quota exhausted blocker ── */
         <div className="mt-8 flex flex-col items-center rounded-2xl border border-dashed border-amber-300 bg-gradient-to-br from-amber-50 to-orange-50 px-8 py-12 text-center">
-          <span className="text-5xl">🔒</span>
+          <svg className="h-12 w-12 text-amber-400" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" aria-hidden="true">
+            <path strokeLinecap="round" strokeLinejoin="round" d="M16.5 10.5V6.75a4.5 4.5 0 1 0-9 0v3.75m-.75 11.25h10.5a2.25 2.25 0 0 0 2.25-2.25v-6.75a2.25 2.25 0 0 0-2.25-2.25H6.75a2.25 2.25 0 0 0-2.25 2.25v6.75a2.25 2.25 0 0 0 2.25 2.25Z" />
+          </svg>
           <h2 className="mt-4 text-lg font-bold text-slate-800">{t.allFreeUsed}</h2>
           <p className="mt-2 whitespace-pre-line text-sm text-slate-500">{t.upgradeToKeep}</p>
           <div className="mt-6 flex flex-wrap justify-center gap-3">
@@ -158,9 +160,17 @@ export default function UploadPage() {
           <button
             onClick={handleSubmit}
             disabled={files.length === 0 || uploading}
-            className="w-full rounded-lg bg-cyan-600 px-6 py-3 text-sm font-medium text-white transition-colors hover:bg-cyan-700 active:scale-[0.98] disabled:cursor-not-allowed disabled:opacity-50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-cyan-600 focus-visible:ring-offset-2"
+            className="inline-flex w-full items-center justify-center gap-2 rounded-lg bg-cyan-600 px-6 py-3 text-sm font-medium text-white transition-colors hover:bg-cyan-700 active:scale-[0.98] disabled:cursor-not-allowed disabled:opacity-50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-cyan-600 focus-visible:ring-offset-2"
           >
-            {uploading ? 'Uploading\u2026' : 'Generate Video'}
+            {uploading ? (
+              <>
+                <svg className="h-4 w-4 animate-spin" fill="none" viewBox="0 0 24 24" aria-hidden="true">
+                  <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
+                  <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z" />
+                </svg>
+                Uploading{'\u2026'}
+              </>
+            ) : 'Generate Video'}
           </button>
         </div>
       )}

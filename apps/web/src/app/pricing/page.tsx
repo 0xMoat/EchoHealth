@@ -35,8 +35,8 @@ export default function PricingPage() {
 
   return (
     <main
-      className="min-h-screen px-6 py-16"
-      style={{ background: 'linear-gradient(135deg, #fff7ed 0%, #fdf4ff 50%, #fff0f3 100%)' }}
+      id="main-content"
+      className="min-h-screen bg-gradient-to-br from-orange-50 via-fuchsia-50 to-rose-50 px-6 py-16"
     >
       <div className="mx-auto max-w-4xl">
         {/* Header */}
@@ -78,8 +78,7 @@ export default function PricingPage() {
           {/* Pro Monthly */}
           <div className="flex animate-fadeInUp" style={{ animationDelay: '100ms' }}>
           <div
-            className="relative flex flex-1 flex-col overflow-hidden rounded-2xl p-6 shadow-lg"
-            style={{ background: 'linear-gradient(135deg, #ff6b6b, #ee5a24)' }}
+            className="relative flex flex-1 flex-col overflow-hidden rounded-2xl bg-gradient-to-br from-red-400 to-orange-600 p-6 shadow-lg"
           >
             {/* decorative circles */}
             <div className="pointer-events-none absolute -right-5 -top-5 h-20 w-20 rounded-full bg-white/10" />

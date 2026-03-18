@@ -53,7 +53,7 @@ export default function ResultPage() {
 
   if (authLoading || loading) {
     return (
-      <main className="flex min-h-[calc(100vh-4rem)] items-center justify-center">
+      <main id="main-content" className="flex min-h-[calc(100vh-4rem)] items-center justify-center">
         <div className="flex flex-col items-center gap-3">
           <div className="h-8 w-8 animate-spin rounded-full border-2 border-neutral-200 border-t-neutral-900" />
           <p className="text-sm text-slate-500">Loading&hellip;</p>

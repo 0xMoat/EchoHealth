@@ -38,7 +38,7 @@ export default function Home() {
   return (
     <>
       {/* Hero */}
-      <section className="relative overflow-hidden">
+      <section id="main-content" className="relative overflow-hidden">
         {/* Subtle dot grid background */}
         <div
           className="pointer-events-none absolute inset-0 opacity-[0.03]"

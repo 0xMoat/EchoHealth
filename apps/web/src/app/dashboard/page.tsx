@@ -113,7 +113,7 @@ export default function DashboardPage() {
     <Suspense fallback={null}>
       <UpgradeChecker onToast={setToast} />
     </Suspense>
-    <main className="mx-auto min-h-[calc(100vh-4rem)] max-w-5xl px-6 py-10">
+    <main id="main-content" className="mx-auto min-h-[calc(100vh-4rem)] max-w-5xl px-6 py-10">
       {/* Header */}
       <div className="mb-8 flex flex-col gap-6 sm:flex-row sm:items-end sm:justify-between">
         <div>

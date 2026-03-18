@@ -29,7 +29,7 @@ export default function LoginPage() {
   if (user) return null
 
   return (
-    <main className="relative flex min-h-[calc(100vh-4rem)] items-center justify-center px-6">
+    <main id="main-content" className="relative flex min-h-[calc(100vh-4rem)] items-center justify-center px-6">
       {/* Background texture */}
       <div
         className="pointer-events-none absolute inset-0 opacity-[0.02]"
