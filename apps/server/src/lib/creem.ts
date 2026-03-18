@@ -17,8 +17,10 @@ export async function createCheckout({ plan, userId, userEmail }: CreateCheckout
   const apiKey = process.env.CREEM_API_KEY
   const webBaseUrl = process.env.WEB_BASE_URL || 'http://localhost:3001'
   const productId = CREEM_PLANS[plan]
+  const baseUrl = process.env.CREEM_API_BASE_URL
+    || (apiKey?.startsWith('creem_test_') ? 'https://test-api.creem.io' : 'https://api.creem.io')
 
-  const res = await fetch('https://api.creem.io/v1/checkouts', {
+  const res = await fetch(`${baseUrl}/v1/checkouts`, {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',
@@ -29,7 +31,6 @@ export async function createCheckout({ plan, userId, userEmail }: CreateCheckout
       customer: { email: userEmail },
       metadata: { userId },
       success_url: `${webBaseUrl}/dashboard?upgraded=true`,
-      cancel_url: `${webBaseUrl}/pricing`,
     }),
   })
 

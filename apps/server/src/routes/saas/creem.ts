@@ -21,13 +21,19 @@ export default async function creemRoutes(app: FastifyInstance) {
       return reply.status(400).send({ error: 'User email not found' })
     }
 
-    const checkoutUrl = await createCheckout({
-      plan: plan as CreemPlan,
-      userId: request.user.id,
-      userEmail: user.email,
-    })
-
-    return { checkoutUrl }
+    try {
+      const checkoutUrl = await createCheckout({
+        plan: plan as CreemPlan,
+        userId: request.user.id,
+        userEmail: user.email,
+      })
+      return { checkoutUrl }
+    } catch (err) {
+      request.log.error(err, 'Creem checkout failed')
+      return reply.status(502).send({
+        error: 'Payment service unavailable. Please try again later.',
+      })
+    }
   })
 
   // POST /webhook — no auth, rawBody required for HMAC verification

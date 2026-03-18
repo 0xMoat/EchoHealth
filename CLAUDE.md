@@ -4,22 +4,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Project Status
 
-EchoHealth is a new project with no source code yet. The repository currently only contains Claude Code skill configurations.
-
-## Installed Skills
-
-The following skills are available via `skills-lock.json` (sourced from `ReScienceLab/opc-skills`):
-
-- `archive` - Session archiving and knowledge persistence
-- `banner-creator` - AI-generated banners and headers
-- `domain-hunter` - Domain search and pricing
-- `logo-creator` - AI-generated logos and icons
-- `nanobanana` - Image generation via Google Gemini
-- `producthunt` - Product Hunt data retrieval
-- `reddit` - Reddit search and content retrieval
-- `requesthunt` - User demand research from real feedback
-- `seo-geo` - SEO and AI search engine optimization
-- `twitter` - Twitter/X content retrieval
+EchoHealth — AI 健康报告视频解读。包含 Fastify 后端 (`apps/server`)、Next.js SaaS 前端 (`apps/web`)、微信小程序 (`apps/miniprogram`)。
 
 ## Package Manager
 
@@ -28,6 +13,13 @@ Use `pnpm` (not npm or yarn).
 ## Deployment
 
 Prefer Vercel for static web deployments.
+
+## Creem 支付集成注意事项
+
+- **Test vs Production API**：test key（`creem_test_*`）必须使用 `https://test-api.creem.io`，production key 使用 `https://api.creem.io`。用错会返回 403 Forbidden，错误信息不会提示 base URL 问题。
+- **不支持 `cancel_url`**：Creem checkout API 的 request body 不接受 `cancel_url` 字段，传了会返回 400。
+- **URL 必须是域名或 localhost**：`success_url` 不接受 IP 地址（如 `http://137.131.22.123:3001`），会返回 400 "URL must be valid"。必须用 `http://localhost:*` 或正式域名。
+- **环境变量**：`CREEM_API_BASE_URL` 控制 API 地址，`WEB_BASE_URL` 控制 checkout 回跳地址。
 
 ## 部署原则
 

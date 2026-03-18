@@ -219,6 +219,19 @@ curl http://localhost:3000/health
 | `GEMINI_API_KEY` | | Google Gemini API Key |
 | `LLM_SCRIPT_PROVIDER` | `claude` | 脚本生成 LLM 提供商 |
 
+### Creem 支付
+
+| 变量 | 说明 |
+|------|------|
+| `CREEM_API_KEY` | Creem API Key，test key 以 `creem_test_` 开头 |
+| `CREEM_API_BASE_URL` | API 地址。test key 必须用 `https://test-api.creem.io`，production 用 `https://api.creem.io`。若不设置，代码会根据 key 前缀自动检测 |
+| `CREEM_WEBHOOK_SECRET` | Webhook HMAC 签名密钥 |
+| `CREEM_PRODUCT_MONTHLY` | 月订阅产品 ID |
+| `CREEM_PRODUCT_PASS` | 30 天通行证产品 ID |
+| `WEB_BASE_URL` | checkout 成功后回跳地址的前缀，必须是域名或 `http://localhost:*`（Creem 不接受 IP 地址） |
+
+> **注意：** test key 用 production API 地址会返回 403 Forbidden，错误信息不会提示 base URL 问题。
+
 ### CORS
 
 | 变量 | 默认值 | 说明 |
