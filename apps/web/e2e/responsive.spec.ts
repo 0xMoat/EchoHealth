@@ -7,6 +7,7 @@ test.describe('Mobile Responsive', () => {
     await page.goto('/')
     // Hero should be visible
     await expect(page.locator('h1').first()).toBeVisible()
+    await expect(page.getByRole('region', { name: /loved by families|用户好评/i })).toBeVisible()
     // No horizontal overflow
     const body = page.locator('body')
     const bodyWidth = await body.evaluate((el) => el.scrollWidth)

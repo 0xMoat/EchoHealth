@@ -1,5 +1,25 @@
 import { test, expect } from '@playwright/test'
 
+async function measureLandingLayout(page: Parameters<typeof test>[0]['page']) {
+  return page.evaluate(() => {
+    const rect = (selector: string) => {
+      const element = document.querySelector(selector)
+      if (!element) return null
+      const { y, height } = element.getBoundingClientRect()
+      return { y: Math.round(y), height: Math.round(height) }
+    }
+
+    return {
+      bodyHeight: document.body.scrollHeight,
+      heroActions: rect('#main-content .mt-10'),
+      howItWorks: rect('#how-it-works'),
+      features: rect('section:nth-of-type(4)'),
+      testimonials: rect('section:nth-of-type(5)'),
+      pricing: rect('section:nth-of-type(7)'),
+    }
+  })
+}
+
 test.describe('Internationalization (i18n)', () => {
   test('defaults to English', async ({ page }) => {
     await page.goto('/')
@@ -95,5 +115,52 @@ test.describe('Internationalization (i18n)', () => {
       await expect(page.getByText('$4.99')).toBeVisible()
       await expect(page.getByText('$7.99')).toBeVisible()
     }
+  })
+
+  test('landing layout stays stable when switching languages', async ({ page }) => {
+    await page.goto('/')
+
+    const before = await measureLandingLayout(page)
+
+    const zhBtn = page.locator('button').filter({ hasText: '中' }).first()
+    await zhBtn.click()
+    await page.waitForTimeout(300)
+
+    const after = await measureLandingLayout(page)
+
+    expect(Math.abs(after.bodyHeight - before.bodyHeight)).toBeLessThanOrEqual(24)
+    expect(Math.abs((after.heroActions?.y ?? 0) - (before.heroActions?.y ?? 0))).toBeLessThanOrEqual(0)
+    expect(Math.abs((after.howItWorks?.y ?? 0) - (before.howItWorks?.y ?? 0))).toBeLessThanOrEqual(16)
+    expect(Math.abs((after.features?.y ?? 0) - (before.features?.y ?? 0))).toBeLessThanOrEqual(16)
+    expect(Math.abs((after.testimonials?.y ?? 0) - (before.testimonials?.y ?? 0))).toBeLessThanOrEqual(16)
+    expect(Math.abs((after.pricing?.y ?? 0) - (before.pricing?.y ?? 0))).toBeLessThanOrEqual(16)
+  })
+
+  test('desktop language toggle height matches adjacent auth button', async ({ page, browserName }) => {
+    test.skip(browserName !== 'chromium', 'Desktop-only layout assertion')
+
+    await page.setViewportSize({ width: 1280, height: 800 })
+    await page.goto('/')
+
+    const metrics = await page.evaluate(() => {
+      const enButton = document.querySelector('button[aria-label="Switch to English"]')
+      const languageGroup = enButton?.parentElement
+      const authButton = document.querySelector('a[href="/login"]')
+
+      if (!languageGroup || !authButton) {
+        return null
+      }
+
+      const languageRect = languageGroup.getBoundingClientRect()
+      const authRect = authButton.getBoundingClientRect()
+
+      return {
+        languageHeight: Math.round(languageRect.height),
+        authHeight: Math.round(authRect.height),
+      }
+    })
+
+    expect(metrics).not.toBeNull()
+    expect(metrics?.languageHeight).toBe(metrics?.authHeight)
   })
 })
