@@ -56,6 +56,11 @@
       "sourceType": "github",
       "computedHash": "b5f404df04c3b94dbca7248d177902f66af237b168ca7331a1455aaa30006cae"
     },
+    "strategic-compact": {
+      "source": "affaan-m/everything-claude-code",
+      "sourceType": "github",
+      "computedHash": "9d9718a451a832920f42feb3d5c5e2a66e138d385e62011aed3bcb0bbe871570"
+    },
     "twitter": {
       "source": "ReScienceLab/opc-skills",
       "sourceType": "github",

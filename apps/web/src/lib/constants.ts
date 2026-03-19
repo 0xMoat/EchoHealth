@@ -9,9 +9,3 @@ export const LIMITS = {
 export const PRO_MONTHLY_PRICE = 4.99   // USD
 export const PASS_PRICE        = 7.99   // USD
 export const PASS_DAYS         = 30
-
-export const LANGUAGE_OPTIONS = [
-  { value: 'AUTO', label: 'Auto-detect' },
-  { value: 'EN', label: 'English' },
-  { value: 'ZH', label: '中文' },
-] as const

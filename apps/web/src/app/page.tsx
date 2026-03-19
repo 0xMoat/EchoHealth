@@ -119,6 +119,9 @@ export default function Home() {
       <section id="main-content" className="overflow-hidden">
         <div className="mx-auto max-w-5xl px-6 pb-16 pt-28 sm:pb-20 sm:pt-36">
           <div className="max-w-2xl min-h-[20.5rem]">
+            <p className="text-sm font-semibold uppercase tracking-[0.16em] text-cyan-700/80">
+              {t.heroEyebrow}
+            </p>
             <h1 className="font-display text-4xl font-bold leading-[1.1] tracking-tight text-slate-800 text-balance sm:text-5xl lg:text-6xl">
               {t.heroTitle1}{' '}
               <span className="text-cyan-700">{t.heroTitle2}</span>

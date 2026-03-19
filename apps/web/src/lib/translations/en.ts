@@ -15,53 +15,60 @@ const en = {
   proBadge: '\u2728 Pro',
   langEN: 'EN',
   langZH: '\u4E2D',
+  autoDetect: 'Auto-detect',
+  english: 'English',
+  chinese: 'Chinese',
+  switchToEnglish: 'Switch to English',
+  switchToChinese: 'Switch to Chinese',
+  openMenu: 'Open menu',
+  closeMenu: 'Close menu',
 
   // ── Landing page ──
-  heroEyebrow: 'AI-Powered Health Insights',
+  heroEyebrow: 'AI turns health reports into video explanations',
   heroTitle1: 'Your Health Report,',
   heroTitle2: 'Explained in Video',
-  heroDesc: 'Upload your checkup results and get a personalized video that breaks down every metric in plain, understandable language.',
+  heroDesc: 'Upload your checkup results and EchoHealth uses AI to read every marker, identify the important changes, and turn the report into a personalized video explanation you can actually follow.',
   tryItFree: 'Try it free',
   howItWorks: 'How it works',
   threeSteps: 'Three simple steps',
-  threeStepsDesc: 'From paper report to video explanation in under two minutes.',
+  threeStepsDesc: 'From raw lab numbers to an AI-generated video explanation in about two minutes.',
   stepUploadTitle: 'Upload',
-  stepUploadDesc: 'Take a photo or upload a PDF of your health checkup report.',
-  stepAITitle: 'AI Analysis',
-  stepAIDesc: 'Our AI reads every metric, flags anomalies, and prepares a clear breakdown.',
-  stepVideoTitle: 'Watch Video',
-  stepVideoDesc: 'Receive a personalized video that walks you through your results in plain language.',
+  stepUploadDesc: 'Take a photo or upload a PDF so EchoHealth has the full report to analyze.',
+  stepAITitle: 'AI Reads the Report',
+  stepAIDesc: 'The AI identifies each metric, compares it with reference ranges, spots what stands out, and builds the explanation logic.',
+  stepVideoTitle: 'AI Generates the Video',
+  stepVideoDesc: 'That analysis becomes a personalized video explanation, so the results are easier to understand and easier to share.',
 
   // ── Landing: Benefits ──
   benefitsTitle: 'Why EchoHealth?',
-  benefitsSubtitle: 'Understanding your health shouldn\u2019t require a medical degree.',
-  benefit1Title: 'Plain-Language Video',
-  benefit1Desc: 'Complex medical data explained in a short video anyone can understand \u2014 perfect for sharing with family.',
-  benefit2Title: 'Accurate AI Analysis',
-  benefit2Desc: 'Every metric reviewed, anomalies flagged, context provided. Nothing gets overlooked.',
+  benefitsSubtitle: 'EchoHealth is not just summarizing text. It uses AI to interpret the report, decide what matters, and explain it back in video.',
+  benefit1Title: 'AI That Explains, Not Just Extracts',
+  benefit1Desc: 'Instead of only pulling text out of a PDF, EchoHealth reads the report structure, understands the markers, and decides what needs to be explained first.',
+  benefit2Title: 'Video Built From Your Report',
+  benefit2Desc: 'The final video is generated from your actual report findings, so the explanation follows your numbers rather than a generic template.',
   benefit3Title: 'Private & Secure',
-  benefit3Desc: 'Your health data is processed securely and never stored beyond what\u2019s needed.',
+  benefit3Desc: 'Your report is processed securely while the AI generates the explanation and video output you requested.',
 
   // ── Landing: Features ──
-  featuresTitle: 'See it in action',
-  feature1Title: 'Smart Report Reading',
-  feature1Desc: 'Upload any health report \u2014 our AI identifies every metric, understands reference ranges, and highlights what needs attention.',
-  feature2Title: 'Personalized Video Report',
-  feature2Desc: 'Get a custom video that walks through your results step by step, in the language you choose.',
+  featuresTitle: 'How the AI does the work',
+  feature1Title: 'It reads the report like a structured health document',
+  feature1Desc: 'Upload an image or PDF and the AI maps out the report, pulls each metric, checks reference ranges, and identifies the findings worth slowing down for.',
+  feature2Title: 'It turns that reasoning into a video you can follow',
+  feature2Desc: 'Once the analysis is done, EchoHealth generates a personalized video explanation in your chosen language, so the logic and the takeaway stay connected.',
   featureMockReport: 'Report analysis preview',
   featureMockVideo: 'Video explanation preview',
 
   // ── Landing: Testimonials ──
   trustMetricsTitle: 'Built to feel clear, calm, and dependable',
-  trustMetricsSubtitle: 'A quick snapshot of the experience families come for before they read individual stories.',
+  trustMetricsSubtitle: 'A quick snapshot of how the AI-driven workflow feels before you read individual stories.',
   trustMetric1Value: '2 min',
-  trustMetric1Label: 'average time to get a video explanation',
+  trustMetric1Label: 'average time for AI to turn a report into a video explanation',
   trustMetric2Value: '92%',
   trustMetric2Label: 'say it became easier to explain results to family',
   trustMetric3Value: '24/7',
-  trustMetric3Label: 'AI analysis available whenever a new report arrives',
+  trustMetric3Label: 'AI can analyze a new report and start generating the explanation any time',
   testimonialsTitle: 'Loved by families',
-  testimonialsSubtitle: 'Families use EchoHealth to turn dense lab numbers into something they can explain, share, and act on with less stress.',
+  testimonialsSubtitle: 'Families use EchoHealth because the AI does the hard reading first, then turns the findings into a video they can explain, share, and act on with less stress.',
   testimonial1Quote: 'I finally understand what my blood test numbers mean. Shared the video with my parents and they loved it.',
   testimonial1Author: 'Sarah L.',
   testimonial1Role: 'Daughter helping her parents',
@@ -96,28 +103,28 @@ const en = {
   testimonial8Tag: 'Big picture fast',
 
   // ── Landing: CTA ──
-  ctaTitle: 'Your next checkup, explained',
-  ctaDesc: 'Upload your health report and get a video explanation in under 2 minutes.',
+  ctaTitle: 'Let AI turn your next report into something understandable',
+  ctaDesc: 'Upload your health report and get an AI-generated video explanation in about 2 minutes.',
   ctaButton: 'Get started free',
 
   // ── Landing: Pricing preview ──
   pricingPreviewTitle: 'Simple, transparent pricing',
-  pricingPreviewDesc: 'Start free, upgrade when you need more.',
+  pricingPreviewDesc: 'Start free, then upgrade when you want more AI-generated report explanations.',
   pricingPreviewPerMonth: '/mo',
   pricingPreviewOneTime: 'one-time',
   pricingPreviewLink: 'Compare all plans',
 
   // ── Landing: FAQ ──
   faqTitle: 'Frequently asked questions',
-  faqSubtitle: 'A few quick answers before you upload your first report.',
+  faqSubtitle: 'A few quick answers before you let EchoHealth analyze your first report.',
   faq1Question: 'Is EchoHealth a doctor?',
-  faq1Answer: 'No. EchoHealth helps explain health report metrics in plain language, but it does not replace a licensed clinician, diagnosis, or emergency care.',
+  faq1Answer: 'No. EchoHealth uses AI to explain health report metrics in plain language, but it does not replace a licensed clinician, diagnosis, or emergency care.',
   faq2Question: 'What file types can I upload?',
   faq2Answer: 'You can upload common image formats such as JPEG, PNG, and WebP, as well as PDF health reports.',
-  faq3Question: 'How long does it take to get a video?',
-  faq3Answer: 'Most reports are processed in about 1 to 3 minutes, depending on file size, queue volume, and plan priority.',
-  faq4Question: 'Can I share the result with family?',
-  faq4Answer: 'Yes. EchoHealth is designed to make reports easier to explain and share with parents, siblings, and other caregivers.',
+  faq3Question: 'How does EchoHealth create the video?',
+  faq3Answer: 'The AI first reads the uploaded report, identifies metrics and reference ranges, organizes what matters most, and then generates a video explanation from that analysis.',
+  faq4Question: 'How long does it take to get the video?',
+  faq4Answer: 'Most reports are processed in about 1 to 3 minutes, depending on file size, queue volume, and plan priority.',
 
   // ── Landing: Hero preview ──
   heroPreview: 'Product demo',
@@ -133,7 +140,7 @@ const en = {
 
   // ── Upload page ──
   uploadTitle: 'Upload Health Report',
-  uploadDesc: 'Upload images or a PDF of your health checkup report.',
+  uploadDesc: 'Upload images or a PDF of your health checkup report. EchoHealth will use AI to analyze the report first, then generate the video explanation.',
   reportsRemaining: 'You have {n} reports remaining this month.',
   reportsRemainingOne: 'You have {n} report remaining this month.',
   videoLanguage: 'Video Language',
@@ -145,14 +152,14 @@ const en = {
 
   // ── Upload blocker ──
   allFreeUsed: "You've used all 3 free reports",
-  upgradeToKeep: 'Upgrade to keep interpreting health reports\nfor you and your family',
+  upgradeToKeep: 'Upgrade to keep AI-generated health report videos\ncoming for you and your family',
   subscribeMonthly: 'Subscribe $4.99/mo',
   buyPass: '$7.99 Pass',
   seePricing: 'See pricing',
 
   // ── Login ──
   signInTitle: 'Sign in to EchoHealth',
-  signInSubtitle: 'Get AI-powered video explanations of your health reports.',
+  signInSubtitle: 'Sign in to let EchoHealth analyze your report with AI and turn it into a video explanation.',
   signInTerms: 'By signing in, you agree to our terms of service.',
 
   // ── Result page ──
@@ -177,9 +184,9 @@ const en = {
   monthlyUsage: 'Monthly usage',
 
   // ── Pricing page ──
-  pricingTagline: '\u2764\uFE0F GIVE YOUR FAMILY THE CARE THEY DESERVE',
-  pricingTitle: 'Simple, Honest Pricing',
-  pricingSubtitle: 'No surprises. Cancel anytime.',
+  pricingTagline: '\u2764\uFE0F AI help for the reports your family actually needs explained',
+  pricingTitle: 'Simple pricing for AI-generated report videos',
+  pricingSubtitle: 'Start free, then upgrade when you want more analysis capacity. No surprises. Cancel anytime.',
   freePlan: 'Free',
   forever: 'forever',
   currentPlan: 'Current Plan',
@@ -191,6 +198,7 @@ const en = {
   oneTime: 'one-time, no auto-renew',
   buyPassBtn: 'Buy Pass \u2192',
   secureCheckout: '\uD83D\uDD12 Secure checkout via Creem \u00B7 Instant activation \u00B7 Cancel anytime',
+  checkoutFailed: 'Failed to create checkout. Please try again.',
 
   // Free plan features
   free3Reports: '3 reports / month',
@@ -218,7 +226,7 @@ const en = {
   videoReady: 'Video ready \u00B7',
 
   // ── Footer ──
-  footerTagline: 'AI-powered health report interpretation. Upload your checkup results and get a video explanation in minutes.',
+  footerTagline: 'EchoHealth uses AI to read health reports, decide what matters, and generate video explanations in minutes.',
   footerProduct: 'Product',
   footerLegal: 'Legal',
   secureCheckoutBadge: 'Secure checkout',

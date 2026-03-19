@@ -12,14 +12,18 @@ type LanguageSwitcherProps = {
     en: string
     zh: string
   }
+  ariaLabels: {
+    en: string
+    zh: string
+  }
 }
 
-function LanguageSwitcher({ lang, setLang, labels }: LanguageSwitcherProps) {
+function LanguageSwitcher({ lang, setLang, labels, ariaLabels }: LanguageSwitcherProps) {
   return (
     <div className="inline-flex h-9 items-center rounded-full border border-neutral-200 bg-neutral-50 p-0.5 text-xs">
       <button
         onClick={() => setLang('en')}
-        aria-label="Switch to English"
+        aria-label={ariaLabels.en}
         className={`h-8 min-w-9 rounded-full px-3 font-medium transition-colors ${
           lang === 'en' ? 'bg-white text-slate-800 shadow-sm' : 'text-slate-500 hover:text-slate-700'
         }`}
@@ -28,7 +32,7 @@ function LanguageSwitcher({ lang, setLang, labels }: LanguageSwitcherProps) {
       </button>
       <button
         onClick={() => setLang('zh')}
-        aria-label="切换到中文"
+        aria-label={ariaLabels.zh}
         className={`h-8 min-w-9 rounded-full px-3 font-medium transition-colors ${
           lang === 'zh' ? 'bg-white text-slate-800 shadow-sm' : 'text-slate-500 hover:text-slate-700'
         }`}
@@ -126,6 +130,7 @@ export default function Navbar() {
             lang={lang}
             setLang={setLang}
             labels={{ en: t.langEN, zh: t.langZH }}
+            ariaLabels={{ en: t.switchToEnglish, zh: t.switchToChinese }}
           />
         </div>
 
@@ -135,11 +140,12 @@ export default function Navbar() {
             lang={lang}
             setLang={setLang}
             labels={{ en: t.langEN, zh: t.langZH }}
+            ariaLabels={{ en: t.switchToEnglish, zh: t.switchToChinese }}
           />
           {!loading && (
             <button
               onClick={() => setMenuOpen(!menuOpen)}
-              aria-label={menuOpen ? 'Close menu' : 'Open menu'}
+              aria-label={menuOpen ? t.closeMenu : t.openMenu}
               aria-expanded={menuOpen}
               className="flex h-9 w-9 items-center justify-center rounded-lg text-slate-600 transition-colors hover:bg-neutral-100 hover:text-slate-800 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-neutral-900 focus-visible:ring-offset-2"
             >

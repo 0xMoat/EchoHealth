@@ -5,7 +5,7 @@ import { useAuth } from '@/contexts/AuthContext'
 import { useRouter } from 'next/navigation'
 import { useEffect, useState } from 'react'
 import { apiFetch, apiUpload, ApiError } from '@/lib/api'
-import { LANGUAGE_OPTIONS, LIMITS } from '@/lib/constants'
+import { LIMITS } from '@/lib/constants'
 import { useT } from '@/hooks/useT'
 import type { VideoLanguage } from '@/types'
 import FileUploader from '@/components/FileUploader'
@@ -35,6 +35,11 @@ export default function UploadPage() {
 
   const limits = user.isPro ? LIMITS.pro : LIMITS.free
   const quotaRemaining = limits.monthly - user.usedThisMonth
+  const languageOptions: Array<{ value: VideoLanguage; label: string }> = [
+    { value: 'AUTO', label: t.autoDetect },
+    { value: 'EN', label: t.english },
+    { value: 'ZH', label: t.chinese },
+  ]
 
   const handleSubmit = async () => {
     if (files.length === 0) return
@@ -132,11 +137,11 @@ export default function UploadPage() {
           <fieldset>
             <legend className="text-sm font-medium text-slate-800">{t.videoLanguage}</legend>
             <div className="mt-3 flex gap-3">
-              {LANGUAGE_OPTIONS.map(opt => (
+              {languageOptions.map(opt => (
                 <button
                   key={opt.value}
                   type="button"
-                  onClick={() => setLanguage(opt.value as VideoLanguage)}
+                  onClick={() => setLanguage(opt.value)}
                   className={`rounded-lg border px-4 py-2 text-sm font-medium transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-neutral-900 focus-visible:ring-offset-2 ${
                     language === opt.value
                       ? 'border-neutral-900 bg-neutral-900 text-white'

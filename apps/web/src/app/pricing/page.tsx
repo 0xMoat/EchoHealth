@@ -4,7 +4,7 @@ import { useState } from 'react'
 import { useAuth } from '@/contexts/AuthContext'
 import { useT } from '@/hooks/useT'
 import { apiFetch } from '@/lib/api'
-import { PRO_MONTHLY_PRICE, PASS_PRICE, PASS_DAYS } from '@/lib/constants'
+import { PRO_MONTHLY_PRICE, PASS_PRICE } from '@/lib/constants'
 
 export default function PricingPage() {
   const { user } = useAuth()
@@ -26,7 +26,7 @@ export default function PricingPage() {
       })
       window.location.href = checkoutUrl
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'Failed to create checkout. Please try again.')
+      setError(err instanceof Error ? err.message : t.checkoutFailed)
       setLoading(null)
     }
   }
@@ -88,7 +88,7 @@ export default function PricingPage() {
             <p className="text-xs font-bold uppercase tracking-widest text-white/80">{t.proPlan}</p>
             <div className="mt-3 flex items-baseline gap-1">
               <span className="text-4xl font-extrabold text-white">${PRO_MONTHLY_PRICE}</span>
-              <span className="text-sm text-white/70">/mo</span>
+              <span className="text-sm text-white/70">{t.pricingPreviewPerMonth}</span>
             </div>
             <p className="mt-1 text-xs text-white/70">{t.cancelAnytime}</p>
 

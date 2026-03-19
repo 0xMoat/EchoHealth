@@ -15,53 +15,60 @@ const zh = {
   proBadge: '✨ Pro',
   langEN: 'EN',
   langZH: '中',
+  autoDetect: '自动识别',
+  english: '英文',
+  chinese: '中文',
+  switchToEnglish: '切换到英文',
+  switchToChinese: '切换到中文',
+  openMenu: '打开菜单',
+  closeMenu: '关闭菜单',
 
   // ── Landing page ──
-  heroEyebrow: 'AI 体检报告解读',
+  heroEyebrow: 'AI 把体检报告变成视频解读',
   heroTitle1: '体检报告太难懂，',
   heroTitle2: '交给视频来讲清楚',
-  heroDesc: '上传体检报告后，EchoHealth 会生成一段更容易听懂、也更方便和家人分享的视频解读，帮你把重点看明白。',
+  heroDesc: '上传体检报告后，EchoHealth 会先用 AI 逐项读取指标、判断哪些变化更值得注意，再把这些重点生成一段更容易听懂、也更方便和家人分享的视频解读。',
   tryItFree: '免费试用',
   howItWorks: '看看怎么用',
   threeSteps: '三步就能看懂',
-  threeStepsDesc: '从体检报告到视频解读，通常只要几分钟。',
+  threeStepsDesc: '从原始报告到 AI 生成的视频解读，通常只要几分钟。',
   stepUploadTitle: '上传报告',
-  stepUploadDesc: '拍照上传，或直接提交 PDF 体检报告。',
-  stepAITitle: 'AI 帮你梳理',
-  stepAIDesc: '系统会逐项识别指标、参考范围和异常提示，把重点先帮你捋清楚。',
-  stepVideoTitle: '看视频解读',
-  stepVideoDesc: '生成一段更容易理解的视频，把结果讲给你，也更方便转给家人。',
+  stepUploadDesc: '拍照上传，或直接提交 PDF 体检报告，让系统拿到完整内容。',
+  stepAITitle: 'AI 先读懂报告',
+  stepAIDesc: 'AI 会逐项识别指标、对照参考范围、找出异常和重点，并先把解释逻辑梳理出来。',
+  stepVideoTitle: 'AI 再生成视频',
+  stepVideoDesc: '这些分析结果会被整理成一段视频解读，让你更容易听懂，也更方便发给家人。',
 
   // ── Landing: Benefits ──
   benefitsTitle: '为什么选择 EchoHealth？',
-  benefitsSubtitle: '看懂体检报告，不该是一件让人头疼的事。',
-  benefit1Title: '更容易听懂的视频解读',
-  benefit1Desc: '把复杂的检查结果讲得更清楚，自己能看懂，也更方便转给家人一起看。',
-  benefit2Title: '把重点先帮你梳理好',
-  benefit2Desc: '逐项识别指标、参考范围和需要留意的地方，先把报告里真正重要的信息拎出来。',
+  benefitsSubtitle: '它不只是把文字提取出来，而是先用 AI 读懂报告，再决定该怎么讲清楚。',
+  benefit1Title: '不是只提取文字，而是真的在解释',
+  benefit1Desc: 'EchoHealth 不只是把 PDF 里的字扫出来，而是会识别报告结构、理解各项指标，并判断哪些内容该先讲清楚。',
+  benefit2Title: '视频内容来自你的真实报告',
+  benefit2Desc: '生成的视频不是套模板念一遍，而是基于你的实际指标和重点结果组织出来的解释。',
   benefit3Title: '隐私与安全',
-  benefit3Desc: '你的健康信息会被谨慎处理，只用于完成解读和提供服务。',
+  benefit3Desc: '你的健康信息会被谨慎处理，只用于完成 AI 解读、生成视频和提供服务。',
 
   // ── Landing: Features ──
-  featuresTitle: '你会看到什么',
-  feature1Title: '先把报告读明白',
-  feature1Desc: '无论是图片还是 PDF，系统都会先识别报告内容，结合参考范围，帮你找出值得关注的地方。',
-  feature2Title: '再用视频慢慢讲清楚',
-  feature2Desc: '把结果做成一段更容易理解的视频，按顺序讲重点，适合自己看，也适合发给家人。',
+  featuresTitle: 'AI 是怎么完成这件事的',
+  feature1Title: '先把报告当成健康文档来读',
+  feature1Desc: '无论是图片还是 PDF，AI 都会先识别报告结构，提取每项指标，对照参考范围，再找出真正值得停下来看的地方。',
+  feature2Title: '再把分析过程变成能听懂的视频',
+  feature2Desc: '当分析完成后，EchoHealth 会按你的报告内容生成一段视频解读，让重点、原因和整体结论连在一起讲清楚。',
   featureMockReport: '报告识别预览',
   featureMockVideo: '视频解读预览',
 
   // ── Landing: Testimonials ──
   trustMetricsTitle: '先看几个大家最在意的点',
-  trustMetricsSubtitle: '在看具体评价前，先快速了解 EchoHealth 想带来的真实体验。',
+  trustMetricsSubtitle: '在看具体评价前，先快速了解这套 AI 解读流程带来的真实体验。',
   trustMetric1Value: '2 分钟',
-  trustMetric1Label: '平均可拿到一段视频解读',
+  trustMetric1Label: '平均可把一份报告变成视频解读',
   trustMetric2Value: '92%',
   trustMetric2Label: '的用户觉得更容易把报告讲给家人听',
   trustMetric3Value: '24/7',
-  trustMetric3Label: '随时都能上传并开始 AI 解读',
+  trustMetric3Label: '随时都能上传，并开始 AI 分析与生成',
   testimonialsTitle: '很多家庭已经在用了',
-  testimonialsSubtitle: '这些反馈大多来自想帮父母看懂报告、又不想被复杂术语卡住的人。',
+  testimonialsSubtitle: '这些反馈大多来自想帮父母看懂报告、又不想自己先被复杂术语卡住的人，因为 AI 已经先把难读的部分处理掉了。',
   testimonial1Quote: '以前看到血检数字就发懵，这次总算知道重点在哪了。我把视频发给爸妈，他们一下就听明白了。',
   testimonial1Author: 'Sarah L.',
   testimonial1Role: '帮父母看报告的女儿',
@@ -96,13 +103,13 @@ const zh = {
   testimonial8Tag: '快速掌握重点',
 
   // ── Landing: CTA ──
-  ctaTitle: '下一份体检报告，试着换一种更轻松的看法',
-  ctaDesc: '上传报告后，几分钟内就能拿到一段更容易理解的视频解读。',
+  ctaTitle: '让 AI 把下一份报告讲清楚给你听',
+  ctaDesc: '上传报告后，几分钟内就能拿到一段由 AI 生成、也更容易理解的视频解读。',
   ctaButton: '免费开始',
 
   // ── Landing: Pricing preview ──
   pricingPreviewTitle: '价格简单明白',
-  pricingPreviewDesc: '先免费试用，用得上再升级。',
+  pricingPreviewDesc: '先免费试用，需要更多 AI 视频解读时再升级。',
   pricingPreviewPerMonth: '/月',
   pricingPreviewOneTime: '一次性',
   pricingPreviewLink: '查看完整方案',
@@ -111,13 +118,13 @@ const zh = {
   faqTitle: '常见问题',
   faqSubtitle: '在上传第一份报告前，先把大家最常问的几件事看清楚。',
   faq1Question: 'EchoHealth 是医生吗？',
-  faq1Answer: '不是。EchoHealth 只是帮你更容易看懂体检报告，不能替代医生诊断、治疗建议或紧急医疗服务。',
+  faq1Answer: '不是。EchoHealth 会用 AI 帮你更容易看懂体检报告，但不能替代医生诊断、治疗建议或紧急医疗服务。',
   faq2Question: '支持上传哪些文件？',
   faq2Answer: '支持常见图片格式，例如 JPEG、PNG、WebP，也支持上传 PDF 体检报告。',
-  faq3Question: '多久能拿到视频解读？',
-  faq3Answer: '大多数情况下，1 到 3 分钟内就能拿到结果。具体速度会受文件大小、排队情况和套餐优先级影响。',
-  faq4Question: '可以把结果分享给家人吗？',
-  faq4Answer: '可以。EchoHealth 本来就是为了帮你更容易把体检结果讲给父母、兄弟姐妹或其他照护者。',
+  faq3Question: '这个视频是怎么生成的？',
+  faq3Answer: '系统会先用 AI 读取上传的报告，识别各项指标和参考范围，梳理真正重要的结果，再把这套分析生成一段视频解读。',
+  faq4Question: '多久能拿到视频解读？',
+  faq4Answer: '大多数情况下，1 到 3 分钟内就能拿到结果。具体速度会受文件大小、排队情况和套餐优先级影响。',
 
   // ── Landing: Hero preview ──
   heroPreview: '产品演示',
@@ -133,7 +140,7 @@ const zh = {
 
   // ── Upload page ──
   uploadTitle: '上传体检报告',
-  uploadDesc: '支持上传图片或 PDF。我们会先识别内容，再生成视频解读。',
+  uploadDesc: '支持上传图片或 PDF。我们会先用 AI 识别和分析报告内容，再生成视频解读。',
   reportsRemaining: '这个月你还可以解读 {n} 份报告。',
   reportsRemainingOne: '这个月你还可以解读 {n} 份报告。',
   videoLanguage: '视频语言',
@@ -145,14 +152,14 @@ const zh = {
 
   // ── Upload blocker ──
   allFreeUsed: '3 次免费解读已经用完',
-  upgradeToKeep: '升级后，继续帮你和家人把体检报告看明白',
+  upgradeToKeep: '升级后，继续让 AI 帮你和家人把体检报告看明白',
   subscribeMonthly: '订阅 $4.99/月',
   buyPass: '$7.99 通行证',
   seePricing: '查看定价',
 
   // ── Login ──
   signInTitle: '登录 EchoHealth',
-  signInSubtitle: '登录后，就可以开始上传体检报告并查看视频解读。',
+  signInSubtitle: '登录后，就可以让 EchoHealth 用 AI 分析体检报告，并生成视频解读。',
   signInTerms: '登录即表示你同意我们的服务条款。',
 
   // ── Result page ──
@@ -177,9 +184,9 @@ const zh = {
   monthlyUsage: '本月已用',
 
   // ── Pricing page ──
-  pricingTagline: '❤️ 帮家人看懂报告，也可以很省心',
-  pricingTitle: '定价简单，不绕弯',
-  pricingSubtitle: '先免费试，再按自己的使用频率选择。',
+  pricingTagline: '❤️ 让 AI 持续帮家人把报告讲清楚',
+  pricingTitle: 'AI 视频解读，定价简单不绕弯',
+  pricingSubtitle: '先免费试，再按你需要的分析和生成次数选择。',
   freePlan: '免费',
   forever: '长期可用',
   currentPlan: '当前方案',
@@ -191,6 +198,7 @@ const zh = {
   oneTime: '一次性，不自动续费',
   buyPassBtn: '购买通行证 →',
   secureCheckout: '🔒 通过 Creem 安全结账 · 付款后立即生效 · 可随时取消',
+  checkoutFailed: '创建结账链接失败了，请稍后再试。',
 
   // Free plan features
   free3Reports: '3 份/月',
@@ -218,7 +226,7 @@ const zh = {
   videoReady: '视频已生成 ·',
 
   // ── Footer ──
-  footerTagline: '把难懂的体检报告，变成更容易理解、也更方便和家人沟通的视频解读。',
+  footerTagline: '用 AI 读懂体检报告、判断重点，再把结果生成更容易理解、也更方便和家人沟通的视频解读。',
   footerProduct: '产品',
   footerLegal: '法律',
   secureCheckoutBadge: '安全结账',
