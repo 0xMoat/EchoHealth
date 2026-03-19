@@ -1,38 +1,50 @@
-// apps/server/src/__tests__/vision.test.ts
 import { describe, it, expect, vi } from 'vitest'
 
-vi.stubEnv('GEMINI_API_KEY', 'test-key')
-vi.stubEnv('LLM_VISION_PROVIDER', 'gemini')
+const { MockOpenAI, mockChatCreate } = vi.hoisted(() => {
+  const mockChatCreate = vi.fn()
+  const MockOpenAI = vi.fn().mockImplementation(() => ({
+    chat: { completions: { create: mockChatCreate } },
+  }))
+  return { MockOpenAI, mockChatCreate }
+})
 
-vi.mock('@google/genai', () => ({
-  GoogleGenAI: vi.fn().mockImplementation(() => ({
-    models: {
-      generateContent: vi.fn().mockResolvedValue({
-        text: JSON.stringify({
-          language: 'en',
-          indicators: [
-            {
-              name: 'Hemoglobin',
-              value: '18.5',
-              unit: 'g/dL',
-              referenceRange: '13.5-17.5',
-              status: 'high',
-            },
-          ],
-        }),
-      }),
-    },
-  })),
-}))
+vi.mock('openai', () => ({ default: MockOpenAI }))
 
 describe('LLM Vision', () => {
-  it('extracts indicators from images via Gemini', async () => {
-    const { extractIndicatorsFromImages } = await import('../lib/vision.js')
+  it('generates a script from images via Groq vision', async () => {
+    process.env.GROQ_API_KEY = 'gsk_test'
+    mockChatCreate.mockResolvedValue({
+      choices: [{
+        message: {
+          content: JSON.stringify({
+            language: 'en',
+            summary: 'Overall health is stable.',
+            details: [
+              {
+                indicatorName: 'Hemoglobin',
+                status: 'high',
+                explanation: 'The value is slightly above the reference range.',
+                advice: 'Stay hydrated and recheck if symptoms continue.',
+              },
+            ],
+            suggestions: 'Maintain a balanced diet.',
+            outro: 'EchoHealth has interpreted this report for you.',
+          }),
+        },
+      }],
+      usage: { prompt_tokens: 100, completion_tokens: 50, total_tokens: 150 },
+    })
+
+    const { generateScriptFromImages } = await import('../lib/vision.js')
     const fakeImage = Buffer.from('fake-image-data')
-    const result = await extractIndicatorsFromImages([fakeImage], 'AUTO')
-    expect(result.language).toBe('en')
-    expect(result.indicators).toHaveLength(1)
-    expect(result.indicators[0].name).toBe('Hemoglobin')
-    expect(result.indicators[0].status).toBe('high')
+    const result = await generateScriptFromImages([fakeImage], 'AUTO', 'GENERAL', 'EchoHealth')
+
+    expect(MockOpenAI).toHaveBeenCalledWith(
+      expect.objectContaining({ baseURL: 'https://api.groq.com/openai/v1' }),
+    )
+    expect(result.detectedLanguage).toBe('en')
+    expect(result.script.details).toHaveLength(1)
+    expect(result.script.details[0].indicatorName).toBe('Hemoglobin')
+    expect(result.script.details[0].status).toBe('high')
   })
 })

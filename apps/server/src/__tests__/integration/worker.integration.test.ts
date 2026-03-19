@@ -52,6 +52,7 @@ vi.mock('../../pipeline/upload.js', () => ({
 
 vi.mock('fs/promises', () => ({
   mkdir: vi.fn().mockResolvedValue(undefined),
+  readFile: vi.fn().mockResolvedValue(Buffer.from('fake-audio')),
   rm: vi.fn().mockResolvedValue(undefined),
 }))
 

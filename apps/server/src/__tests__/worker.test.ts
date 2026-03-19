@@ -52,6 +52,7 @@ vi.mock('../pipeline/upload.js', () => ({
 
 vi.mock('fs/promises', () => ({
   mkdir: vi.fn().mockResolvedValue(undefined),
+  readFile: vi.fn().mockResolvedValue(Buffer.from('fake-audio')),
   rm: vi.fn().mockResolvedValue(undefined),
 }))
 
@@ -129,7 +130,7 @@ describe('runPipeline', () => {
     await runPipeline(job)
 
     const calls = vi.mocked(job.updateProgress).mock.calls.flat()
-    expect(calls).toEqual([5, 20, 40, 60, 85, 95, 100])
+    expect(calls).toEqual([5, 40, 60, 85, 95, 100])
   })
 
   it('skips OCR when report already has cached indicators', async () => {
