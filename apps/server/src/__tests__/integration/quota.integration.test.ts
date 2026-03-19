@@ -60,6 +60,10 @@ async function createUser(overrides?: Partial<Parameters<typeof prisma.user.crea
   })
 }
 
+function makeRequest(userId: string) {
+  return { user: { id: userId } } as never
+}
+
 // ── Tests ─────────────────────────────────────────────────────────────────────
 
 describe('quota (real DB)', () => {
@@ -68,7 +72,7 @@ describe('quota (real DB)', () => {
     const user = await createUser()
 
     const reply = { status: () => reply, send: () => {} } as never
-    await quotaMiddleware({ body: { userId: user.id } } as never, reply)
+    await quotaMiddleware(makeRequest(user.id), reply)
 
     const updated = await prisma.user.findUniqueOrThrow({ where: { id: user.id } })
     expect(updated.usedThisMonth).toBe(1)
@@ -85,7 +89,7 @@ describe('quota (real DB)', () => {
       send: () => {},
     } as never
 
-    await quotaMiddleware({ body: { userId: user.id } } as never, reply)
+    await quotaMiddleware(makeRequest(user.id), reply)
 
     expect(sentStatus).toBe(429)
     // Count should remain unchanged
@@ -109,7 +113,7 @@ describe('quota (real DB)', () => {
       send: () => {},
     } as never
 
-    await quotaMiddleware({ body: { userId: user.id } } as never, reply)
+    await quotaMiddleware(makeRequest(user.id), reply)
 
     expect(sentStatus).not.toBe(429)
     const updated = await prisma.user.findUniqueOrThrow({ where: { id: user.id } })
@@ -128,7 +132,7 @@ describe('quota (real DB)', () => {
       send: () => {},
     } as never
 
-    await quotaMiddleware({ body: { userId: user.id } } as never, reply)
+    await quotaMiddleware(makeRequest(user.id), reply)
 
     expect(sentStatus).not.toBe(429)
     const updated = await prisma.user.findUniqueOrThrow({ where: { id: user.id } })
@@ -156,7 +160,7 @@ describe('quota concurrency (real DB)', () => {
     const replies = await Promise.all(
       Array.from({ length: FREE_MONTHLY_LIMIT }, () => {
         const reply = makeReply()
-        return quotaMiddleware({ body: { userId: user.id } } as never, reply as never)
+        return quotaMiddleware(makeRequest(user.id), reply as never)
           .then(() => reply.getStatus())
       }),
     )
@@ -189,7 +193,7 @@ describe('quota concurrency (real DB)', () => {
     const statuses = await Promise.all(
       Array.from({ length: FREE_MONTHLY_LIMIT }, () => {
         const reply = makeReply()
-        return quotaMiddleware({ body: { userId: user.id } } as never, reply as never)
+        return quotaMiddleware(makeRequest(user.id), reply as never)
           .then(() => reply.getStatus())
       }),
     )
