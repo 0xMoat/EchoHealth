@@ -62,6 +62,8 @@ jobs:
 
       - name: Generate Prisma client
         run: pnpm --filter server exec prisma generate
+        env:
+          DATABASE_URL: postgresql://dummy:dummy@localhost:5432/dummy
 
       - name: Install Playwright browser
         run: pnpm --filter web exec playwright install --with-deps chromium
