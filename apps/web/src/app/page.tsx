@@ -2,6 +2,7 @@
 
 import Link from 'next/link'
 import Footer from '@/components/Footer'
+import TestimonialsCarousel from '@/components/TestimonialsCarousel'
 import { useT } from '@/hooks/useT'
 import { PRO_MONTHLY_PRICE, PASS_PRICE } from '@/lib/constants'
 
@@ -33,8 +34,83 @@ export default function Home() {
   ]
 
   const testimonials = [
-    { quote: t.testimonial1Quote, author: t.testimonial1Author, role: t.testimonial1Role },
-    { quote: t.testimonial2Quote, author: t.testimonial2Author, role: t.testimonial2Role },
+    {
+      quote: t.testimonial1Quote,
+      author: t.testimonial1Author,
+      role: t.testimonial1Role,
+      tag: t.testimonial1Tag,
+      avatar: '/testimonials/68.jpg',
+      variant: 'default' as const,
+    },
+    {
+      quote: t.testimonial2Quote,
+      author: t.testimonial2Author,
+      role: t.testimonial2Role,
+      tag: t.testimonial2Tag,
+      avatar: '/testimonials/32.jpg',
+      variant: 'tinted' as const,
+    },
+    {
+      quote: t.testimonial3Quote,
+      author: t.testimonial3Author,
+      role: t.testimonial3Role,
+      tag: t.testimonial3Tag,
+      avatar: '/testimonials/44.jpg',
+      variant: 'tall' as const,
+    },
+    {
+      quote: t.testimonial4Quote,
+      author: t.testimonial4Author,
+      role: t.testimonial4Role,
+      tag: t.testimonial4Tag,
+      avatar: '/testimonials/75.jpg',
+      variant: 'default' as const,
+    },
+    {
+      quote: t.testimonial5Quote,
+      author: t.testimonial5Author,
+      role: t.testimonial5Role,
+      tag: t.testimonial5Tag,
+      avatar: '/testimonials/21.jpg',
+      variant: 'tinted' as const,
+    },
+    {
+      quote: t.testimonial6Quote,
+      author: t.testimonial6Author,
+      role: t.testimonial6Role,
+      tag: t.testimonial6Tag,
+      avatar: '/testimonials/18.jpg',
+      variant: 'default' as const,
+    },
+    {
+      quote: t.testimonial7Quote,
+      author: t.testimonial7Author,
+      role: t.testimonial7Role,
+      tag: t.testimonial7Tag,
+      avatar: '/testimonials/60.jpg',
+      variant: 'tall' as const,
+    },
+    {
+      quote: t.testimonial8Quote,
+      author: t.testimonial8Author,
+      role: t.testimonial8Role,
+      tag: t.testimonial8Tag,
+      avatar: '/testimonials/41.jpg',
+      variant: 'default' as const,
+    },
+  ]
+
+  const trustMetrics = [
+    { value: t.trustMetric1Value, label: t.trustMetric1Label },
+    { value: t.trustMetric2Value, label: t.trustMetric2Label },
+    { value: t.trustMetric3Value, label: t.trustMetric3Label },
+  ]
+
+  const faqs = [
+    { question: t.faq1Question, answer: t.faq1Answer },
+    { question: t.faq2Question, answer: t.faq2Answer },
+    { question: t.faq3Question, answer: t.faq3Answer },
+    { question: t.faq4Question, answer: t.faq4Answer },
   ]
 
   return (
@@ -42,13 +118,13 @@ export default function Home() {
       {/* ── 1. Hero ── */}
       <section id="main-content" className="overflow-hidden">
         <div className="mx-auto max-w-5xl px-6 pb-16 pt-28 sm:pb-20 sm:pt-36">
-          <div className="max-w-2xl">
+          <div className="max-w-2xl min-h-[20.5rem]">
             <h1 className="font-display text-4xl font-bold leading-[1.1] tracking-tight text-slate-800 text-balance sm:text-5xl lg:text-6xl">
               {t.heroTitle1}{' '}
               <span className="text-cyan-700">{t.heroTitle2}</span>
             </h1>
 
-            <p className="mt-6 max-w-lg text-lg leading-relaxed text-slate-500">
+            <p className="mt-6 max-w-lg min-h-[5.5rem] text-lg leading-relaxed text-slate-500">
               {t.heroDesc}
             </p>
 
@@ -91,13 +167,13 @@ export default function Home() {
           <h2 className="font-display text-3xl font-bold tracking-tight text-slate-800 text-balance sm:text-4xl">
             {t.benefitsTitle}
           </h2>
-          <p className="mt-3 max-w-md text-base text-slate-500">
+          <p className="mt-3 max-w-md min-h-12 text-base text-slate-500">
             {t.benefitsSubtitle}
           </p>
 
           <div className="mt-14 grid grid-cols-1 gap-10 sm:grid-cols-3 sm:gap-12">
             {benefits.map((b, i) => (
-              <div key={i} className="animate-fadeInUp" style={{ animationDelay: `${i * 100}ms` }}>
+              <div key={i} className="min-h-[7.5rem] animate-fadeInUp" style={{ animationDelay: `${i * 100}ms` }}>
                 <div className="mb-4 h-0.5 w-8 rounded-full bg-cyan-600" />
                 <h3 className="text-base font-semibold text-slate-800">{b.title}</h3>
                 <p className="mt-2 text-sm leading-relaxed text-slate-500">{b.desc}</p>
@@ -113,7 +189,7 @@ export default function Home() {
           <h2 className="font-display text-3xl font-bold tracking-tight text-slate-800 text-balance sm:text-4xl">
             {t.threeSteps}
           </h2>
-          <p className="mt-3 max-w-md text-base text-slate-500">
+          <p className="mt-3 max-w-md min-h-12 text-base text-slate-500">
             {t.threeStepsDesc}
           </p>
 
@@ -183,36 +259,50 @@ export default function Home() {
         </div>
       </section>
 
-      {/* ── 5. Testimonials (用户证言) ── */}
-      <section className="bg-neutral-50">
-        <div className="mx-auto max-w-5xl px-6 py-20 sm:py-28">
-          <h2 className="font-display text-3xl font-bold tracking-tight text-slate-800 text-balance sm:text-4xl">
-            {t.testimonialsTitle}
-          </h2>
+      {/* ── 5. Trust metrics ── */}
+      <section className="border-t border-neutral-200 bg-white">
+        <div className="mx-auto max-w-5xl px-6 py-18 sm:py-22">
+          <div className="max-w-2xl">
+            <h2 className="font-display text-3xl font-bold tracking-tight text-slate-800 text-balance sm:text-4xl">
+              {t.trustMetricsTitle}
+            </h2>
+            <p className="mt-3 max-w-xl text-base leading-7 text-slate-500">
+              {t.trustMetricsSubtitle}
+            </p>
+          </div>
 
-          <div className="mt-12 grid grid-cols-1 gap-8 sm:grid-cols-2 sm:gap-12">
-            {testimonials.map((item, i) => (
-              <blockquote key={i} className="animate-fadeInUp" style={{ animationDelay: `${i * 120}ms` }}>
-                <p className="text-base leading-relaxed text-slate-700">
-                  &ldquo;{item.quote}&rdquo;
+          <div className="mt-12 grid grid-cols-1 gap-4 sm:grid-cols-3">
+            {trustMetrics.map((metric) => (
+              <div
+                key={metric.label}
+                className="rounded-[1.75rem] border border-neutral-200 bg-[linear-gradient(180deg,#ffffff_0%,#f8fafc_100%)] px-6 py-7 shadow-[0_12px_28px_rgba(15,23,42,0.05)]"
+              >
+                <p className="font-display text-5xl font-bold tracking-tight text-slate-900 sm:text-6xl">
+                  {metric.value}
                 </p>
-                <footer className="mt-4">
-                  <p className="text-sm font-semibold text-slate-800">{item.author}</p>
-                  <p className="text-sm text-slate-500">{item.role}</p>
-                </footer>
-              </blockquote>
+                <p className="mt-3 max-w-[18ch] text-sm leading-6 text-slate-500">
+                  {metric.label}
+                </p>
+              </div>
             ))}
           </div>
         </div>
       </section>
 
-      {/* ── 6. CTA (行动召唤) ── */}
+      {/* ── 6. Testimonials (用户证言) ── */}
+      <TestimonialsCarousel
+        title={t.testimonialsTitle}
+        subtitle={t.testimonialsSubtitle}
+        items={testimonials}
+      />
+
+      {/* ── 7. CTA (行动召唤) ── */}
       <section className="bg-slate-900">
         <div className="mx-auto max-w-5xl px-6 py-20 text-center sm:py-28">
           <h2 className="font-display text-3xl font-bold tracking-tight text-white sm:text-4xl">
             {t.ctaTitle}
           </h2>
-          <p className="mx-auto mt-4 max-w-md text-base text-slate-400">
+          <p className="mx-auto mt-4 min-h-12 max-w-md text-base text-slate-400">
             {t.ctaDesc}
           </p>
           <Link
@@ -227,7 +317,7 @@ export default function Home() {
         </div>
       </section>
 
-      {/* ── 7. Pricing preview (价格方案) ── */}
+      {/* ── 8. Pricing preview (价格方案) ── */}
       <section className="border-t border-neutral-200">
         <div className="mx-auto max-w-5xl px-6 py-20 sm:py-28">
           <div className="text-center">
@@ -271,7 +361,44 @@ export default function Home() {
         </div>
       </section>
 
-      {/* ── 8. Footer ── */}
+      {/* ── 9. FAQ ── */}
+      <section className="border-t border-neutral-200 bg-neutral-50">
+        <div className="mx-auto max-w-5xl px-6 py-20 sm:py-28">
+          <div className="grid gap-10 lg:grid-cols-[0.85fr_1.15fr] lg:gap-16">
+            <div>
+              <h2 className="font-display text-3xl font-bold tracking-tight text-slate-800 sm:text-4xl">
+                {t.faqTitle}
+              </h2>
+              <p className="mt-3 max-w-md text-base leading-7 text-slate-500">
+                {t.faqSubtitle}
+              </p>
+            </div>
+
+            <div className="space-y-3">
+              {faqs.map((faq) => (
+                <details
+                  key={faq.question}
+                  className="group rounded-2xl border border-neutral-200 bg-white px-5 py-4 shadow-[0_8px_24px_rgba(15,23,42,0.04)]"
+                >
+                  <summary className="flex cursor-pointer list-none items-center justify-between gap-4 text-left text-base font-semibold text-slate-800 marker:content-none">
+                    <span>{faq.question}</span>
+                    <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-neutral-100 text-slate-500 transition-transform duration-200 group-open:rotate-45">
+                      <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" strokeWidth={1.8} stroke="currentColor" aria-hidden="true">
+                        <path strokeLinecap="round" strokeLinejoin="round" d="M12 5.25v13.5m6.75-6.75H5.25" />
+                      </svg>
+                    </span>
+                  </summary>
+                  <p className="mt-4 max-w-2xl pr-12 text-sm leading-7 text-slate-600">
+                    {faq.answer}
+                  </p>
+                </details>
+              ))}
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* ── 10. Footer ── */}
       <Footer />
     </>
   )

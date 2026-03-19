@@ -19,7 +19,7 @@ export default function Footer() {
                 EchoHealth
               </span>
             </div>
-            <p className="mt-2 max-w-xs text-sm text-slate-500">
+            <p className="mt-2 min-h-[3.75rem] max-w-xs text-sm text-slate-500">
               {t.footerTagline}
             </p>
           </div>
@@ -42,6 +42,21 @@ export default function Footer() {
                 <li>
                   <Link href="/dashboard" className="text-sm text-slate-600 transition-colors hover:text-slate-800">
                     {t.dashboard}
+                  </Link>
+                </li>
+              </ul>
+            </div>
+            <div>
+              <p className="text-xs font-semibold uppercase tracking-wider text-slate-500">{t.footerLegal}</p>
+              <ul className="mt-3 space-y-2">
+                <li>
+                  <Link href="/privacy" className="text-sm text-slate-600 transition-colors hover:text-slate-800">
+                    {t.privacyPolicy}
+                  </Link>
+                </li>
+                <li>
+                  <Link href="/terms" className="text-sm text-slate-600 transition-colors hover:text-slate-800">
+                    {t.termsOfService}
                   </Link>
                 </li>
               </ul>
