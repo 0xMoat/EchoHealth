@@ -258,6 +258,21 @@ curl http://localhost:3000/health
 cd apps/server
 pnpm test                  # 运行所有单元测试
 pnpm test:watch            # 监听模式
+
+---
+
+## SaaS 域名与登录排障
+
+如果遇到以下任一问题：
+
+- `echohealth.mintmind.io` 在 Vercel 中显示 `Invalid Configuration`
+- Google 登录报 `origin_mismatch`
+- Google 登录报 `Missing required parameter: client_id`
+- 前端 `POST /api/saas/auth/google` 返回 `404`
+
+优先查看：
+
+- [saas-domain-auth-runbook.md](/Users/young/Downloads/repos/EchoHealth/docs/saas-domain-auth-runbook.md)
 ```
 
 ### 集成测试（需要 Docker）
