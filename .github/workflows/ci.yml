@@ -39,3 +39,59 @@ jobs:
 
       - name: Type check
         run: pnpm --filter server build
+
+  web-e2e:
+    name: Web E2E
+    runs-on: ubuntu-latest
+    needs: test
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: pnpm/action-setup@v4
+        with:
+          version: latest
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: pnpm
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Install Playwright browser
+        run: pnpm --filter web exec playwright install --with-deps chromium
+
+      - name: Run stable desktop web E2E tests
+        run: >
+          pnpm --filter web exec playwright test
+          e2e/auth.spec.ts
+          e2e/dashboard.spec.ts
+          e2e/i18n.spec.ts
+          e2e/landing.spec.ts
+          e2e/pricing.spec.ts
+          e2e/result.spec.ts
+          --project=chromium
+
+      - name: Run mobile responsive web E2E tests
+        run: >
+          pnpm --filter web exec playwright test
+          e2e/responsive.spec.ts
+          --project=mobile
+
+      - name: Upload Playwright artifacts
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: playwright-artifacts
+          path: |
+            apps/web/test-results
+            apps/web/playwright-report
+          if-no-files-found: ignore
+
+      # TODO: Add a dedicated `web-e2e-external` job for tests that depend on
+      # third-party services or heavier end-to-end infrastructure, including:
+      # - payment.spec.ts (Creem test secrets and hosted checkout flow)
+      # - upload.spec.ts (requires test storage instead of real COS)
+      # - smoke.spec.ts (depends on stable upload + result pipeline)
