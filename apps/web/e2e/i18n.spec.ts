@@ -140,12 +140,18 @@ test.describe('Internationalization (i18n)', () => {
     test.skip(browserName !== 'chromium', 'Desktop-only layout assertion')
 
     await page.setViewportSize({ width: 1280, height: 800 })
+    await page.context().clearCookies()
+    await page.addInitScript(() => {
+      window.localStorage.clear()
+      window.sessionStorage.clear()
+    })
     await page.goto('/')
+    await expect(page.locator('nav a[href="/login"]').first()).toBeVisible()
 
     const metrics = await page.evaluate(() => {
-      const enButton = document.querySelector('button[aria-label="Switch to English"]')
-      const languageGroup = enButton?.parentElement
-      const authButton = document.querySelector('a[href="/login"]')
+      const desktopNav = document.querySelector('nav .hidden.items-center.gap-3.sm\\:flex')
+      const languageGroup = desktopNav?.querySelector('div.inline-flex')
+      const authButton = desktopNav?.querySelector('a[href="/login"]')
 
       if (!languageGroup || !authButton) {
         return null

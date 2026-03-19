@@ -51,10 +51,14 @@ test.describe('Landing Page', () => {
   })
 
   test('renders trust metrics section', async ({ page }) => {
-    await expect(page.getByRole('heading', { name: /built to feel clear, calm, and dependable|先用几项关键信号建立信任/i })).toBeVisible()
-    await expect(page.getByText(/2 min|2 分钟/i)).toBeVisible()
-    await expect(page.getByText('92%')).toBeVisible()
-    await expect(page.getByText('24/7')).toBeVisible()
+    const trustSection = page.locator('section').filter({
+      has: page.getByRole('heading', { name: /built to feel clear, calm, and dependable|先看几个大家最在意的点/i }),
+    }).first()
+
+    await expect(trustSection.getByRole('heading', { name: /built to feel clear, calm, and dependable|先看几个大家最在意的点/i })).toBeVisible()
+    await expect(trustSection.getByText(/^(2 min|2 分钟)$/)).toBeVisible()
+    await expect(trustSection.getByText('92%')).toBeVisible()
+    await expect(trustSection.getByText('24/7')).toBeVisible()
   })
 
   test('navbar is visible with logo', async ({ page }) => {

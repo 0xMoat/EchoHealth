@@ -266,7 +266,7 @@ export default function Home() {
             <h2 className="font-display text-3xl font-bold tracking-tight text-slate-800 text-balance sm:text-4xl">
               {t.trustMetricsTitle}
             </h2>
-            <p className="mt-3 max-w-xl text-base leading-7 text-slate-500">
+            <p className="mt-3 min-h-[3.5rem] max-w-xl text-base leading-7 text-slate-500">
               {t.trustMetricsSubtitle}
             </p>
           </div>
@@ -280,7 +280,7 @@ export default function Home() {
                 <p className="font-display text-5xl font-bold tracking-tight text-slate-900 sm:text-6xl">
                   {metric.value}
                 </p>
-                <p className="mt-3 max-w-[18ch] text-sm leading-6 text-slate-500">
+                <p className="mt-3 min-h-[4.5rem] max-w-[18ch] text-sm leading-6 text-slate-500">
                   {metric.label}
                 </p>
               </div>
