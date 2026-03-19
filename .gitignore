@@ -63,3 +63,8 @@ skills/*/cache/
 
 # ===== Redis =====
 dump.rdb
+
+# ===== Playwright =====
+playwright-report/
+test-results/
+blob-report/

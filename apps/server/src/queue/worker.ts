@@ -101,6 +101,36 @@ export async function runPipeline(job: Job<VideoJobData>): Promise<void> {
 
   console.log(`[${rid}] ── pipeline start  reportId=${reportId}`)
 
+  // Fast-video mode for e2e testing: skip entire pipeline, mark as completed immediately
+  if (process.env.TEST_FAST_VIDEO === 'true') {
+    console.log(`[${rid}] ── TEST_FAST_VIDEO: skipping pipeline`)
+    await prisma.report.update({ where: { id: reportId }, data: { status: 'PROCESSING' } })
+    await job.updateProgress(50)
+    const dummyScript = {
+      summary: 'Test summary',
+      details: [{ indicatorName: 'Test', status: 'normal', explanation: 'Normal range' }],
+      suggestions: 'Stay healthy',
+      outro: 'Thank you',
+    }
+    await prisma.report.update({
+      where: { id: reportId },
+      data: { script: dummyScript as unknown as Prisma.InputJsonValue },
+    })
+    await prisma.$transaction([
+      prisma.video.create({
+        data: {
+          reportId,
+          cosUrl: 'https://echohealth-test.cos.ap-guangzhou.myqcloud.com/test/sample.mp4',
+          duration: 15,
+        },
+      }),
+      prisma.report.update({ where: { id: reportId }, data: { status: 'COMPLETED' } }),
+    ])
+    await job.updateProgress(100)
+    console.log(`[${rid}] ── TEST_FAST_VIDEO: done`)
+    return
+  }
+
   // ── 1. Load report ──────────────────────────────────────────────────────────
   let done = step('load-report')
   const report = await prisma.report.findUniqueOrThrow({

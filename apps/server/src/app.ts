@@ -15,6 +15,7 @@ import saasUploadRoutes from './routes/saas/upload.js'
 import saasReportRoutes from './routes/saas/reports.js'
 import rawBody from 'fastify-raw-body'
 import creemRoutes from './routes/saas/creem.js'
+import testAuthRoutes from './routes/saas/test-auth.js'
 
 export async function buildApp() {
   const app = Fastify({ logger: true })
@@ -30,10 +31,13 @@ export async function buildApp() {
 
   await app.register(rawBody)
 
-  await app.register(rateLimit, {
-    max: 100,
-    timeWindow: '1 minute',
-  })
+  // Disable rate limiting in test mode to avoid 429 errors during e2e tests
+  if (process.env.NODE_ENV !== 'test' && process.env.TEST_FAST_VIDEO !== 'true') {
+    await app.register(rateLimit, {
+      max: 100,
+      timeWindow: '1 minute',
+    })
+  }
 
   // Origin header validation for non-GET routes (CSRF protection)
   app.addHook('preHandler', async (request, reply) => {
@@ -72,6 +76,11 @@ export async function buildApp() {
   await app.register(saasUploadRoutes, { prefix: '/api/saas' })
   await app.register(saasReportRoutes, { prefix: '/api/saas' })
   await app.register(creemRoutes, { prefix: '/api/saas/creem' })
+
+  // Test-only routes — never available in production
+  if (process.env.NODE_ENV !== 'production') {
+    await app.register(testAuthRoutes, { prefix: '/api/saas' })
+  }
 
   Sentry.setupFastifyErrorHandler(app)
 

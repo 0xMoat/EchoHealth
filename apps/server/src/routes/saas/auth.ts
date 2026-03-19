@@ -8,8 +8,11 @@ import { signToken } from '../../lib/jwt.js'
 const GOOGLE_CLIENT_ID = process.env.GOOGLE_CLIENT_ID || ''
 
 export default async function saasAuthRoutes(app: FastifyInstance) {
-  // Stricter rate limit for all auth routes (10 req/min/IP per spec §9)
-  await app.register(rateLimit, { max: 10, timeWindow: '1 minute' })
+  // Skip rate limiting in test mode to avoid 429 errors during e2e tests
+  if (process.env.NODE_ENV !== 'test' && process.env.TEST_FAST_VIDEO !== 'true') {
+    // Stricter rate limit for all auth routes (10 req/min/IP per spec §9)
+    await app.register(rateLimit, { max: 10, timeWindow: '1 minute' })
+  }
   app.post('/auth/google', async (request, reply) => {
     const { idToken } = request.body as { idToken?: string }
     if (!idToken) {

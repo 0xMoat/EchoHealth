@@ -7,7 +7,9 @@
     "dev:mp": "pnpm --filter miniprogram dev:weapp",
     "dev:web": "pnpm --filter web dev",
     "dev:video": "pnpm --filter @echohealth/video dev",
-    "test": "pnpm --filter server test"
+    "test": "pnpm --filter server test",
+    "test:e2e": "pnpm --filter web test:e2e",
+    "test:e2e:ui": "pnpm --filter web test:e2e:ui"
   },
   "engines": {
     "node": ">=20.0.0",

@@ -1,0 +1,29 @@
+# E2E 测试专用数据库容器（通过 OrbStack 运行）
+# 生命周期由 Playwright globalSetup/globalTeardown 自动管理
+# 手动清理: docker compose -f docker-compose.test.yml down -v
+services:
+  postgres:
+    image: postgres:16-alpine
+    ports:
+      - "5433:5432"  # 用 5433 避免与本地 dev 实例冲突
+    environment:
+      POSTGRES_DB: echohealth_test
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: test
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      interval: 2s
+      timeout: 5s
+      retries: 10
+    tmpfs:
+      - /var/lib/postgresql/data  # 数据放内存，快速且不留痕迹
+
+  redis:
+    image: redis:7-alpine
+    ports:
+      - "6380:6379"  # 用 6380 避免与本地 dev 实例冲突
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 2s
+      timeout: 5s
+      retries: 10
