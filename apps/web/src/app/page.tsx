@@ -219,7 +219,7 @@ export default function Home() {
             </div>
             <div className="relative flex aspect-[4/3] w-full items-center justify-center overflow-hidden rounded-xl border border-neutral-200 bg-neutral-50 shadow-sm">
               <Image 
-                src="/assets/feature_mock_report.png" 
+                src="/assets/feature_illustration_report.png" 
                 alt={t.featureMockReport}
                 fill
                 className="object-cover"
@@ -232,7 +232,7 @@ export default function Home() {
           <div className="mt-16 grid grid-cols-1 items-center gap-10 sm:grid-cols-2 sm:gap-16">
             <div className="order-last sm:order-first relative flex aspect-[4/3] w-full items-center justify-center overflow-hidden rounded-xl border border-neutral-200 bg-neutral-50 shadow-sm">
               <Image 
-                src="/assets/feature_mock_video.png" 
+                src="/assets/feature_illustration_video.png" 
                 alt={t.featureMockVideo}
                 fill
                 className="object-cover"
