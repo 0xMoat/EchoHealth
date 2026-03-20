@@ -6,7 +6,7 @@ English | [简体中文](./README.md)
 > 
 > 📸 Upload Photo → 🤖 AI Deep Analysis → 🎥 Automated Video Generation → 📱 Share to Parents via WeChat
 
-![EchoHealth Banner](./assets/banner.png)
+![EchoHealth Banner](./assets/banner.svg)
 
 ---
 
