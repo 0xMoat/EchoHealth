@@ -6,7 +6,7 @@
 > 
 > 📸 拍照上传体检报告 → 🤖 AI 深度解读 → 🎥 自动化生成短视频 → 📱 微信分享给父母
 
-![EchoHealth Banner](./assets/banner.svg)
+![EchoHealth Banner](./assets/banner_zh.svg)
 
 ---
 
