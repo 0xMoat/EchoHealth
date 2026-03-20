@@ -132,13 +132,7 @@ export default function Navbar() {
               >
                 {t.dashboard}
               </Link>
-              <Link
-                href="/#main-content"
-                onClick={closeMenu}
-                className="rounded-lg bg-cyan-600 px-4 py-2 text-sm font-medium text-white transition-colors hover:bg-cyan-700 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-cyan-600 focus-visible:ring-offset-2"
-              >
-                {t.newReport}
-              </Link>
+
               {/* Upgrade button for non-Pro users; Pro badge for Pro users */}
               {user.isPro ? (
                 <span className="rounded-full bg-gradient-to-r from-orange-400 to-rose-500 px-3 py-1 text-xs font-semibold text-white">
@@ -209,13 +203,7 @@ export default function Navbar() {
               >
                 {t.dashboard}
               </Link>
-              <Link
-                href="/#main-content"
-                onClick={closeMenu}
-                className="rounded-lg px-3 py-2.5 text-left text-sm font-medium text-slate-700 transition-colors hover:bg-neutral-50"
-              >
-                {t.newReport}
-              </Link>
+
               {user.isPro ? (
                 <span className="inline-flex w-fit rounded-full bg-gradient-to-r from-orange-400 to-rose-500 px-3 py-1 text-xs font-semibold text-white">
                   {t.proBadge}
