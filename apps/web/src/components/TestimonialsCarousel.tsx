@@ -115,7 +115,7 @@ export default function TestimonialsCarousel({ title, subtitle, items }: Testimo
   return (
     <section
       aria-label={title}
-      className="relative overflow-hidden bg-[linear-gradient(180deg,#f8fafc_0%,#f7f4ef_100%)]"
+      className="relative overflow-hidden border-t border-neutral-200 bg-[linear-gradient(180deg,#ffffff_0%,#f8fafc_100%)]"
     >
       <div className="mx-auto max-w-5xl px-6 py-20 sm:py-28">
         <div className="max-w-2xl">
