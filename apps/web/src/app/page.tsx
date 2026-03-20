@@ -5,6 +5,7 @@ import Footer from '@/components/Footer'
 import TestimonialsCarousel from '@/components/TestimonialsCarousel'
 import { useT } from '@/hooks/useT'
 import { PRO_MONTHLY_PRICE, PASS_PRICE } from '@/lib/constants'
+import { useUploadModal } from '@/contexts/UploadModalContext'
 
 const stepIcons = [
   <svg key="upload" className="h-6 w-6" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" aria-hidden="true">
@@ -20,6 +21,7 @@ const stepIcons = [
 
 export default function Home() {
   const t = useT()
+  const { openModal } = useUploadModal()
 
   const steps = [
     { number: '01', title: t.stepUploadTitle, description: t.stepUploadDesc, icon: stepIcons[0] },
@@ -141,9 +143,13 @@ export default function Home() {
             </h2>
 
             <div className="mt-4 space-y-5">
-              {/* File upload zone — same style as FileUploader */}
-              <Link href="/upload" className="block">
-                <div className="flex min-h-[120px] cursor-pointer flex-col items-center justify-center rounded-xl border-2 border-dashed border-neutral-300 transition-colors hover:border-neutral-400">
+              {/* File upload zone — triggers modal */}
+              <button 
+                type="button" 
+                onClick={openModal} 
+                className="block w-full text-left transition-transform active:scale-[0.99] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-cyan-600 focus-visible:ring-offset-2 rounded-xl"
+              >
+                <div className="flex min-h-[120px] cursor-pointer flex-col items-center justify-center rounded-xl border-2 border-dashed border-neutral-300 transition-colors hover:border-neutral-400 bg-white hover:bg-neutral-50/50">
                   <svg className="h-8 w-8 text-slate-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5} aria-hidden="true">
                     <path strokeLinecap="round" strokeLinejoin="round" d="M12 16.5V9.75m0 0l3 3m-3-3l-3 3M6.75 19.5a4.5 4.5 0 01-1.41-8.775 5.25 5.25 0 0110.338-2.32 3 3 0 013.4 3.178A3.38 3.38 0 0118 15.75" />
                   </svg>
@@ -151,10 +157,10 @@ export default function Home() {
                     {t.dragOrBrowse} <span className="font-medium text-slate-800">{t.browse}</span>
                   </p>
                   <p className="mt-1 text-xs text-slate-500">
-                    {t.fileHint.replace('{n}', '5')}
+                    {t.fileHint ? t.fileHint.replace('{n}', '5') : 'Max 5 files'}
                   </p>
                 </div>
-              </Link>
+              </button>
 
               {/* Language + Generate row */}
               <div className="flex flex-wrap items-end justify-between gap-4">
@@ -176,15 +182,16 @@ export default function Home() {
                   </div>
                 </fieldset>
 
-                <Link
-                  href="/upload"
-                  className="inline-flex items-center gap-2 rounded-lg bg-cyan-600 px-6 py-2.5 text-sm font-medium text-white transition-colors hover:bg-cyan-700 active:scale-[0.98]"
+                <button
+                  type="button"
+                  onClick={openModal}
+                  className="inline-flex items-center gap-2 rounded-lg bg-cyan-600 px-6 py-2.5 text-sm font-medium text-white transition-colors hover:bg-cyan-700 active:scale-[0.98] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-cyan-600 focus-visible:ring-offset-2"
                 >
                   {t.generateVideo}
                   <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor" aria-hidden="true">
                     <path strokeLinecap="round" strokeLinejoin="round" d="M13.5 4.5 21 12m0 0-7.5 7.5M21 12H3" />
                   </svg>
-                </Link>
+                </button>
               </div>
             </div>
           </div>
