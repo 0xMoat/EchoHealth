@@ -7,6 +7,8 @@ import TestimonialsCarousel from '@/components/TestimonialsCarousel'
 import { useT } from '@/hooks/useT'
 import { PRO_MONTHLY_PRICE, PASS_PRICE } from '@/lib/constants'
 import HeroUploader from '@/components/HeroUploader'
+import IllustrationReport from '@/components/IllustrationReport'
+import IllustrationVideo from '@/components/IllustrationVideo'
 
 const stepIcons = [
   <svg key="upload" className="h-6 w-6" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" aria-hidden="true">
@@ -218,26 +220,14 @@ export default function Home() {
               <p className="mt-3 text-sm leading-relaxed text-slate-500">{t.feature1Desc}</p>
             </div>
             <div className="relative flex aspect-[4/3] w-full items-center justify-center overflow-hidden rounded-xl border border-neutral-200 bg-neutral-50 shadow-sm">
-              <Image 
-                src="/assets/feature_illustration_report.png" 
-                alt={t.featureMockReport}
-                fill
-                className="object-cover"
-                sizes="(max-width: 640px) 100vw, 50vw"
-              />
+              <IllustrationReport />
             </div>
           </div>
 
           {/* Feature 2: mockup left, text right */}
           <div className="mt-16 grid grid-cols-1 items-center gap-10 sm:grid-cols-2 sm:gap-16">
             <div className="order-last sm:order-first relative flex aspect-[4/3] w-full items-center justify-center overflow-hidden rounded-xl border border-neutral-200 bg-neutral-50 shadow-sm">
-              <Image 
-                src="/assets/feature_illustration_video.png" 
-                alt={t.featureMockVideo}
-                fill
-                className="object-cover"
-                sizes="(max-width: 640px) 100vw, 50vw"
-              />
+              <IllustrationVideo />
             </div>
             <div>
               <h3 className="font-display text-xl font-bold text-slate-800">{t.feature2Title}</h3>
