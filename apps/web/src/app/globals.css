@@ -2,7 +2,7 @@
 
 @theme {
   --font-sans: var(--font-body), var(--font-cjk), ui-sans-serif, system-ui, sans-serif;
-  --font-display: var(--font-heading), Georgia, "Noto Serif SC", serif;
+  --font-display: var(--font-heading), var(--font-cjk-serif), Georgia, serif;
 }
 
 /* Animation keyframes */
