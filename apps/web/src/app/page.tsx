@@ -1,6 +1,7 @@
 'use client'
 
 import Link from 'next/link'
+import Image from 'next/image'
 import Footer from '@/components/Footer'
 import TestimonialsCarousel from '@/components/TestimonialsCarousel'
 import { useT } from '@/hooks/useT'
@@ -216,25 +217,27 @@ export default function Home() {
               <h3 className="font-display text-xl font-bold text-slate-800">{t.feature1Title}</h3>
               <p className="mt-3 text-sm leading-relaxed text-slate-500">{t.feature1Desc}</p>
             </div>
-            <div className="flex aspect-[4/3] items-center justify-center rounded-xl border border-neutral-200 bg-neutral-50" aria-label={t.featureMockReport}>
-              <div className="flex flex-col items-center gap-2 text-slate-300">
-                <svg className="h-10 w-10" fill="none" viewBox="0 0 24 24" strokeWidth={1} stroke="currentColor" aria-hidden="true">
-                  <path strokeLinecap="round" strokeLinejoin="round" d="M19.5 14.25v-2.625a3.375 3.375 0 0 0-3.375-3.375h-1.5A1.125 1.125 0 0 1 13.5 7.125v-1.5a3.375 3.375 0 0 0-3.375-3.375H8.25m0 12.75h7.5m-7.5 3H12M10.5 2.25H5.625c-.621 0-1.125.504-1.125 1.125v17.25c0 .621.504 1.125 1.125 1.125h12.75c.621 0 1.125-.504 1.125-1.125V11.25a9 9 0 0 0-9-9Z" />
-                </svg>
-                <span className="text-xs">{t.featureMockReport}</span>
-              </div>
+            <div className="relative flex aspect-[4/3] w-full items-center justify-center overflow-hidden rounded-xl border border-neutral-200 bg-neutral-50 shadow-sm">
+              <Image 
+                src="/assets/feature_mock_report.png" 
+                alt={t.featureMockReport}
+                fill
+                className="object-cover"
+                sizes="(max-width: 640px) 100vw, 50vw"
+              />
             </div>
           </div>
 
           {/* Feature 2: mockup left, text right */}
           <div className="mt-16 grid grid-cols-1 items-center gap-10 sm:grid-cols-2 sm:gap-16">
-            <div className="order-last sm:order-first flex aspect-[4/3] items-center justify-center rounded-xl border border-neutral-200 bg-neutral-50" aria-label={t.featureMockVideo}>
-              <div className="flex flex-col items-center gap-2 text-slate-300">
-                <svg className="h-10 w-10" fill="none" viewBox="0 0 24 24" strokeWidth={1} stroke="currentColor" aria-hidden="true">
-                  <path strokeLinecap="round" strokeLinejoin="round" d="m15.75 10.5 4.72-4.72a.75.75 0 0 1 1.28.53v11.38a.75.75 0 0 1-1.28.53l-4.72-4.72M4.5 18.75h9a2.25 2.25 0 0 0 2.25-2.25v-9a2.25 2.25 0 0 0-2.25-2.25h-9A2.25 2.25 0 0 0 2.25 7.5v9a2.25 2.25 0 0 0 2.25 2.25Z" />
-                </svg>
-                <span className="text-xs">{t.featureMockVideo}</span>
-              </div>
+            <div className="order-last sm:order-first relative flex aspect-[4/3] w-full items-center justify-center overflow-hidden rounded-xl border border-neutral-200 bg-neutral-50 shadow-sm">
+              <Image 
+                src="/assets/feature_mock_video.png" 
+                alt={t.featureMockVideo}
+                fill
+                className="object-cover"
+                sizes="(max-width: 640px) 100vw, 50vw"
+              />
             </div>
             <div>
               <h3 className="font-display text-xl font-bold text-slate-800">{t.feature2Title}</h3>
