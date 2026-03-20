@@ -5,6 +5,53 @@
   --font-display: var(--font-heading), var(--font-cjk-serif), Georgia, serif;
 }
 
+/* ── Hero gradient background ── */
+.hero-gradient {
+  background:
+    radial-gradient(ellipse 80% 60% at 50% -10%, rgba(8, 145, 178, 0.06), transparent),
+    radial-gradient(ellipse 60% 50% at 80% 50%, rgba(8, 145, 178, 0.04), transparent);
+}
+
+/* ── Hero feature badges ── */
+.hero-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.25rem;
+  padding: 0.3rem 0.75rem;
+  border-radius: 9999px;
+  font-size: 0.75rem;
+  font-weight: 600;
+  line-height: 1;
+  white-space: nowrap;
+  letter-spacing: 0.01em;
+  border: 1px solid;
+}
+
+.hero-badge--green {
+  background-color: #ecfdf5;
+  color: #047857;
+  border-color: #a7f3d0;
+}
+
+.hero-badge--cyan {
+  background-color: #ecfeff;
+  color: #0e7490;
+  border-color: #a5f3fc;
+}
+
+.hero-badge--amber {
+  background-color: #fffbeb;
+  color: #92400e;
+  border-color: #fde68a;
+}
+
+.hero-badge--purple {
+  background-color: #f5f3ff;
+  color: #6d28d9;
+  border-color: #ddd6fe;
+}
+
+
 /* Animation keyframes */
 @keyframes fadeIn {
   from { opacity: 0; }

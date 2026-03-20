@@ -25,13 +25,13 @@ const zh = {
 
   // ── Landing page ──
   heroEyebrow: 'AI 把体检报告变成视频解读',
-  heroTitle1: '体检报告太难懂，',
-  heroTitle2: '交给视频来讲清楚',
-  heroDesc: '上传体检报告后，EchoHealth 会先用 AI 逐项读取指标、判断哪些变化更值得注意，再把这些重点生成一段更容易听懂、也更方便和家人分享的视频解读。',
+  heroTitle1: '体检报告像是天书？',
+  heroTitle2: '转成视频，听懂了才安心',
+  heroDesc: '别让密密麻麻的医学数字成为你的焦虑来源。EchoHealth 将晦涩枯燥的体检报告，一键转化为条理清晰、简单易懂的短视频解读，让你在几分钟内彻底看懂自己的身体状况。',
   tryItFree: '免费试用',
   howItWorks: '看看怎么用',
-  threeSteps: '三步就能看懂',
-  threeStepsDesc: '从原始报告到 AI 生成的视频解读，通常只要几分钟。',
+  threeSteps: '只需三步，告别焦虑',
+  threeStepsDesc: '从拿到令人发懵的化验单，到彻底看懂自己的身体状况，通常只要几分钟。',
   stepUploadTitle: '上传报告',
   stepUploadDesc: '拍照上传，或直接提交 PDF 体检报告，让系统拿到完整内容。',
   stepAITitle: 'AI 先读懂报告',
@@ -41,11 +41,11 @@ const zh = {
 
   // ── Landing: Benefits ──
   benefitsTitle: '为什么选择 EchoHealth？',
-  benefitsSubtitle: '它不只是把文字提取出来，而是先用 AI 读懂报告，再决定该怎么讲清楚。',
-  benefit1Title: '不是只提取文字，而是真的在解释',
-  benefit1Desc: 'EchoHealth 不只是把 PDF 里的字扫出来，而是会识别报告结构、理解各项指标，并判断哪些内容该先讲清楚。',
-  benefit2Title: '视频内容来自你的真实报告',
-  benefit2Desc: '生成的视频不是套模板念一遍，而是基于你的实际指标和重点结果组织出来的解释。',
+  benefitsSubtitle: '把冰冷复杂的体检数据，变成带着温度和清晰逻辑的视频讲解。',
+  benefit1Title: '告别医学术语，讲大白话',
+  benefit1Desc: '自动过滤无关干扰信息，将生涩的专业术语翻译成大白话。对于那些吓人的“异常”指标，AI 会为你详细解释其真实含义，让你不再无端焦虑。',
+  benefit2Title: '条理清晰，直击重点',
+  benefit2Desc: '不再是对着几十项指标发懵。生成的视频会按照对你健康最重要的优先级，把复杂的结果梳理成简单清晰的结构讲述给你听。',
   benefit3Title: '隐私与安全',
   benefit3Desc: '你的健康信息会被谨慎处理，只用于完成 AI 解读、生成视频和提供服务。',
 
@@ -128,6 +128,17 @@ const zh = {
 
   // ── Landing: Hero preview ──
   heroPreview: '产品演示',
+
+  // ── Landing: Hero panel ──
+  heroBadgeFree: '免费开始使用',
+  heroBadgeAI: 'AI 智能分析',
+  heroBadgeNoExpertise: '解读轻松易懂',
+  heroBadgeVideo: '视频化解读',
+  heroPanelTitle: 'AI 体检报告解读',
+  heroPanelUploadHint: '拖入体检报告，开始 AI 解读',
+  heroPanelLangLabel: '语言',
+  heroPanelGenerate: '生成视频解读',
+  heroPanelFormatHint: '支持 JPEG、PNG、WebP、PDF',
 
   // ── Dashboard ──
   welcomeBack: '欢迎回来',

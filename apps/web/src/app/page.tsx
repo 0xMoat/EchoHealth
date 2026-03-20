@@ -116,48 +116,75 @@ export default function Home() {
   return (
     <>
       {/* ── 1. Hero ── */}
-      <section id="main-content" className="overflow-hidden">
-        <div className="mx-auto max-w-5xl px-6 pb-16 pt-28 sm:pb-20 sm:pt-36">
-          <div className="max-w-2xl min-h-[20.5rem]">
-            <p className="text-sm font-semibold uppercase tracking-[0.16em] text-cyan-700/80">
-              {t.heroEyebrow}
-            </p>
-            <h1 className="font-display text-4xl font-bold leading-[1.1] tracking-tight text-slate-800 text-balance sm:text-5xl lg:text-6xl">
-              {t.heroTitle1}{' '}
-              <span className="text-cyan-700">{t.heroTitle2}</span>
-            </h1>
-
-            <p className="mt-6 max-w-lg min-h-[5.5rem] text-lg leading-relaxed text-slate-500">
+      <section id="main-content" className="hero-gradient overflow-hidden">
+        <div className="mx-auto max-w-5xl px-6 pb-12 pt-8 sm:pb-16 sm:pt-12">
+          {/* ── Centered header ── */}
+          <div className="mx-auto max-w-2xl text-center">
+            <span className="font-display text-3xl font-bold tracking-tight text-cyan-700 sm:text-4xl">EchoHealth</span>
+            <p className="mt-5 text-base leading-relaxed text-slate-500">
               {t.heroDesc}
             </p>
 
-            <div className="mt-10 flex flex-wrap items-center gap-4">
-              <Link
-                href="/upload"
-                className="inline-flex items-center gap-2 rounded-lg bg-cyan-600 px-6 py-3 text-sm font-medium text-white shadow-sm transition-[background-color] hover:bg-cyan-700 active:scale-[0.98] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-cyan-600 focus-visible:ring-offset-2"
-              >
-                {t.tryItFree}
-                <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor" aria-hidden="true">
-                  <path strokeLinecap="round" strokeLinejoin="round" d="M13.5 4.5 21 12m0 0-7.5 7.5M21 12H3" />
-                </svg>
-              </Link>
-              <a
-                href="#how-it-works"
-                className="text-sm font-medium text-slate-500 transition-colors hover:text-slate-800"
-              >
-                {t.howItWorks} &darr;
-              </a>
+            {/* ── Feature badges ── */}
+            <div className="mt-6 flex flex-wrap items-center justify-center gap-3">
+              <span className="hero-badge hero-badge--green">{t.heroBadgeFree}</span>
+              <span className="hero-badge hero-badge--cyan">{t.heroBadgeAI}</span>
+              <span className="hero-badge hero-badge--amber">{t.heroBadgeNoExpertise}</span>
+              <span className="hero-badge hero-badge--purple">{t.heroBadgeVideo}</span>
             </div>
           </div>
 
-          {/* Product preview placeholder */}
-          <div className="mt-16 overflow-hidden rounded-xl border border-neutral-200 bg-neutral-50">
-            <div className="flex aspect-video items-center justify-center">
-              <div className="flex flex-col items-center gap-3 text-slate-400">
-                <svg className="h-12 w-12" fill="none" viewBox="0 0 24 24" strokeWidth={1} stroke="currentColor" aria-hidden="true">
-                  <path strokeLinecap="round" strokeLinejoin="round" d="M5.25 5.653c0-.856.917-1.398 1.667-.986l11.54 6.347a1.125 1.125 0 0 1 0 1.972l-11.54 6.347a1.125 1.125 0 0 1-1.667-.986V5.653Z" />
-                </svg>
-                <span className="text-sm">{t.heroPreview}</span>
+          {/* ── Demo panel (mirrors /upload page UI) ── */}
+          <div className="mx-auto mt-8 max-w-2xl">
+            <h2 className="font-display text-xl font-bold tracking-tight text-slate-800 sm:text-2xl">
+              {t.heroPanelTitle}
+            </h2>
+
+            <div className="mt-4 space-y-5">
+              {/* File upload zone — same style as FileUploader */}
+              <Link href="/upload" className="block">
+                <div className="flex min-h-[120px] cursor-pointer flex-col items-center justify-center rounded-xl border-2 border-dashed border-neutral-300 transition-colors hover:border-neutral-400">
+                  <svg className="h-8 w-8 text-slate-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5} aria-hidden="true">
+                    <path strokeLinecap="round" strokeLinejoin="round" d="M12 16.5V9.75m0 0l3 3m-3-3l-3 3M6.75 19.5a4.5 4.5 0 01-1.41-8.775 5.25 5.25 0 0110.338-2.32 3 3 0 013.4 3.178A3.38 3.38 0 0118 15.75" />
+                  </svg>
+                  <p className="mt-2 text-sm text-slate-600">
+                    {t.dragOrBrowse} <span className="font-medium text-slate-800">{t.browse}</span>
+                  </p>
+                  <p className="mt-1 text-xs text-slate-500">
+                    {t.fileHint.replace('{n}', '5')}
+                  </p>
+                </div>
+              </Link>
+
+              {/* Language + Generate row */}
+              <div className="flex flex-wrap items-end justify-between gap-4">
+                <fieldset>
+                  <legend className="text-sm font-medium text-slate-800">{t.videoLanguage}</legend>
+                  <div className="mt-2 flex gap-2">
+                    {[t.autoDetect, t.english, t.chinese].map((label, i) => (
+                      <span
+                        key={label}
+                        className={`rounded-lg border px-3 py-1.5 text-sm font-medium ${
+                          i === 0
+                            ? 'border-neutral-900 bg-neutral-900 text-white'
+                            : 'border-neutral-300 text-slate-700'
+                        }`}
+                      >
+                        {label}
+                      </span>
+                    ))}
+                  </div>
+                </fieldset>
+
+                <Link
+                  href="/upload"
+                  className="inline-flex items-center gap-2 rounded-lg bg-cyan-600 px-6 py-2.5 text-sm font-medium text-white transition-colors hover:bg-cyan-700 active:scale-[0.98]"
+                >
+                  {t.generateVideo}
+                  <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor" aria-hidden="true">
+                    <path strokeLinecap="round" strokeLinejoin="round" d="M13.5 4.5 21 12m0 0-7.5 7.5M21 12H3" />
+                  </svg>
+                </Link>
               </div>
             </div>
           </div>

@@ -25,13 +25,13 @@ const en = {
 
   // ── Landing page ──
   heroEyebrow: 'AI turns health reports into video explanations',
-  heroTitle1: 'Your Health Report,',
-  heroTitle2: 'Explained in Video',
-  heroDesc: 'Upload your checkup results and EchoHealth uses AI to read every marker, identify the important changes, and turn the report into a personalized video explanation you can actually follow.',
+  heroTitle1: 'Make Sense of Your Report,',
+  heroTitle2: 'Without the Anxiety.',
+  heroDesc: 'Don\'t let a wall of medical jargon overwhelm you. EchoHealth instantly transforms your confusing checkup results into a clear, easy-to-understand short video, so you know exactly where your health stands in minutes.',
   tryItFree: 'Try it free',
   howItWorks: 'How it works',
-  threeSteps: 'Three simple steps',
-  threeStepsDesc: 'From raw lab numbers to an AI-generated video explanation in about two minutes.',
+  threeSteps: 'Three simple steps to peace of mind',
+  threeStepsDesc: 'From receiving a confusing lab result to fully understanding your health status in just a couple of minutes.',
   stepUploadTitle: 'Upload',
   stepUploadDesc: 'Take a photo or upload a PDF so EchoHealth has the full report to analyze.',
   stepAITitle: 'AI Reads the Report',
@@ -41,11 +41,11 @@ const en = {
 
   // ── Landing: Benefits ──
   benefitsTitle: 'Why EchoHealth?',
-  benefitsSubtitle: 'EchoHealth is not just summarizing text. It uses AI to interpret the report, decide what matters, and explain it back in video.',
-  benefit1Title: 'AI That Explains, Not Just Extracts',
-  benefit1Desc: 'Instead of only pulling text out of a PDF, EchoHealth reads the report structure, understands the markers, and decides what needs to be explained first.',
-  benefit2Title: 'Video Built From Your Report',
-  benefit2Desc: 'The final video is generated from your actual report findings, so the explanation follows your numbers rather than a generic template.',
+  benefitsSubtitle: 'Turning cold, confusing medical data into warm, clear, and logical video explanations.',
+  benefit1Title: 'Goodbye Jargon, Hello Plain English',
+  benefit1Desc: 'We automatically filter out the noise and translate complex medical terms into plain English. The AI patiently explains scary "abnormal" markers so you can stop worrying unnecessarily.',
+  benefit2Title: 'Clear Structure, Straight to the Point',
+  benefit2Desc: 'No more staring blankly at rows of data. The video organizes your results by what matters most to your health, presenting complex information in a simple, structured way.',
   benefit3Title: 'Private & Secure',
   benefit3Desc: 'Your report is processed securely while the AI generates the explanation and video output you requested.',
 
@@ -128,6 +128,17 @@ const en = {
 
   // ── Landing: Hero preview ──
   heroPreview: 'Product demo',
+
+  // ── Landing: Hero panel ──
+  heroBadgeFree: '100% Free to Start',
+  heroBadgeAI: 'AI-Powered Analysis',
+  heroBadgeNoExpertise: 'Easy to Understand',
+  heroBadgeVideo: 'Video Explanation',
+  heroPanelTitle: 'AI Health Report Interpreter',
+  heroPanelUploadHint: 'Drop your health report here to get started',
+  heroPanelLangLabel: 'Language',
+  heroPanelGenerate: 'Generate Video',
+  heroPanelFormatHint: 'Supports JPEG, PNG, WebP, PDF',
 
   // ── Dashboard ──
   welcomeBack: 'Welcome back',
